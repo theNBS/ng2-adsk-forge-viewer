@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-viewer',
+  selector: 'adsk-forge-viewer',
   templateUrl: './viewer.component.html',
-  styleUrls: ['./viewer.component.css']
+  styleUrls: ['./viewer.component.scss']
 })
 export class ViewerComponent implements OnInit {
 
