@@ -1,3 +1,5 @@
+/// <reference types="three" />
+
 declare namespace Autodesk.Viewing {
   interface ViewerOptions {
     env?: String;

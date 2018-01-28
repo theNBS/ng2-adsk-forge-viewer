@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ViewerComponent } from './viewer.component';
+import { ScriptService } from './script.service';
 
 @NgModule({
   imports: [
@@ -11,6 +12,9 @@ import { ViewerComponent } from './viewer.component';
   ],
   exports: [
     ViewerComponent,
+  ],
+  providers: [
+    ScriptService,
   ],
 })
 export class ViewerModule { }
