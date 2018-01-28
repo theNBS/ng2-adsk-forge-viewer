@@ -6,14 +6,17 @@ declare namespace Autodesk.Viewing {
     accessToken?: string;
     webGLHelpLink?: string;
     language?: string;
+    [key: string]: any;
   }
 
   interface Viewer3DConfig {
     startOnInitialize?: boolean;
+    [key: string]: any;
   }
 
   interface ViewingApplicationOptions {
     disableBrowserContextMenu?: boolean;
+    [key: string]: any;
   }
 
   interface ItemSelectedObserver {
@@ -36,6 +39,7 @@ declare namespace Autodesk.Viewing {
   interface FileLoaderOptions {
     ids?: string;
     sharedPropertyDbPath?: string;
+    [key: string]: any;
   }
 
   interface LoadModelOptions {
@@ -43,11 +47,22 @@ declare namespace Autodesk.Viewing {
     loadOptions?: Object;
     sharedPropertyDbPath?: string;
     ids?: string;
+    [key: string]: any;
   }
 
   interface PropertyOptions {
     propFilter?: Array<string>;
     ignoreHidden?: boolean;
+    [key: string]: any;
+  }
+
+  interface ResizePanelOptions {
+    dockingPanels?: Array<UI.DockingPanel>;
+    viewer?: Viewer3D;
+    dimensions?: {
+      width: number;
+      height: number;
+    };
   }
 
   enum ErrorCodes {
@@ -389,8 +404,15 @@ declare namespace Autodesk.Viewing {
   }
 
   class GuiViewer3D extends Viewer3D {
-    addPanel(panel: PropertyPanel): boolean;
-
+    addPanel(panel: UI.PropertyPanel): boolean;
+    getToolbar(create: boolean): UI.ToolBar;
+    removePanel(panel: UI.PropertyPanel): boolean;
+    resizePanels(options?: ResizePanelOptions): void;
+    setLayersPanel(layersPanel: UI.LayersPanel): boolean;
+    setModelStructurePanel(modelStructurePanel: UI.ModelStructurePanel): boolean;
+    setPropertyPanel(propertyPanel: UI.PropertyPanel): boolean;
+    setSettingsPanel(settingsPanel: UI.SettingsPanel): boolean;
+    updateToolbarButtons(): void;
   }
 
   class ViewingApplication {
@@ -417,6 +439,220 @@ declare namespace Autodesk.Viewing {
                    onItemFailedToSelectCallback: Function): boolean;
     setCurrentViewer(viewer: Viewer3D): void;
     setDocument(docManifest: Object): boolean;
+  }
+
+  namespace UI {
+    interface DockingPanelOptions {
+      localizeTitle?: boolean;
+      [key: string]: any;
+    }
+
+    interface ScrollContainerOptions {
+      left: boolean;
+      heightAdjustment: number;
+      marginTop: number;
+      [key: string]: any;
+    }
+
+    interface ContentSize {
+      height: number;
+      width: number;
+    }
+
+    interface ResizeOptions {
+      maxHeight: number;
+      [key: string]: any;
+    }
+
+    interface AddPropertyOptions {
+      localizeCategory: boolean;
+      localizeProperty: boolean;
+      [key: string]: any;
+    }
+
+    interface ControlOptions {
+      collapsible?: boolean;
+      [key: string]: any;
+    }
+
+    interface AddControlOptions {
+      index?: Object;
+      [key: string]: any;
+    }
+
+    interface DisplayCategoryOptions {
+      localize?: boolean;
+      [key: string]: any;
+    }
+
+    interface MenuItem {
+      title: string;
+      target: Function | Array<MenuItem>;
+    }
+
+    enum ControlEvents {
+      COLLAPSED_CHANGED = 'Control.VisibilityChanged',
+      VISIBILITY_CHANGED = 'Control.CollapsedChanged',
+      CONTROL_ADDED = 'ControlGroup.ControlAdded',
+      CONTROL_REMOVED = 'ControlGroup.ControlRemoved',
+      SIZE_CHANGED = 'ControlGroup.SizeChanged',
+    }
+
+    class DockingPanel {
+      constructor(parentContainer: HTMLElement, id: string, title: string, options?: DockingPanelOptions);
+
+      addEventListener(target: Object, eventId: string, callback: Function): void;
+      addVisibilityListener(callback: Function): void;
+      createCloseButton(): HTMLElement;
+      createScrollContainer(options: ScrollContainerOptions): void;
+      createTitleBar(title: string): HTMLElement;
+      getContainerBoundingRect(): ClientRect;
+      getContentSize(): ContentSize;
+      initialize(): void;
+      initializeCloseHandler(closer: HTMLElement): void;
+      initializeMoveHandlers(mover: HTMLElement): void;
+      isVisible(): boolean;
+      onEndMove(event: MouseEvent, endX: number, endY: number): void;
+      onMove(event: MouseEvent, currentX: number, currentY: number): void;
+      onStartMove(event: MouseEvent, startX: number, startY: number): void;
+      onTitleClick(event: Event): void;
+      onTitleDoubleClick(event: Event): void;
+      removeEventListener(target: Object, eventId: string, callback: Function): boolean;
+      resizeToContent(options: ResizeOptions): void;
+      setTitle(text: string, options: DockingPanelOptions): void;
+      setVisible(show: boolean): void;
+      uninitialize(): void;
+      visibilityChanged(): void;
+    }
+
+    class LayersPanel extends DockingPanel {
+      build(): void;
+      createNode(node: Object, parent: HTMLElement): void;
+      getNodeClass(node: Object): string;
+      getNodeLabel(node: Object): string;
+      isGroupCollapsed(node: Object): boolean;
+      isGroupNode(node: Object): boolean;
+      onClick(node: Object, event: Event): void;
+      onDoubleClick(node: Object, event: Event): void;
+      onIconClick(node: Object, event: Event): void;
+      onImageClick(node: Object, event: Event): void;
+      onRightClick(node: Object, event: Event): void;
+      setGroupCollapsed(node: Object, collapse: boolean): void;
+      setLayerVisible(node: Object, collapse: boolean): void;
+      shouldInclude(node: Object): boolean;
+      update(): void;
+    }
+
+    class PropertyPanel extends DockingPanel {
+      addProperty(name: string, value: string, category: string, options?: AddPropertyOptions): boolean;
+      areDefaultPropertiesShown(): void;
+      displayCategory(category: Object, parent: HTMLElement, options: DisplayCategoryOptions): Array<HTMLElement>;
+      displayProperty(property: Object, parent: HTMLElement, options: DisplayCategoryOptions): Array<HTMLElement>;
+      getCategoryClass(category: Object): string;
+      getPropertyClass(property: Object): string;
+      hasProperties(): boolean;
+      highlight(text: string, options: Object): void;
+      isCategoryCollapsed(category: Object): boolean;
+      onCategoryClick(category: Object, event: Event): void;
+      onCategoryDoubleClick(category: Object, event: Event): void;
+      onCategoryIconClick(category: Object, event: Event): void;
+      onCategoryRightClick(category: Object, event: Event): void;
+      onPropertyClick(property: Object, event: Event): void;
+      onPropertyDoubleClick(property: Object, event: Event): void;
+      onPropertyIconClick(property: Object, event: Event): void;
+      onPropertyRightClick(property: Object, event: Event): void;
+      removeAllProperties(): void;
+      removeProperty(name: string, value: string, category: string, options?: Object): boolean;
+      setCategoryCollapsed(category: Object, collapsed: boolean): void;
+      setProperties(properties: Array<{displayName: string, displayValue: any}>, options?: Object): void;
+      showDefaultProperties(): void;
+      showNoProperties(): void;
+    }
+
+    class SettingsPanel extends DockingPanel {
+      addCheckbox(tabId: string, caption: string, initialState: boolean,
+                  onchange: Function, options?: Object): string;
+      addControl(tabId: string, control: Object|HTMLElement, options: Object|undefined): string;
+      addDropDownMenu(tabId: string, caption: string, items: Array<MenuItem>,
+                      initialItemIndex: number, onchange: Function, options: Object|undefined): string;
+      addSlider(tabId: string, caption: string, min: number, max: number, initialValue: number,
+                onchange: Function, options: Object|undefined): string;
+      addTab(tabId: string, tabTitle: string, options: Object|undefined): boolean;
+      getControl(controlId: string): Object;
+      hasTab(tabId: string): boolean;
+      isTabSelected(tabId: string): boolean;
+      removeCheckbox(checkboxId: string|Control): boolean;
+      removeControl(controlId: string|Control): boolean;
+      removeDropdownMenu(dropdownMenuId: string|Control): boolean;
+      removeSlider(sliderId: string|Control): boolean;
+      removeTab(tabId: string): boolean;
+      selectTab(tabId: string): boolean;
+      setVisible(show: boolean, skipTransition?: boolean): void;
+    }
+
+    class ModelStructurePanel extends DockingPanel {
+      addClass(id: string, className: string): boolean;
+      getNodeClass(node: Object): string;
+      getNodeLabel(node: Object): string;
+      isGroupCollapsed(node: Object): boolean;
+      isGroupNode(node: Object): boolean;
+      onClick(node: Object, event: Event): void;
+      onDoubleClick(node: Object, event: Event): void;
+      onHover(node: Object, event: Event): void;
+      onIconClick(node: Object, event: Event): void;
+      onRightClick(node: Object, event: Event): void;
+      removeClass(id: string, className: string): boolean;
+      setGroupCollapsed(node: Object, collapsed: boolean): void;
+      setModel(instanceTree: Object, modelTitle: string): void; // InstanceTree?
+      setSelection(nodes: Array<Model>): void;
+      shouldInclude(node: Model): boolean;
+    }
+
+    class ObjectContextMenu {
+      constructor(viewer: Viewer3D);
+
+      buildMenu(event: Event, status: Object): Array<MenuItem>;
+      hide(): boolean;
+      show(event: Event): void;
+    }
+
+    class Control implements EventTarget {
+      constructor(id?: string, options?: ControlOptions);
+
+      addClass(cssClass: string): void;
+      getDimensions(): Object;
+      getId(): string;
+      getPosition(): Object;
+      getToolTip(): string;
+      isCollapsed(): boolean;
+      isCollapsible(): boolean;
+      isVisible(): boolean;
+      removeClass(cssClass: string): void;
+      setCollapsed(collapsed: boolean): boolean;
+      setToolTip(toolTipText: string): boolean;
+      setVisible(visible: boolean): boolean;
+
+      // Events
+      addEventListener(type: ControlEvents, listener?: EventListenerOrEventListenerObject,
+                       options?: boolean | AddEventListenerOptions): void;
+      dispatchEvent(evt: Event): boolean;
+      removeEventListener(type: ControlEvents, listener?: EventListenerOrEventListenerObject,
+                          options?: boolean | EventListenerOptions): void;
+    }
+
+    class ControlGroup extends Control {
+      addControl(control: Control, options?: AddControlOptions): boolean;
+      getControl(controlId: string): Control;
+      getControlId(index: number): string;
+      getNumberOfControls(): number;
+      indexOf(control: string|Control): number;
+      removeControl(control: string|Control): boolean;
+      setCollapsed(collapsed: boolean): boolean;
+    }
+
+    class ToolBar extends ControlGroup {
+     // Nothing here
+    }
   }
 
   namespace Private {
