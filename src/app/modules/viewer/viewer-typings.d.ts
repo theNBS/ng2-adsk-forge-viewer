@@ -3,7 +3,7 @@
 declare namespace Autodesk.Viewing {
   interface ViewerOptions {
     env?: String;
-    getAccessToken?: Function;
+    getAccessToken?: (cb: Function) => void;
     useADP?: boolean;
     accessToken?: string;
     webGLHelpLink?: string;
@@ -136,6 +136,14 @@ declare namespace Autodesk.Viewing {
   class BubbleNode {
     constructor(rawNode: Object, parent?: Object);
 
+    parent: Object;
+    id: number;
+    data: Object;
+    isLeaf: boolean;
+    sharedPropertyDbPath: string;
+    lodNode: Object;
+    children: Array<BubbleNode>;
+
     findByGuid(guid: string): BubbleNode;
     findParentGeom2Dor3D(): BubbleNode;
     findPropertyDbPath(): string;
@@ -163,9 +171,7 @@ declare namespace Autodesk.Viewing {
     urn(searchParent: boolean): string;
   }
 
-  class Initializer {
-    constructor(options: ViewerOptions, callback: Function);
-  }
+  function Initializer(options: ViewerOptions, callback: Function);
 
   class Document {
     constructor(dataJSON: Object, path: string, acmsession: string);
@@ -405,20 +411,11 @@ declare namespace Autodesk.Viewing {
                         options?: boolean | EventListenerOptions): void;
   }
 
-  class GuiViewer3D extends Viewer3D {
-    addPanel(panel: UI.PropertyPanel): boolean;
-    getToolbar(create: boolean): UI.ToolBar;
-    removePanel(panel: UI.PropertyPanel): boolean;
-    resizePanels(options?: ResizePanelOptions): void;
-    setLayersPanel(layersPanel: UI.LayersPanel): boolean;
-    setModelStructurePanel(modelStructurePanel: UI.ModelStructurePanel): boolean;
-    setPropertyPanel(propertyPanel: UI.PropertyPanel): boolean;
-    setSettingsPanel(settingsPanel: UI.SettingsPanel): boolean;
-    updateToolbarButtons(): void;
-  }
-
   class ViewingApplication {
     constructor(containerId: string, options?: ViewingApplicationOptions);
+
+    k3D: '3D';
+    bubble: BubbleNode;
 
     addItemSelectedObserver(observer: ItemSelectedObserver): void;
     finish(): void;
@@ -432,7 +429,7 @@ declare namespace Autodesk.Viewing {
                  onDocumentLoad?: (document: Document) => void,
                  onLoadFailed?: (errorCode: string, errorMsg: string, errors: Array<any>) => void,
                  accessControlProperties?: Object): void;
-    registerViewer(viewableType: number, viewerClass: any, config: any): void;
+    registerViewer(viewableType: string, viewerClass: any, config?: any): void;
     selectItem(item: Object|BubbleNode,
                onSuccessCallback: (item: Object, viewGeometryItem: Object) => void,
                onErrorCallback: Function): boolean;
@@ -686,6 +683,18 @@ declare namespace Autodesk.Viewing {
       getSeedUrn(): string;
       getState(filter?: Object): Object;
       restoreState(viewerState: Object, filter?: Object, immediate?: boolean): boolean;
+    }
+
+    class GuiViewer3D extends Viewer3D {
+      addPanel(panel: UI.PropertyPanel): boolean;
+      getToolbar(create: boolean): UI.ToolBar;
+      removePanel(panel: UI.PropertyPanel): boolean;
+      resizePanels(options?: ResizePanelOptions): void;
+      setLayersPanel(layersPanel: UI.LayersPanel): boolean;
+      setModelStructurePanel(modelStructurePanel: UI.ModelStructurePanel): boolean;
+      setPropertyPanel(propertyPanel: UI.PropertyPanel): boolean;
+      setSettingsPanel(settingsPanel: UI.SettingsPanel): boolean;
+      updateToolbarButtons(): void;
     }
   }
 }
