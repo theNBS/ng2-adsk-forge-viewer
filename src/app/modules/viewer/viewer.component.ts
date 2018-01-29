@@ -56,7 +56,7 @@ export class ViewerComponent implements OnInit {
     Autodesk.Viewing.Initializer(options, () => {
       this.viewerApp = new Autodesk.Viewing.ViewingApplication('MyViewerDiv');
       this.viewerApp.registerViewer(this.viewerApp.k3D, Autodesk.Viewing.Private.GuiViewer3D);
-      this.viewerApp.loadDocument(documentId, this.onDocumentLoadSuccess, this.onDocumentLoadFailure);
+      this.viewerApp.loadDocument(documentId, this.onDocumentLoadSuccess.bind(this), this.onDocumentLoadFailure.bind(this));
     });
   }
 
@@ -71,7 +71,7 @@ export class ViewerComponent implements OnInit {
       }
 
       // Choose any of the avialble viewables
-      this.viewerApp.selectItem(viewables[0].data, this.onItemLoadSuccess, this.onItemLoadFail);
+      this.viewerApp.selectItem(viewables[0].data, this.onItemLoadSuccess.bind(this), this.onItemLoadFail.bind(this));
   }
 
   private onDocumentLoadFailure(viewerErrorCode) {
