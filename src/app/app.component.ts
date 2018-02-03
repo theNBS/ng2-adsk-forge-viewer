@@ -8,8 +8,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 export class AppComponent implements OnInit {
   title = 'app';
 
-  private viewerOptions: Autodesk.Viewing.ViewerOptions;
-  private documentId: string;
+  public viewerOptions: Autodesk.Viewing.ViewerOptions;
+  public documentId: string;
 
   ngOnInit() {
 
