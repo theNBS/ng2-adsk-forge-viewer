@@ -1,5 +1,16 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ScriptService } from './script.service';
+
+export interface DocumentChangedEvent {
+  document: Autodesk.Viewing.Document;
+  viewingApplication: Autodesk.Viewing.ViewingApplication;
+}
+
+export interface ItemLoadedEvent {
+  item: Autodesk.Viewing.ViewerItem;
+  viewingApplication: Autodesk.Viewing.ViewingApplication;
+  currentViewer: Autodesk.Viewing.Viewer3D;
+}
 
 @Component({
   selector: 'adsk-forge-viewer',
@@ -18,7 +29,9 @@ export class ViewerComponent implements OnInit, OnChanges {
 
   @Output() public onViewerReady = new EventEmitter<boolean>();
   @Output() public onViewerInitialized = new EventEmitter<boolean>();
-  @Output() public onDocumentChanged = new EventEmitter<Autodesk.Viewing.Document>();
+  @Output() public onDocumentChanged = new EventEmitter<DocumentChangedEvent>();
+  @Output() public onItemLoaded = new EventEmitter<ItemLoadedEvent>();
+  @Output() public onError = new EventEmitter<Autodesk.Viewing.ErrorCodes>();
 
   private viewerInitialized = false;
   private viewerApp: Autodesk.Viewing.ViewingApplication;
@@ -87,36 +100,40 @@ export class ViewerComponent implements OnInit, OnChanges {
                                 this.onDocumentLoadFailure.bind(this));
   }
 
-  private onDocumentLoadSuccess(doc: Autodesk.Viewing.Document) {
+  private onDocumentLoadSuccess(document: Autodesk.Viewing.Document) {
+    // Emit an event so the caller can do something
+    // TODO: config option?
+    this.onDocumentChanged.emit({ document, viewingApplication: this.viewerApp });
+
+    // This will be the default behaviour -- show the first viewable
     // We could still make use of Document.getSubItemsWithProperties()
     // However, when using a ViewingApplication, we have access to the **bubble** attribute,
     // which references the root node of a graph that wraps each object from the Manifest JSON.
     const viewables = this.viewerApp.bubble.search({ type: 'geometry' });
 
-    if (viewables.length === 0) {
-      console.error('Document contains no viewables.');
-      return;
+    if (viewables && viewables.length > 0) {
+      this.viewerApp.selectItem(viewables[0].data, this.onItemLoadSuccess.bind(this), this.onItemLoadFail.bind(this));
     }
-
-    // Choose any of the available viewables
-    this.viewerApp.selectItem(viewables[0].data, this.onItemLoadSuccess.bind(this), this.onItemLoadFail.bind(this));
-    this.onDocumentChanged.emit(doc);
   }
 
-  private onDocumentLoadFailure(viewerErrorCode) {
+  private onDocumentLoadFailure(viewerErrorCode: Autodesk.Viewing.ErrorCodes) {
     console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
   }
 
-  private onItemLoadSuccess(viewer, item) {
+  private onItemLoadSuccess(viewer: Autodesk.Viewing.Viewer3D, item: Autodesk.Viewing.ViewerItem) {
+    debugger;
+
     console.log('onItemLoadSuccess()!');
     console.log(viewer);
     console.log(item);
 
     // Congratulations! The viewer is now ready to be used.
     console.log('Viewers are equal: ' + (viewer === this.viewerApp.getCurrentViewer()));
+
+    this.onItemLoaded.emit({ item, currentViewer: viewer, viewingApplication: this.viewerApp });
   }
 
-  private onItemLoadFail(errorCode) {
+  private onItemLoadFail(errorCode: Autodesk.Viewing.ErrorCodes) {
     console.error('onItemLoadFail() - errorCode:' + errorCode);
   }
 }

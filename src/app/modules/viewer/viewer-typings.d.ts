@@ -80,6 +80,21 @@ declare namespace Autodesk.Viewing {
     };
   }
 
+  interface ViewerItem {
+    children?: ViewerItem[];
+    guid: string;
+    hasThumbnail: boolean;
+    name: string;
+    parent: ViewerItem;
+    progress: string;
+    role: '3d'|'2d'|string;
+    size: number;
+    status: string;
+    success: string;
+    type: 'view'|'geometry'|string;
+    viewableID: string;
+  }
+
   enum ErrorCodes {
     UNKNOWN_FAILURE,
     NETWORK_FAILURE,
@@ -149,7 +164,7 @@ declare namespace Autodesk.Viewing {
   class BubbleNode {
     parent: Object;
     id: number;
-    data: Object;
+    data: ViewerItem;
     isLeaf: boolean;
     sharedPropertyDbPath: string;
     lodNode: Object;
@@ -439,7 +454,7 @@ declare namespace Autodesk.Viewing {
     myDocument: Document;
     myCurrentViewer: Viewer3D;
     urn: string;
-    selectedItem: Object|null;
+    selectedItem: ViewerItem|null;
     extensionCache: Object;
 
 
@@ -458,9 +473,10 @@ declare namespace Autodesk.Viewing {
                  onLoadFailed?: (errorCode: string, errorMsg: string, errors: any[]) => void,
                  accessControlProperties?: Object): void;
     registerViewer(viewableType: string, viewerClass: any, config?: ViewerConfig): void;
-    selectItem(item: Object|BubbleNode,
-               onSuccessCallback: (item: Object, viewGeometryItem: Object) => void,
-               onErrorCallback: Function): boolean;
+    selectItem(item: ViewerItem|BubbleNode,
+               onSuccessCallback: (viewer: Viewer3D, item: ViewerItem) => void,
+               onErrorCallback: (errorCode: ErrorCodes, errorMsg: string,
+                                 statusCode: string, statusText: string, messages: string) => void): boolean;
     selectItemById(itemId: number,
                    onItemSelectedCallback: (item: Object, viewGeometryItem: Object) => void,
                    onItemFailedToSelectCallback: Function): boolean;
