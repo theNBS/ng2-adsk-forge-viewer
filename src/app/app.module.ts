@@ -14,6 +14,6 @@ import { ViewerModule } from './modules/viewer/viewer.module';
     ViewerModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule { }

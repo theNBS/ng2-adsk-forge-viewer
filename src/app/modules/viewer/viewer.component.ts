@@ -1,5 +1,8 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ScriptService } from './script.service';
+import * as nbsExt from './extensions/nbs-extension';
+
+declare const require;
 
 export interface DocumentChangedEvent {
   document: Autodesk.Viewing.Document;
@@ -28,7 +31,7 @@ export class ViewerComponent implements OnInit, OnChanges {
   @Input() public viewerConfig: Autodesk.Viewing.ViewerConfig;
 
   @Output() public onViewerReady = new EventEmitter<boolean>();
-  @Output() public onViewerInitialized = new EventEmitter<boolean>();
+  @Output() public onViewingApplicationInitialized = new EventEmitter<boolean>();
   @Output() public onDocumentChanged = new EventEmitter<DocumentChangedEvent>();
   @Output() public onItemLoaded = new EventEmitter<ItemLoadedEvent>();
   @Output() public onError = new EventEmitter<Autodesk.Viewing.ErrorCodes>();
@@ -51,7 +54,7 @@ export class ViewerComponent implements OnInit, OnChanges {
     }
 
     if (!this.viewerInitialized && changes.viewerOptions && changes.viewerOptions.currentValue) {
-      this.initialiseViewer();
+      this.initialiseApplication();
     }
   }
 
@@ -84,17 +87,50 @@ export class ViewerComponent implements OnInit, OnChanges {
       .catch(error => console.log(error));
   }
 
-  private initialiseViewer() {
+  private initialiseApplication() {
     Autodesk.Viewing.Initializer(this.viewerOptions, () => {
       this.viewerApp = new Autodesk.Viewing.ViewingApplication(this.containerId, this.viewerApplicationOptions);
+
+      const exts = require('./extensions'); //tslint:disable-line
+      exts.NbsExtension.registerExtension();
+
+      // try to initialise an extension -- this is a bit tricky as we've lazy loaded the
+      // Autodesk scripts; so we can't do an import or the Autodesk namespace won't be found
+      const config: Autodesk.Viewing.ViewerConfig = Object.assign({}, this.viewerConfig, { extensions: [] });
+      if (this.viewerConfig && this.viewerConfig.extensions) {
+        config.extensions = [...this.viewerConfig.extensions, exts.NbsExtension.extensionName];
+      } else {
+        config.extensions = [exts.NbsExtension.extensionName];
+      }
+
+      debugger;
       this.viewerApp.registerViewer(this.viewerApp.k3D,
                                     Autodesk.Viewing.Private.GuiViewer3D,
-                                    this.viewerConfig);
+                                    config);
 
       // Viewer is ready - scripts are loaded and we've create a new viewing application
       this.viewerInitialized = true;
-      this.onViewerInitialized.emit(true);
+      this.onViewingApplicationInitialized.emit(true);
     });
+  }
+
+  private registerViewer(viewerConfig: Autodesk.Viewing.ViewerConfig) {
+    const exts = require('./extensions'); //tslint:disable-line
+    const nbsEx = new exts.NbsExtension(this.viewerApp.getCurrentViewer(), {});
+    nbsEx.registerExtension();
+
+    // try to initialise an extension -- this is a bit tricky as we've lazy loaded the
+    // Autodesk scripts; so we can't do an import or the Autodesk namespace won't be found
+    const config: Autodesk.Viewing.ViewerConfig = Object.assign({}, viewerConfig, { extensions: [] });
+    if (viewerConfig && viewerConfig.extensions) {
+      config.extensions = [...viewerConfig.extensions, nbsEx.extensionName];
+    } else {
+      config.extensions = [nbsEx.extensionName];
+    }
+
+    this.viewerApp.registerViewer(this.viewerApp.k3D,
+                                  Autodesk.Viewing.Private.GuiViewer3D,
+                                  viewerConfig);
   }
 
   private loadDocument(documentId: string) {

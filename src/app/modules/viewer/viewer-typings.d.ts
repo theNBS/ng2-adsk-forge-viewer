@@ -23,7 +23,7 @@ declare namespace Autodesk.Viewing {
 
   interface ViewerConfig {
     disableBrowserContextMenu?: boolean;
-    extensions?: Extension[];
+    extensions?: string[];
     useConsolidation?: boolean;
     consolidationMemoryLimit?: number;
     sharedPropertyDbPath?: string;
@@ -93,6 +93,14 @@ declare namespace Autodesk.Viewing {
     success: string;
     type: 'view'|'geometry'|string;
     viewableID: string;
+  }
+
+  interface ExtensionOptions {
+    defaultModelStructureTitle: string;
+    extensions: string[];
+    startOnInitialize: boolean;
+    viewableName: string;
+    [key: string]: any;
   }
 
   enum ErrorCodes {
@@ -223,14 +231,26 @@ declare namespace Autodesk.Viewing {
     requestThumbnailWithSecurity(data: string, onComplete: (err: Error, response: any) => void);
   }
 
-  class Extension {
-    constructor(viewer: Viewer3D, options: Object);
+  class ExtensionManager {
+    extensions: { [key: string]: Extension };
+    extensionsAsync: { [key: string]: Extension };
 
-    extendLocalization(locales: Object): boolean;
-    getCache(): Object;
-    getState(viewerState: Object): any;
+    registerExtension(extensionId: string, extension: Object): boolean;
+    getExtension(extensionId: string): Extension|null;
+    unregisterExtension(extensionId: string): boolean;
+    registerExternalExtension(extensionId: string, urlPath: string): boolean;
+    getExternalPath(extensionId: string): string|null;
+    unregisterExternalExtension(extensionId: string): boolean;
+    getRegisteredExtensions(): { id: string, inMemory: boolean, isAsync: boolean}[];
+    popuplateOptions(options: any): void;
+  }
+
+  const theExtensionManager: ExtensionManager;
+
+  class Extension {
+    constructor(viewer: Viewer3D, options: ExtensionOptions);
+
     load(): boolean;
-    restoreState(viewerState: Object, immediate: boolean): boolean;
     unload(): boolean;
   }
 
