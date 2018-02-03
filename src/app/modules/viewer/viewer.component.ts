@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ScriptService } from './script.service';
-import * as nbsExt from './extensions/nbs-extension';
 
 declare const require;
 
@@ -15,6 +14,12 @@ export interface ItemLoadedEvent {
   currentViewer: Autodesk.Viewing.Viewer3D;
 }
 
+export interface ViewerOptions {
+  initializerOptions: Autodesk.Viewing.InitializerOptions;
+  viewerApplicationOptions?: Autodesk.Viewing.ViewingApplicationOptions;
+  viewerConfig?: Autodesk.Viewing.ViewerConfig;
+}
+
 @Component({
   selector: 'adsk-forge-viewer',
   templateUrl: './viewer.component.html',
@@ -26,9 +31,7 @@ export class ViewerComponent implements OnInit, OnChanges {
   readonly containerId = 'ng2-adsk-forge-viewer-container';
 
   @Input() public documentId: string;
-  @Input() public viewerOptions: Autodesk.Viewing.ViewerOptions;
-  @Input() public viewerApplicationOptions: Autodesk.Viewing.ViewingApplicationOptions;
-  @Input() public viewerConfig: Autodesk.Viewing.ViewerConfig;
+  @Input() public viewerOptions: ViewerOptions;
 
   @Output() public onViewerReady = new EventEmitter<boolean>();
   @Output() public onViewingApplicationInitialized = new EventEmitter<boolean>();
@@ -39,6 +42,14 @@ export class ViewerComponent implements OnInit, OnChanges {
   private viewerInitialized = false;
   private viewerApp: Autodesk.Viewing.ViewingApplication;
 
+  /**
+   * Helper to allow callers to specify documentId with or without the required urn: prefix
+   * @param {string} documentId
+   * @returns {string}
+   */
+  private static verifyUrn(documentId: string): string {
+    return (documentId.startsWith('urn:')) ? documentId : `urn:${documentId}`;
+  }
 
   constructor(private script: ScriptService) {
     this.loadScripts();
@@ -61,24 +72,44 @@ export class ViewerComponent implements OnInit, OnChanges {
   /**
    * Helper method to get some default viewer options
    * @param {(cb: Function) => void} getAccessToken
-   * @returns {Autodesk.Viewing.ViewerOptions}
+   * @returns {ViewerOptions}
    */
   getDefaultViewerOptions(getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => void)
-  : Autodesk.Viewing.ViewerOptions {
+  : ViewerOptions {
     return {
-      env: 'AutodeskProduction',
-      getAccessToken,
+      initializerOptions: {
+        env: 'AutodeskProduction',
+        getAccessToken,
+      },
     };
   }
 
+  /**
+   * Get a reference to the current viewing application
+   * @returns {Autodesk.Viewing.ViewingApplication}
+   * @constructor
+   */
+  public get ViewerApplication() {
+    return this.viewerApp;
+  }
+
+  /**
+   * Get a reference to the current 3D viewer
+   * @returns {Autodesk.Viewing.Viewer3D}
+   * @constructor
+   */
   public get Viewer3D() {
     return this.viewerApp.getCurrentViewer();
   }
 
+  /**
+   * We don't bundle Autodesk's scripts with the component, and we don't really want users to have
+   * to add the scripts to their index.html pages. So we'll load them when required.
+   */
   private loadScripts() {
     this.script.load(
-      'https://developer.api.autodesk.com/modelderivative/v2/viewers/three.min.js',
-      'https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js',
+      'https://developer.api.autodesk.com/modelderivative/v2/viewers/three.min.js?v=3.3.*',
+      'https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=3.3.*',
     )
       .then((data) => {
         console.log('script loaded ', data);
@@ -87,23 +118,34 @@ export class ViewerComponent implements OnInit, OnChanges {
       .catch(error => console.log(error));
   }
 
+  /**
+   * Initialises a ViewingApplication
+   */
   private initialiseApplication() {
-    Autodesk.Viewing.Initializer(this.viewerOptions, () => {
-      this.viewerApp = new Autodesk.Viewing.ViewingApplication(this.containerId, this.viewerApplicationOptions);
+    Autodesk.Viewing.Initializer(this.viewerOptions.initializerOptions, () => {
+      this.viewerApp = new Autodesk.Viewing.ViewingApplication(this.containerId,
+                                                               this.viewerOptions.viewerApplicationOptions);
 
+      // Register a basic extension that will help us report events. This is a bit tricky
+      // as we've lazy loaded the Autodesk scripts; if we use `import` instead of
+      // `require`, the Autodesk namespace won't be found
       const exts = require('./extensions'); //tslint:disable-line
-      exts.NbsExtension.registerExtension();
+      exts.BasicExtension.registerExtension();
 
-      // try to initialise an extension -- this is a bit tricky as we've lazy loaded the
-      // Autodesk scripts; so we can't do an import or the Autodesk namespace won't be found
-      const config: Autodesk.Viewing.ViewerConfig = Object.assign({}, this.viewerConfig, { extensions: [] });
-      if (this.viewerConfig && this.viewerConfig.extensions) {
-        config.extensions = [...this.viewerConfig.extensions, exts.NbsExtension.extensionName];
+      const config: Autodesk.Viewing.ViewerConfig = Object.assign(
+        {},
+        this.viewerOptions.viewerConfig,
+        { extensions: [] },
+      );
+
+      // We will always load our basic extension with any others specified by the caller
+      if (this.viewerOptions.viewerConfig && this.viewerOptions.viewerConfig.extensions) {
+        config.extensions = [...this.viewerOptions.viewerConfig.extensions, exts.BasicExtension.extensionName];
       } else {
-        config.extensions = [exts.NbsExtension.extensionName];
+        config.extensions = [exts.BasicExtension.extensionName];
       }
 
-      debugger;
+      // Register a viewer with the application (passign through any additional config)
       this.viewerApp.registerViewer(this.viewerApp.k3D,
                                     Autodesk.Viewing.Private.GuiViewer3D,
                                     config);
@@ -114,37 +156,26 @@ export class ViewerComponent implements OnInit, OnChanges {
     });
   }
 
-  private registerViewer(viewerConfig: Autodesk.Viewing.ViewerConfig) {
-    const exts = require('./extensions'); //tslint:disable-line
-    const nbsEx = new exts.NbsExtension(this.viewerApp.getCurrentViewer(), {});
-    nbsEx.registerExtension();
-
-    // try to initialise an extension -- this is a bit tricky as we've lazy loaded the
-    // Autodesk scripts; so we can't do an import or the Autodesk namespace won't be found
-    const config: Autodesk.Viewing.ViewerConfig = Object.assign({}, viewerConfig, { extensions: [] });
-    if (viewerConfig && viewerConfig.extensions) {
-      config.extensions = [...viewerConfig.extensions, nbsEx.extensionName];
-    } else {
-      config.extensions = [nbsEx.extensionName];
-    }
-
-    this.viewerApp.registerViewer(this.viewerApp.k3D,
-                                  Autodesk.Viewing.Private.GuiViewer3D,
-                                  viewerConfig);
-  }
-
+  /**
+   * Loads a model in to the viewer via it's urn
+   * @param {string} documentId
+   */
   private loadDocument(documentId: string) {
     if (!documentId) return;
 
     // Add urn: to the beginning of document id if needed
-    this.viewerApp.loadDocument((documentId.startsWith('urn:')) ? documentId : `urn:${documentId}`,
+    this.viewerApp.loadDocument(ViewerComponent.verifyUrn(documentId),
                                 this.onDocumentLoadSuccess.bind(this),
                                 this.onDocumentLoadFailure.bind(this));
   }
 
+  /**
+   * Document successfully loaded
+   * @param {Autodesk.Viewing.Document} document
+   */
   private onDocumentLoadSuccess(document: Autodesk.Viewing.Document) {
     // Emit an event so the caller can do something
-    // TODO: config option?
+    // TODO: config option to specify which viewable to display (how?)
     this.onDocumentChanged.emit({ document, viewingApplication: this.viewerApp });
 
     // This will be the default behaviour -- show the first viewable
@@ -158,24 +189,33 @@ export class ViewerComponent implements OnInit, OnChanges {
     }
   }
 
-  private onDocumentLoadFailure(viewerErrorCode: Autodesk.Viewing.ErrorCodes) {
-    console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
+  /**
+   * Failed to load document
+   * @param {Autodesk.Viewing.ErrorCodes} errorCode
+   */
+  private onDocumentLoadFailure(errorCode: Autodesk.Viewing.ErrorCodes) {
+    console.error('onDocumentLoadFailure() - errorCode:' + errorCode);
+    this.onError.emit(errorCode);
   }
 
+  /**
+   * View from the document was successfully loaded
+   * @param {Autodesk.Viewing.Viewer3D} viewer
+   * @param {Autodesk.Viewing.ViewerItem} item
+   */
   private onItemLoadSuccess(viewer: Autodesk.Viewing.Viewer3D, item: Autodesk.Viewing.ViewerItem) {
-    debugger;
-
-    console.log('onItemLoadSuccess()!');
-    console.log(viewer);
-    console.log(item);
-
-    // Congratulations! The viewer is now ready to be used.
+    console.log('onItemLoadSuccess()', viewer, item);
     console.log('Viewers are equal: ' + (viewer === this.viewerApp.getCurrentViewer()));
 
     this.onItemLoaded.emit({ item, currentViewer: viewer, viewingApplication: this.viewerApp });
   }
 
+  /**
+   * Failed to load a view from the document
+   * @param {Autodesk.Viewing.ErrorCodes} errorCode
+   */
   private onItemLoadFail(errorCode: Autodesk.Viewing.ErrorCodes) {
     console.error('onItemLoadFail() - errorCode:' + errorCode);
+    this.onError.emit(errorCode);
   }
 }

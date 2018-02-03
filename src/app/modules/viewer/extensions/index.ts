@@ -1,1 +1,1 @@
-export * from './nbs-extension';
+export * from './basic-extension';

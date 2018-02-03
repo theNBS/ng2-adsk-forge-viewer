@@ -1,8 +1,33 @@
 /// <reference types="three" />
 
 declare namespace Autodesk.Viewing {
-  interface ViewerOptions {
-    env?: string;
+  enum ErrorCodes {
+    UNKNOWN_FAILURE,
+    NETWORK_FAILURE,
+    NETWORK_ACCESS_DENIED,
+    NETWORK_FILE_NOT_FOUND,
+    NETWORK_SERVER_ERROR,
+    NETWORK_UNHANDLED_RESPONSE_CODE,
+    BROWSER_WEBGL_NOT_SUPPORTED,
+    BAD_DATA_NO_VIEWABLE_CONTENT,
+    BROWSER_WEBGL_DISABLED,
+    BAD_DATA_MODEL_IS_EMPTY,
+    RTC_ERROR,
+    UNSUPORTED_FILE_EXTENSION,
+    VIEWER_INTERNAL_ERROR,
+  }
+
+  enum SelectionMode {
+    MIXED,
+    REGULAR,
+    OVERLAYED,
+    LEAF_OBJECT,
+    FIRST_OBJECT,
+    LAST_OBJECT,
+  }
+
+  interface InitializerOptions {
+    env?: 'Development'|'Staging'|'Production'|'AutodeskDevelopment'|'AutodeskStaging'|'AutodeskProduction'|string;
     accessToken?: string;
     getAccessToken?: (onGetAccessToken: (token: string, expire: number) => void) => void;
     useADP?: boolean;
@@ -103,74 +128,57 @@ declare namespace Autodesk.Viewing {
     [key: string]: any;
   }
 
-  enum ErrorCodes {
-    UNKNOWN_FAILURE,
-    NETWORK_FAILURE,
-    NETWORK_ACCESS_DENIED,
-    NETWORK_FILE_NOT_FOUND,
-    NETWORK_SERVER_ERROR,
-    NETWORK_UNHANDLED_RESPONSE_CODE,
-    BROWSER_WEBGL_NOT_SUPPORTED,
-    BAD_DATA_NO_VIEWABLE_CONTENT,
-    BROWSER_WEBGL_DISABLED,
-    BAD_DATA_MODEL_IS_EMPTY,
-    RTC_ERROR,
-    UNSUPORTED_FILE_EXTENSION,
-    VIEWER_INTERNAL_ERROR,
+  interface ViewerEventArgs {
+    target?: Viewer3D;
+    type?: string;
   }
-
-  enum SelectionMode {
-    MIXED,
-    REGULAR,
-    OVERLAYED,
-    LEAF_OBJECT,
-    FIRST_OBJECT,
-    LAST_OBJECT,
+  const AGGREGATE_SELECTION_CHANGED_EVENT = 'aggregateSelection';
+  const ANIMATION_READY_EVENT = 'animationReady';
+  const CAMERA_CHANGE_EVENT = 'cameraChanged';
+  const CUTPLANES_CHANGE_EVENT = 'cutplanesChanged';
+  const ESCAPE_EVENT = 'escape';
+  const EXPLODE_CHANGE_EVENT = 'explodeChanged';
+  const EXTENSION_LOADED_EVENT = 'extensionLoaded';
+  const EXTENSION_UNLOADED_EVENT = 'extensionUnloaded';
+  const FINAL_FRAME_RENDERED_CHANGED_EVENT = 'finalFrameRenderedChanged';
+  const FIT_TO_VIEW_EVENT = 'fitToView';
+  const FRAGMENTS_LOADED_EVENT = 'fragmentsLoaded';
+  const FULLSCREEN_MODE_EVENT = 'fullscreenMode';
+  const GEOMETRY_LOADED_EVENT = 'geometryLoaded';
+  const HIDE_EVENT = 'hide';
+  const HYPERLINK_EVENT = 'hyperlink';
+  const ISOLATE_EVENT = 'isolate';
+  const LAYER_VISIBILITY_CHANGED_EVENT = 'layerVisibilityChanged';
+  const LOAD_MISSING_GEOMETRY = 'loadMissingGeometry';
+  const MODEL_ROOT_LOADED_EVENT = 'modelRootLoaded';
+  const MODEL_UNLOADED_EVENT = 'modelUnloaded';
+  const NAVIGATION_MODE_CHANGED_EVENT = 'navigationModeChanged';
+  const OBJECT_TREE_CREATED_EVENT = 'objectTreeCreated';
+  const OBJECT_TREE_UNAVAILABLE_EVENT = 'objectTreeUnavailable';
+  const PREF_CHANGED_EVENT = 'prefChanged';
+  const PREF_RESET_EVENT = 'prefReset';
+  const PROGRESS_UPDATE_EVENT = 'progressUpdate';
+  const RENDER_OPTION_CHANGED_EVENT = 'renderOptionChanged';
+  const RENDER_PRESENTED_EVENT = 'renderPresented';
+  const RESET_EVENT = 'reset';
+  const RESTORE_DEFAULT_SETTINGS_EVENT = 'restoreDefaultSettings';
+  const SELECTION_CHANGED_EVENT = 'selectionChanged';
+  interface SelectionChangedEventArgs extends ViewerEventArgs {
+    fragIdsArray: number[];
+    dbIdArray: number[];
+    nodeArray: number[];
+    model: ViewerItem;
   }
-
-  enum Viewer3DEvents {
-    AGGREGATE_SELECTION_CHANGED_EVENT = 'aggregateSelection',
-    ANIMATION_READY_EVENT = 'animationReady',
-    CAMERA_CHANGE_EVENT = 'cameraChanged',
-    CUTPLANES_CHANGE_EVENT = 'cutplanesChanged',
-    ESCAPE_EVENT = 'escape',
-    EXPLODE_CHANGE_EVENT = 'explodeChanged',
-    EXTENSION_LOADED_EVENT = 'extensionLoaded',
-    EXTENSION_UNLOADED_EVENT = 'extensionUnloaded',
-    FINAL_FRAME_RENDERED_CHANGED_EVENT = 'finalFrameRenderedChanged',
-    FIT_TO_VIEW_EVENT = 'fitToView',
-    FRAGMENTS_LOADED_EVENT = 'fragmentsLoaded',
-    FULLSCREEN_MODE_EVENT = 'fullscreenMode',
-    GEOMETRY_LOADED_EVENT = 'geometryLoaded',
-    HIDE_EVENT = 'hide',
-    HYPERLINK_EVENT = 'hyperlink',
-    ISOLATE_EVENT = 'isolate',
-    LAYER_VISIBILITY_CHANGED_EVENT = 'layerVisibilityChanged',
-    LOAD_MISSING_GEOMETRY = 'loadMissingGeometry',
-    MODEL_ROOT_LOADED_EVENT = 'modelRootLoaded',
-    MODEL_UNLOADED_EVENT = 'modelUnloaded',
-    NAVIGATION_MODE_CHANGED_EVENT = 'navigationModeChanged',
-    OBJECT_TREE_CREATED_EVENT = 'objectTreeCreated',
-    OBJECT_TREE_UNAVAILABLE_EVENT = 'objectTreeUnavailable',
-    PREF_CHANGED_EVENT = 'prefChanged',
-    PREF_RESET_EVENT = 'prefReset',
-    PROGRESS_UPDATE_EVENT = 'progressUpdate',
-    RENDER_OPTION_CHANGED_EVENT = 'renderOptionChanged',
-    RENDER_PRESENTED_EVENT = 'renderPresented',
-    RESET_EVENT = 'reset',
-    RESTORE_DEFAULT_SETTINGS_EVENT = 'restoreDefaultSettings',
-    SELECTION_CHANGED_EVENT = 'selectionChanged',
-    SHOW_EVENT = 'show',
-    TEXTURES_LOADED_EVENT = 'texturesLoaded',
-    TOOL_CHANGE_EVENT = 'toolChanged',
-    VIEWER_INITIALIZED = 'viewerInitialized',
-    VIEWER_RESIZE_EVENT = 'viewerResize',
-    VIEWER_STATE_RESTORED_EVENT = 'viewerStateRestored',
-    VIEWER_UNINITIALIZED = 'viewerUninitialized',
-  }
+  const SHOW_EVENT = 'show';
+  const TEXTURES_LOADED_EVENT = 'texturesLoaded';
+  const TOOL_CHANGE_EVENT = 'toolChanged';
+  const VIEWER_INITIALIZED = 'viewerInitialized';
+  const VIEWER_RESIZE_EVENT = 'viewerResize';
+  const VIEWER_STATE_RESTORED_EVENT = 'viewerStateRestored';
+  const VIEWER_UNINITIALIZED = 'viewerUninitialized';
 
   class BubbleNode {
-    parent: Object;
+    parent: BubbleNode;
     id: number;
     data: ViewerItem;
     isLeaf: boolean;
@@ -178,7 +186,7 @@ declare namespace Autodesk.Viewing {
     lodNode: Object;
     children: BubbleNode[];
 
-    constructor(rawNode: Object, parent?: Object);
+    constructor(rawNode: Object, parent?: BubbleNode);
 
     findByGuid(guid: string): BubbleNode;
     findParentGeom2Dor3D(): BubbleNode;
@@ -207,7 +215,7 @@ declare namespace Autodesk.Viewing {
     urn(searchParent: boolean): string;
   }
 
-  function Initializer(options: ViewerOptions, callback: Function); // tslint:disable-line
+  function Initializer(options: InitializerOptions, callback: () => void): void; // tslint:disable-line
 
   class Document {
     constructor(dataJSON: Object, path: string, acmsession: string);
@@ -457,10 +465,10 @@ declare namespace Autodesk.Viewing {
     worldToClient(point: THREE.Vector3): THREE.Vector3;
 
     // Events
-    addEventListener(type: Viewer3DEvents, listener?: EventListenerOrEventListenerObject,
+    addEventListener(type: string, listener?: EventListenerOrEventListenerObject,
                      options?: boolean | AddEventListenerOptions): void;
     dispatchEvent(evt: Event): boolean;
-    removeEventListener(type: Viewer3DEvents, listener?: EventListenerOrEventListenerObject,
+    removeEventListener(type: string, listener?: EventListenerOrEventListenerObject,
                         options?: boolean | EventListenerOptions): void;
   }
 

@@ -1,4 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ViewerOptions } from './modules/viewer/viewer.component';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +9,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 export class AppComponent implements OnInit {
   title = 'app';
 
-  public viewerOptions: Autodesk.Viewing.ViewerOptions;
+  public viewerOptions: ViewerOptions;
   public documentId: string;
 
   ngOnInit() {
@@ -17,11 +18,13 @@ export class AppComponent implements OnInit {
 
   viewerReady() {
     this.viewerOptions = {
-      env: 'AutodeskProduction',
-      getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => {
-        const accessToken = '<YOUR_APPLICATION_TOKEN>';
-        const expireTimeSeconds = 60 * 30;
-        onGetAccessToken(accessToken, expireTimeSeconds);
+      initializerOptions: {
+        env: 'AutodeskProduction',
+        getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => {
+          const accessToken = '<YOUR_APPLICATION_TOKEN>';
+          const expireTimeSeconds = 60 * 30;
+          onGetAccessToken(accessToken, expireTimeSeconds);
+        },
       },
     };
   }
