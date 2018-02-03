@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
   viewerReady() {
     this.viewerOptions = {
       env: 'AutodeskProduction',
-      getAccessToken: (onGetAccessToken) => {
+      getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => {
         const accessToken = '<YOUR_APPLICATION_TOKEN>';
         const expireTimeSeconds = 60 * 30;
         onGetAccessToken(accessToken, expireTimeSeconds);
@@ -27,6 +27,6 @@ export class AppComponent implements OnInit {
   }
 
   loadModel() {
-    this.documentId = 'urn:<YOUR_URN_ID>';
+    this.documentId = '<YOUR_URN_ID>';
   }
 }
