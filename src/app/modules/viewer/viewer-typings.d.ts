@@ -2,10 +2,10 @@
 
 declare namespace Autodesk.Viewing {
   interface ViewerOptions {
-    env?: String;
-    getAccessToken?: (cb: Function) => void;
-    useADP?: boolean;
+    env?: string;
     accessToken?: string;
+    getAccessToken?: (onGetAccessToken: (token: string, expire: number) => void) => void;
+    useADP?: boolean;
     webGLHelpLink?: string;
     language?: string;
     [key: string]: any;

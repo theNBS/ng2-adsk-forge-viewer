@@ -55,7 +55,13 @@ export class ViewerComponent implements OnInit, OnChanges {
     }
   }
 
-  getDefaultViewerOptions(getAccessToken: (cb: Function) => void): Autodesk.Viewing.ViewerOptions {
+  /**
+   * Helper method to get some default viewer options
+   * @param {(cb: Function) => void} getAccessToken
+   * @returns {Autodesk.Viewing.ViewerOptions}
+   */
+  getDefaultViewerOptions(getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => void)
+  : Autodesk.Viewing.ViewerOptions {
     return {
       env: 'AutodeskProduction',
       getAccessToken,
