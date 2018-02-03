@@ -14,7 +14,7 @@ describe('ViewerComponent', () => {
   let fixture: ComponentFixture<ViewerComponent>;
 
   beforeEach(async(() => {
-    TestBed.configureTestingModule({
+    return TestBed.configureTestingModule({
       declarations: [
         ViewerComponent,
       ],

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ViewerOptions } from './modules/viewer/viewer.component';
 
 @Component({
@@ -6,15 +6,11 @@ import { ViewerOptions } from './modules/viewer/viewer.component';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'app';
 
   public viewerOptions: ViewerOptions;
   public documentId: string;
-
-  ngOnInit() {
-
-  }
 
   setViewerOptions() {
     this.viewerOptions = {

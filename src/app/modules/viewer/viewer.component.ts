@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { ScriptService } from './services/script.service';
 
 declare const require;
@@ -27,7 +27,7 @@ export interface ViewerOptions {
     './viewer.component.scss',
   ],
 })
-export class ViewerComponent implements OnInit, OnChanges {
+export class ViewerComponent implements OnChanges {
   readonly containerId = 'ng2-adsk-forge-viewer-container';
 
   @Input() public documentId: string;
@@ -53,10 +53,6 @@ export class ViewerComponent implements OnInit, OnChanges {
 
   constructor(private script: ScriptService) {
     this.loadScripts();
-  }
-
-  ngOnInit() {
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
