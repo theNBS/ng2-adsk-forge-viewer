@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { ScriptService } from './script.service';
+import { ScriptService } from './services/script.service';
 
 declare const require;
 
