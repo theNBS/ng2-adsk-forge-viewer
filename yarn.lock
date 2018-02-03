@@ -1877,6 +1877,13 @@ dns-txt@^2.0.2:
   dependencies:
     buffer-indexof "^1.0.0"
 
+doctrine@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/doctrine/-/doctrine-0.7.2.tgz#7cb860359ba3be90e040b26b729ce4bfa654c523"
+  dependencies:
+    esutils "^1.1.6"
+    isarray "0.0.1"
+
 dom-converter@~0.1:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/dom-converter/-/dom-converter-0.1.4.tgz#a45ef5727b890c9bffe6d7c876e7b19cb0e17f3b"
@@ -2224,6 +2231,10 @@ estree-walker@^0.3.0:
 estree-walker@^0.5.0:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-0.5.1.tgz#64fc375053abc6f57d73e9bd2f004644ad3c5854"
+
+esutils@^1.1.6:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/esutils/-/esutils-1.1.6.tgz#c01ccaa9ae4b897c6d0c3e210ae52f3c7a844375"
 
 esutils@^2.0.2:
   version "2.0.2"
@@ -6894,9 +6905,42 @@ tsickle@^0.25.5:
     source-map "^0.5.6"
     source-map-support "^0.4.2"
 
+tslib@^1.0.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.0.tgz#e37a86fda8cbbaf23a057f473c9f4dc64e5fc2e8"
+
 tslib@^1.7.1, tslib@^1.8.1:
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.8.1.tgz#6946af2d1d651a7b1863b531d6e5afa41aa44eac"
+
+tslint-config-nbs@^5.4.3:
+  version "5.4.3"
+  resolved "https://registry.yarnpkg.com/tslint-config-nbs/-/tslint-config-nbs-5.4.3.tgz#2800c2a0828fdcaa903466b190dbe94fcd5931db"
+  dependencies:
+    tslint-consistent-codestyle "^1.10.0"
+    tslint-eslint-rules "^4.1.1"
+    tslint-microsoft-contrib "~5.0.1"
+
+tslint-consistent-codestyle@^1.10.0:
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/tslint-consistent-codestyle/-/tslint-consistent-codestyle-1.11.0.tgz#051493eeb3536a74e98d14b66f38028a785f8c2b"
+  dependencies:
+    tslib "^1.7.1"
+    tsutils "^2.12.2"
+
+tslint-eslint-rules@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/tslint-eslint-rules/-/tslint-eslint-rules-4.1.1.tgz#7c30e7882f26bc276bff91d2384975c69daf88ba"
+  dependencies:
+    doctrine "^0.7.2"
+    tslib "^1.0.0"
+    tsutils "^1.4.0"
+
+tslint-microsoft-contrib@~5.0.1:
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/tslint-microsoft-contrib/-/tslint-microsoft-contrib-5.0.2.tgz#ecc2a797f777a12f0066944cec0c81a9e7c59ee9"
+  dependencies:
+    tsutils "^2.12.1"
 
 tslint@~5.8.0:
   version "5.8.0"
@@ -6918,9 +6962,19 @@ tsscmp@~1.0.0:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/tsscmp/-/tsscmp-1.0.5.tgz#7dc4a33af71581ab4337da91d85ca5427ebd9a97"
 
+tsutils@^1.4.0:
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-1.9.1.tgz#b9f9ab44e55af9681831d5f28d0aeeaf5c750cb0"
+
 tsutils@^2.12.1:
   version "2.15.0"
   resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.15.0.tgz#90831e5908cca10b28cdaf83a56dcf8156aed7c6"
+  dependencies:
+    tslib "^1.8.1"
+
+tsutils@^2.12.2:
+  version "2.21.0"
+  resolved "https://registry.yarnpkg.com/tsutils/-/tsutils-2.21.0.tgz#43466a2283a0abce64e2209bc732ad72f8a04fab"
   dependencies:
     tslib "^1.8.1"
 

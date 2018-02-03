@@ -5,7 +5,7 @@ import { ScriptService } from './script.service';
 
 @NgModule({
   imports: [
-    CommonModule
+    CommonModule,
   ],
   declarations: [
     ViewerComponent,

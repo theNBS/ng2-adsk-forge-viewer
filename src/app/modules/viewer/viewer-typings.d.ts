@@ -21,6 +21,19 @@ declare namespace Autodesk.Viewing {
     [key: string]: any;
   }
 
+  interface ViewerConfig {
+    disableBrowserContextMenu?: boolean;
+    extensions?: Extension[];
+    useConsolidation?: boolean;
+    consolidationMemoryLimit?: number;
+    sharedPropertyDbPath?: string;
+    bubbleNode?: BubbleNode;
+    canvasConfig?: any;
+    startOnInitialize?: boolean;
+    experimental?: any[];
+    [key: string]: any;
+  }
+
   interface ItemSelectedObserver {
     onItemSelected(viewer: Viewer3D);
   }
@@ -53,13 +66,13 @@ declare namespace Autodesk.Viewing {
   }
 
   interface PropertyOptions {
-    propFilter?: Array<string>;
+    propFilter?: string[];
     ignoreHidden?: boolean;
     [key: string]: any;
   }
 
   interface ResizePanelOptions {
-    dockingPanels?: Array<UI.DockingPanel>;
+    dockingPanels?: UI.DockingPanel[];
     viewer?: Viewer3D;
     dimensions?: {
       width: number;
@@ -134,22 +147,22 @@ declare namespace Autodesk.Viewing {
   }
 
   class BubbleNode {
-    constructor(rawNode: Object, parent?: Object);
-
     parent: Object;
     id: number;
     data: Object;
     isLeaf: boolean;
     sharedPropertyDbPath: string;
     lodNode: Object;
-    children: Array<BubbleNode>;
+    children: BubbleNode[];
+
+    constructor(rawNode: Object, parent?: Object);
 
     findByGuid(guid: string): BubbleNode;
     findParentGeom2Dor3D(): BubbleNode;
     findPropertyDbPath(): string;
     findViewableParent(): BubbleNode;
     getLodNode(): boolean;
-    getNamedViews(): Array<string>;
+    getNamedViews(): string[];
     getPlacementTransform(): Object;
     getRootNode(): BubbleNode;
     getTag(tag: string): any;
@@ -164,14 +177,14 @@ declare namespace Autodesk.Viewing {
     isMetadata(): boolean;
     isViewable(): boolean;
     name(): string;
-    search(propsToMatch: Object): Array<BubbleNode>;
-    searchByTag(tagsToMatch: Object): Array<BubbleNode>;
+    search(propsToMatch: Object): BubbleNode[];
+    searchByTag(tagsToMatch: Object): BubbleNode[];
     setTag(tag: string, value: any);
     traverse(cb: Function): boolean;
     urn(searchParent: boolean): string;
   }
 
-  function Initializer(options: ViewerOptions, callback: Function);
+  function Initializer(options: ViewerOptions, callback: Function); // tslint:disable-line
 
   class Document {
     constructor(dataJSON: Object, path: string, acmsession: string);
@@ -217,7 +230,10 @@ declare namespace Autodesk.Viewing {
     fetchTopology(maxSizeMB: number): Promise<Object>;
     geomPolyCount(): number;
     getBoundingBox(): any;
-    getBulkProperties(dbIds: Array<number>, options: PropertyOptions, onSuccessCallback: Function, onErrorCallback: Function);
+    getBulkProperties(dbIds: number[],
+                      options: PropertyOptions,
+                      onSuccessCallback: Function,
+                      onErrorCallback: Function);
     getData(): any;
     getDefaultCamera(): THREE.Camera;
     getDisplayUnit(): string;
@@ -248,7 +264,7 @@ declare namespace Autodesk.Viewing {
     isObjectTreeLoaded(): boolean;
     pageToModel(): void;
     pointInClip(): void;
-    search(text: string, onSuccessCallback: Function, onErrorCallback: Function, attributeNames?: Array<string>): void;
+    search(text: string, onSuccessCallback: Function, onErrorCallback: Function, attributeNames?: string[]): void;
     setData(data: Object): void;
     setUUID(urn: string): void;
   }
@@ -294,23 +310,23 @@ declare namespace Autodesk.Viewing {
     displayViewCubeUI(display: boolean): void;
     explode(scale: number): void;
     finish(): void;
-    fitToView(objectIds?: Array<number>|number, model?: Model): void;
+    fitToView(objectIds?: number[]|number, model?: Model): void;
     getActiveNavigationTool(): string;
-    getAggregateSelection(callback?: Function): Array<Object>;
+    getAggregateSelection(callback?: Function): Object[];
     getBimWalkToolPopup(): boolean;
     getCamera(): any;
-    getClickConfig(what: string, where: string): Array<string> | null;
-    getCutPlanes(): Array<Object>;
+    getClickConfig(what: string, where: string): string[] | null;
+    getCutPlanes(): Object[];
     getDefaultNavigationToolName(): Object;
     getDimensions(): Object;
     getExplodeScale(): number;
     getFirstPersonToolPopup(): boolean;
     getFocalLength(): number;
     getFOV(): number;
-    getHiddenModels(): Array<any>; // Array<RenderModel>;
-    getHiddenNodes(): Array<any>;   // Array of nodes
-    getIsolatedNodes(): Array<any>; // Array of nodes
-    getLayerStates(): Array<any>;
+    getHiddenModels(): any[]; // Array<RenderModel>;
+    getHiddenNodes(): any[];   // Array of nodes
+    getIsolatedNodes(): any[]; // Array of nodes
+    getLayerStates(): any[];
     getMemoryInfo(): any;
     getNavigationLock(): boolean;
     getNavigationLockSettings(): Object;
@@ -318,11 +334,11 @@ declare namespace Autodesk.Viewing {
     getProperties(dbid: number, onSuccessCallback?: Function, onErrorCallback?: Function): void;
     getScreenShot(w?: number, h?: number, cb?: Function): any; // DOMString
     getScreenShotBuffer(w?: number, h?: number, cb?: Function): any;
-    getSelection(): Array<number>;
+    getSelection(): number[];
     getSelectionCount(): number;
     getSelectionVisibility(): SelectionVisibility;
     getState(filter?: Object): Object; // Viewer state
-    hide(node: Array<number>|number): void;
+    hide(node: number[]|number): void;
     hideLines(hide: boolean): void;
     hideModel(modelId: number): boolean;
     hidePoints(hide: boolean): void;
@@ -330,8 +346,8 @@ declare namespace Autodesk.Viewing {
     initSettings(): void;
     isLayerVisible(node: Object): boolean;
     isNodeVisible(nodeId: number, model?: Model): boolean;
-    isolate(node: Array<number>|number): void;
-    isolateById(dbids: Array<number>|number): void;
+    isolate(node: number[]|number): void;
+    isolateById(dbids: number[]|number): void;
     joinLiveReview(sessionId: string): void;
     leaveLiveReview(): void;
     load(svfURN: string, sharedPropertyDbPath?: string, onSuccessCallback?: Function,
@@ -343,13 +359,13 @@ declare namespace Autodesk.Viewing {
     registerContextMenuCallback(id: string, callback: (menu: any, status: any) => void);
     resize(): void;
     restoreState(viewerState: Object, filter?: Object, immediate?: boolean): boolean;
-    search(text: string, onSuccessCallback: Function, onErrorCallback: Function, attributeNames?: Array<string>): void;
-    select(dbids: Array<number>|number, selectionType: SelectionMode): void;
+    search(text: string, onSuccessCallback: Function, onErrorCallback: Function, attributeNames?: string[]): void;
+    select(dbids: number[]|number, selectionType: SelectionMode): void;
     setActiveNavigationTool(toolName?: string): boolean;
     setBackgroundColor(red: number, green: number, blue: number, red2: number, green2: number, blue2: number): void;
     setBimWalkToolPopup(value: boolean): void;
     setCanvasClickBehavior(config: Object): void;
-    setClickConfig(what: string, where: string, newAction: string|Array<string>): boolean;
+    setClickConfig(what: string, where: string, newAction: string|string[]): boolean;
     setClickToSetCOI(state: boolean, updatePrefs?: boolean): void;
     setContextMenu(contextMenu: any): void; // ObjectContextMenu)
     setCutPlanes(planes: Object): void;
@@ -367,7 +383,7 @@ declare namespace Autodesk.Viewing {
     setGroundShadow(value: boolean): void;
     setGroundShadowAlpha(alpha: number): void;
     setGroundShadowColor(color: THREE.Color): void;
-    setLayerVisible(nodes: Array<any>, visible: boolean, isolate?: boolean): void;
+    setLayerVisible(nodes: any[], visible: boolean, isolate?: boolean): void;
     setLightPreset(index: number): void;
     setModelUnits(model: Model): void;
     setNavigationLock(value: boolean);
@@ -387,14 +403,16 @@ declare namespace Autodesk.Viewing {
     setUseLeftHandedInput(value: boolean): void;
     setUsePivotAlways(value: boolean): void;
     setViewCube(face: string): void;
-    setViewFromArray(params: Array<any>): void;
+    setViewFromArray(params: any[]): void;
     setViewFromFile(): void;
-    setViewFromViewBox(viewbox: Array<any>, name?: string): void;
+    setViewFromViewBox(viewbox: any[], name?: string): void;
     setZoomTowardsPivot(value: boolean): void;
-    show(node: Array<number>|number): void;
+    show(node: number[]|number): void;
     showAll(): void;
     showModel(modelId: number): boolean;
-    start(url?: string, options?: LoadModelOptions, onSuccessCallback?: Function, onErrorCallback?: Function): number|ErrorCodes;
+    start(url?: string, options?: LoadModelOptions,
+          onSuccessCallback?: Function,
+          onErrorCallback?: Function): number|ErrorCodes;
     toggleSelect(dbid: number, selectionType: SelectionMode): void;
     toggleVisibility(node: number): void;
     trackADPSettingsOptions(): void;
@@ -412,24 +430,34 @@ declare namespace Autodesk.Viewing {
   }
 
   class ViewingApplication {
-    constructor(containerId: string, options?: ViewingApplicationOptions);
-
     k3D: '3D';
     bubble: BubbleNode;
+    appContainerId: string;
+    container: HTMLElement;
+    options: ViewingApplicationOptions;
+    myRegisteredViewers: any;
+    myDocument: Document;
+    myCurrentViewer: Viewer3D;
+    urn: string;
+    selectedItem: Object|null;
+    extensionCache: Object;
+
+
+    constructor(containerId: string, options?: ViewingApplicationOptions);
 
     addItemSelectedObserver(observer: ItemSelectedObserver): void;
     finish(): void;
     getCurrentViewer(): Viewer3D;
-    getDefaultGeometry(geometryItems: Array<any>): Object;
-    getNamedViews(item: Object): Array<any>;
+    getDefaultGeometry(geometryItems: any[]): Object;
+    getNamedViews(item: Object): any[];
     getSelectedItem(): Object|null;
     getViewer(config: Viewer3DConfig): Viewer3D;
     getViewerContainer(): HTMLElement;
     loadDocument(documentId: any,
                  onDocumentLoad?: (document: Document) => void,
-                 onLoadFailed?: (errorCode: string, errorMsg: string, errors: Array<any>) => void,
+                 onLoadFailed?: (errorCode: string, errorMsg: string, errors: any[]) => void,
                  accessControlProperties?: Object): void;
-    registerViewer(viewableType: string, viewerClass: any, config?: any): void;
+    registerViewer(viewableType: string, viewerClass: any, config?: ViewerConfig): void;
     selectItem(item: Object|BubbleNode,
                onSuccessCallback: (item: Object, viewGeometryItem: Object) => void,
                onErrorCallback: Function): boolean;
@@ -486,7 +514,7 @@ declare namespace Autodesk.Viewing {
 
     interface MenuItem {
       title: string;
-      target: Function | Array<MenuItem>;
+      target: Function | MenuItem[];
     }
 
     enum ControlEvents {
@@ -545,8 +573,8 @@ declare namespace Autodesk.Viewing {
     class PropertyPanel extends DockingPanel {
       addProperty(name: string, value: string, category: string, options?: AddPropertyOptions): boolean;
       areDefaultPropertiesShown(): void;
-      displayCategory(category: Object, parent: HTMLElement, options: DisplayCategoryOptions): Array<HTMLElement>;
-      displayProperty(property: Object, parent: HTMLElement, options: DisplayCategoryOptions): Array<HTMLElement>;
+      displayCategory(category: Object, parent: HTMLElement, options: DisplayCategoryOptions): HTMLElement[];
+      displayProperty(property: Object, parent: HTMLElement, options: DisplayCategoryOptions): HTMLElement[];
       getCategoryClass(category: Object): string;
       getPropertyClass(property: Object): string;
       hasProperties(): boolean;
@@ -563,7 +591,7 @@ declare namespace Autodesk.Viewing {
       removeAllProperties(): void;
       removeProperty(name: string, value: string, category: string, options?: Object): boolean;
       setCategoryCollapsed(category: Object, collapsed: boolean): void;
-      setProperties(properties: Array<{displayName: string, displayValue: any}>, options?: Object): void;
+      setProperties(properties: {displayName: string, displayValue: any}[], options?: Object): void;
       showDefaultProperties(): void;
       showNoProperties(): void;
     }
@@ -572,7 +600,7 @@ declare namespace Autodesk.Viewing {
       addCheckbox(tabId: string, caption: string, initialState: boolean,
                   onchange: Function, options?: Object): string;
       addControl(tabId: string, control: Object|HTMLElement, options: Object|undefined): string;
-      addDropDownMenu(tabId: string, caption: string, items: Array<MenuItem>,
+      addDropDownMenu(tabId: string, caption: string, items: MenuItem[],
                       initialItemIndex: number, onchange: Function, options: Object|undefined): string;
       addSlider(tabId: string, caption: string, min: number, max: number, initialValue: number,
                 onchange: Function, options: Object|undefined): string;
@@ -603,14 +631,14 @@ declare namespace Autodesk.Viewing {
       removeClass(id: string, className: string): boolean;
       setGroupCollapsed(node: Object, collapsed: boolean): void;
       setModel(instanceTree: Object, modelTitle: string): void; // InstanceTree?
-      setSelection(nodes: Array<Model>): void;
+      setSelection(nodes: Model[]): void;
       shouldInclude(node: Model): boolean;
     }
 
     class ObjectContextMenu {
       constructor(viewer: Viewer3D);
 
-      buildMenu(event: Event, status: Object): Array<MenuItem>;
+      buildMenu(event: Event, status: Object): MenuItem[];
       hide(): boolean;
       show(event: Event): void;
     }
@@ -663,7 +691,7 @@ declare namespace Autodesk.Viewing {
     class Preferences {
       constructor(viewer: Viewer3D, options: PreferencesOptions);
 
-      add(name: string, defaultValue: any, tags?: Array<string>|string): boolean;
+      add(name: string, defaultValue: any, tags?: string[]|string): boolean;
       addListeners(name: string, onChangedCallback: Function, onResetCallback: Function): void;
       get(): any;
       hasTag(name: string, tag: string): boolean;
@@ -672,8 +700,8 @@ declare namespace Autodesk.Viewing {
       removeListeners(name: string);
       reset(tag?: string, include?: boolean): void;
       set(name: string, value: any, notify?: boolean): boolean;
-      tag(tag: string, names?: Array<string>|string): void;
-      untag(tag: string, names?: Array<string>|string): void;
+      tag(tag: string, names?: string[]|string): void;
+      untag(tag: string, names?: string[]|string): void;
     }
 
     class ViewerState {

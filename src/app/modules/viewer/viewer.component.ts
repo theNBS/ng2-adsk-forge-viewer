@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import { ScriptService } from './script.service';
 
 @Component({
@@ -8,86 +8,115 @@ import { ScriptService } from './script.service';
     './viewer.component.scss',
   ],
 })
-export class ViewerComponent implements OnInit {
+export class ViewerComponent implements OnInit, OnChanges {
+  readonly containerId = 'ng2-adsk-forge-viewer-container';
+
+  @Input() public documentId: string;
+  @Input() public viewerOptions: Autodesk.Viewing.ViewerOptions;
+  @Input() public viewerApplicationOptions: Autodesk.Viewing.ViewingApplicationOptions;
+  @Input() public viewerConfig: Autodesk.Viewing.ViewerConfig;
+
+  @Output() public onViewerReady = new EventEmitter<boolean>();
+  @Output() public onViewerInitialized = new EventEmitter<boolean>();
+  @Output() public onDocumentChanged = new EventEmitter<Autodesk.Viewing.Document>();
+
+  private viewerInitialized = false;
   private viewerApp: Autodesk.Viewing.ViewingApplication;
 
-  constructor(private script: ScriptService) {
 
+  constructor(private script: ScriptService) {
+    this.loadScripts();
   }
 
   ngOnInit() {
-    this.loadScripts();
+
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.documentId && changes.documentId.currentValue) {
+      this.loadDocument(changes.documentId.currentValue);
+    }
+
+    if (!this.viewerInitialized && changes.viewerOptions && changes.viewerOptions.currentValue) {
+      this.initialiseViewer();
+    }
+  }
+
+  getDefaultViewerOptions(getAccessToken: (cb: Function) => void): Autodesk.Viewing.ViewerOptions {
+    return {
+      env: 'AutodeskProduction',
+      getAccessToken,
+    };
+  }
+
+  public get Viewer3D() {
+    return this.viewerApp.getCurrentViewer();
   }
 
   private loadScripts() {
     this.script.load(
       'https://developer.api.autodesk.com/modelderivative/v2/viewers/three.min.js',
-      'https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js'
+      'https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js',
     )
       .then((data) => {
         console.log('script loaded ', data);
-        this.initialiseViewer();
+        this.onViewerReady.emit(true);
       })
       .catch(error => console.log(error));
   }
 
   private initialiseViewer() {
-    const options: Autodesk.Viewing.ViewerOptions = {
-      env: 'AutodeskProduction',
-      getAccessToken: (onGetAccessToken) => {
-        //
-        // TODO: Replace static access token string below with call to fetch new token from your backend
-        // Both values are provided by Forge's Authentication (OAuth) API.
-        //
-        // Example Forge's Authentication (OAuth) API return value:
-        // {
-        //    "access_token": "<YOUR_APPLICATION_TOKEN>",
-        //    "token_type": "Bearer",
-        //    "expires_in": 86400
-        // }
-        //
-        const accessToken = '<YOUR_APPLICATION_TOKEN>';
-        const expireTimeSeconds = 60 * 30;
-        onGetAccessToken(accessToken, expireTimeSeconds);
-      },
-    };
+    Autodesk.Viewing.Initializer(this.viewerOptions, () => {
+      this.viewerApp = new Autodesk.Viewing.ViewingApplication(this.containerId, this.viewerApplicationOptions);
+      this.viewerApp.registerViewer(this.viewerApp.k3D,
+                                    Autodesk.Viewing.Private.GuiViewer3D,
+                                    this.viewerConfig);
 
-    const documentId = 'urn:<YOUR_URN_ID>';
-    Autodesk.Viewing.Initializer(options, () => {
-      this.viewerApp = new Autodesk.Viewing.ViewingApplication('MyViewerDiv');
-      this.viewerApp.registerViewer(this.viewerApp.k3D, Autodesk.Viewing.Private.GuiViewer3D);
-      this.viewerApp.loadDocument(documentId, this.onDocumentLoadSuccess.bind(this), this.onDocumentLoadFailure.bind(this));
+      // Viewer is ready - scripts are loaded and we've create a new viewing application
+      this.viewerInitialized = true;
+      this.onViewerInitialized.emit(true);
     });
   }
 
-  private onDocumentLoadSuccess(doc) {
-      // We could still make use of Document.getSubItemsWithProperties()
-      // However, when using a ViewingApplication, we have access to the **bubble** attribute,
-      // which references the root node of a graph that wraps each object from the Manifest JSON.
-      const viewables = this.viewerApp.bubble.search({ type: 'geometry' });
-      if (viewables.length === 0) {
-          console.error('Document contains no viewables.');
-          return;
-      }
+  private loadDocument(documentId: string) {
+    if (!documentId) return;
 
-      // Choose any of the avialble viewables
-      this.viewerApp.selectItem(viewables[0].data, this.onItemLoadSuccess.bind(this), this.onItemLoadFail.bind(this));
+    // Add urn: to the beginning of document id if needed
+    this.viewerApp.loadDocument((documentId.startsWith('urn:')) ? documentId : `urn:${documentId}`,
+                                this.onDocumentLoadSuccess.bind(this),
+                                this.onDocumentLoadFailure.bind(this));
+  }
+
+  private onDocumentLoadSuccess(doc: Autodesk.Viewing.Document) {
+    // We could still make use of Document.getSubItemsWithProperties()
+    // However, when using a ViewingApplication, we have access to the **bubble** attribute,
+    // which references the root node of a graph that wraps each object from the Manifest JSON.
+    const viewables = this.viewerApp.bubble.search({ type: 'geometry' });
+
+    if (viewables.length === 0) {
+      console.error('Document contains no viewables.');
+      return;
+    }
+
+    // Choose any of the available viewables
+    this.viewerApp.selectItem(viewables[0].data, this.onItemLoadSuccess.bind(this), this.onItemLoadFail.bind(this));
+    this.onDocumentChanged.emit(doc);
   }
 
   private onDocumentLoadFailure(viewerErrorCode) {
-      console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
+    console.error('onDocumentLoadFailure() - errorCode:' + viewerErrorCode);
   }
 
   private onItemLoadSuccess(viewer, item) {
-      console.log('onItemLoadSuccess()!');
-      console.log(viewer);
-      console.log(item);
+    console.log('onItemLoadSuccess()!');
+    console.log(viewer);
+    console.log(item);
 
-      // Congratulations! The viewer is now ready to be used.
-      console.log('Viewers are equal: ' + (viewer === this.viewerApp.getCurrentViewer()));
+    // Congratulations! The viewer is now ready to be used.
+    console.log('Viewers are equal: ' + (viewer === this.viewerApp.getCurrentViewer()));
   }
 
   private onItemLoadFail(errorCode) {
-      console.error('onItemLoadFail() - errorCode:' + errorCode);
+    console.error('onItemLoadFail() - errorCode:' + errorCode);
   }
 }

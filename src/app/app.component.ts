@@ -1,10 +1,32 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'app';
+
+  private viewerOptions: Autodesk.Viewing.ViewerOptions;
+  private documentId: string;
+
+  ngOnInit() {
+
+  }
+
+  viewerReady() {
+    this.viewerOptions = {
+      env: 'AutodeskProduction',
+      getAccessToken: (onGetAccessToken) => {
+        const accessToken = '<YOUR_APPLICATION_TOKEN>';
+        const expireTimeSeconds = 60 * 30;
+        onGetAccessToken(accessToken, expireTimeSeconds);
+      },
+    };
+  }
+
+  loadModel() {
+    this.documentId = 'urn:<YOUR_URN_ID>';
+  }
 }

@@ -7,7 +7,7 @@ import { ViewerModule } from './modules/viewer/viewer.module';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
   ],
   imports: [
     BrowserModule,

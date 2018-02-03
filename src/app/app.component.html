@@ -1,1 +1,3 @@
-<adsk-forge-viewer></adsk-forge-viewer>
+<adsk-forge-viewer #viewer [viewerOptions]="viewerOptions" [documentId]="documentId"
+                   (onViewerReady)="viewerReady()"
+                   (onViewerInitialized)="loadModel()"></adsk-forge-viewer>
