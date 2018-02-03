@@ -33,7 +33,7 @@ export class ViewerComponent implements OnInit, OnChanges {
   @Input() public documentId: string;
   @Input() public viewerOptions: ViewerOptions;
 
-  @Output() public onViewerReady = new EventEmitter<boolean>();
+  @Output() public onViewerScriptsLoaded = new EventEmitter<boolean>();
   @Output() public onViewingApplicationInitialized = new EventEmitter<boolean>();
   @Output() public onDocumentChanged = new EventEmitter<DocumentChangedEvent>();
   @Output() public onItemLoaded = new EventEmitter<ItemLoadedEvent>();
@@ -113,7 +113,7 @@ export class ViewerComponent implements OnInit, OnChanges {
     )
       .then((data) => {
         console.log('script loaded ', data);
-        this.onViewerReady.emit(true);
+        this.onViewerScriptsLoaded.emit(true);
       })
       .catch(error => console.log(error));
   }

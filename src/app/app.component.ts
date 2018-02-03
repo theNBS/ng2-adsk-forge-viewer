@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
 
   }
 
-  viewerReady() {
+  setViewerOptions() {
     this.viewerOptions = {
       initializerOptions: {
         env: 'AutodeskProduction',
@@ -29,7 +29,7 @@ export class AppComponent implements OnInit {
     };
   }
 
-  loadModel() {
+  loadDocument() {
     this.documentId = '<YOUR_URN_ID>';
   }
 }

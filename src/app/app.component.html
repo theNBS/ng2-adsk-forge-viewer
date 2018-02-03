@@ -1,3 +1,4 @@
-<adsk-forge-viewer #viewer [viewerOptions]="viewerOptions" [documentId]="documentId"
-                   (onViewerReady)="viewerReady()"
-                   (onViewingApplicationInitialized)="loadModel()"></adsk-forge-viewer>
+<adsk-forge-viewer [viewerOptions]="viewerOptions"
+                   [documentId]="documentId"
+                   (onViewerScriptsLoaded)="setViewerOptions()"
+                   (onViewingApplicationInitialized)="loadDocument()"></adsk-forge-viewer>
