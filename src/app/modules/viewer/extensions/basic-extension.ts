@@ -1,11 +1,11 @@
-export interface BasicExtensionEventSuscription {
+interface EventSubscription {
   caller: Object;
   eventName: string;
   callback: (args) => void;
 }
 
 export class BasicExtension extends Autodesk.Viewing.Extension {
-  private static supscriptions: { [key: string]: BasicExtensionEventSuscription[] } = {};
+  private static supscriptions: { [key: string]: EventSubscription[] } = {};
 
   private viewer: Autodesk.Viewing.Viewer3D;
   private extOptions: Autodesk.Viewing.ExtensionOptions;
@@ -18,20 +18,36 @@ export class BasicExtension extends Autodesk.Viewing.Extension {
     Autodesk.Viewing.theExtensionManager.registerExtension(BasicExtension.extensionName, BasicExtension);
   }
 
-  static onSelectionEvent(args: Autodesk.Viewing.SelectionChangedEventArgs) {
+  static onViewerSelectionEvent(args: Autodesk.Viewing.SelectionChangedEventArgs) {
     console.log('item selected:', args.fragIdsArray, args.dbIdArray, args.nodeArray, args.model);
+    BasicExtension.publishEvent(args.type, args);
   }
 
-  static subscribeEvent(caller: Object, event: string, callback: (...args) => void) {
+  static subscribeEvent(caller: Object, eventName: string, callback: (args) => void) {
+    const info: EventSubscription = { caller, eventName, callback };
 
+    if (!this.supscriptions[info.eventName]) {
+      this.supscriptions[info.eventName] = [];
+    }
+
+    const alreadySubscribed = this.supscriptions[info.eventName].find(item => item.caller === info.caller);
+    if (!alreadySubscribed) {
+      this.supscriptions[info.eventName].push(info);
+    }
   }
 
-  static unsubscribeEvent(caller: Object, event: string) {
+  static unsubscribeEvent(caller: Object, eventName: string) {
+    if (!this.supscriptions[eventName]) return;
 
+    const subscriber = this.supscriptions[eventName].find(item => item.caller === caller);
+    if (subscriber) {
+      const index = this.supscriptions[eventName].indexOf(subscriber);
+      this.supscriptions[eventName].splice(index, 1);
+    }
   }
 
-  private static publish(event, args) {
-    const subscribers: any[] = BasicExtension.supscriptions[event];
+  private static publishEvent(eventName, args) {
+    const subscribers: EventSubscription[] = BasicExtension.supscriptions[eventName];
     subscribers.forEach(item => item.callback(args));
   }
 
@@ -45,13 +61,13 @@ export class BasicExtension extends Autodesk.Viewing.Extension {
   load() {
     console.log(BasicExtension.extensionName, 'loaded!');
     this.viewer.addEventListener(Autodesk.Viewing.SELECTION_CHANGED_EVENT,
-                                 BasicExtension.onSelectionEvent.bind(this));
+                                 BasicExtension.onViewerSelectionEvent.bind(this));
     return true;
   }
 
   unload() {
     this.viewer.removeEventListener(Autodesk.Viewing.SELECTION_CHANGED_EVENT,
-                                    BasicExtension.onSelectionEvent.bind(this));
+                                    BasicExtension.onViewerSelectionEvent.bind(this));
     console.log(BasicExtension.extensionName, 'unloaded!');
     return true;
   }

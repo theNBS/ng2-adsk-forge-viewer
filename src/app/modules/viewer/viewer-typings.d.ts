@@ -162,7 +162,7 @@ declare namespace Autodesk.Viewing {
   const RENDER_PRESENTED_EVENT = 'renderPresented';
   const RESET_EVENT = 'reset';
   const RESTORE_DEFAULT_SETTINGS_EVENT = 'restoreDefaultSettings';
-  const SELECTION_CHANGED_EVENT = 'selectionChanged';
+  const SELECTION_CHANGED_EVENT = 'selection';
   interface SelectionChangedEventArgs extends ViewerEventArgs {
     fragIdsArray: number[];
     dbIdArray: number[];

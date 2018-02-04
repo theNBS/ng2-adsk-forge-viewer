@@ -122,24 +122,9 @@ export class ViewerComponent implements OnChanges {
       this.viewerApp = new Autodesk.Viewing.ViewingApplication(this.containerId,
                                                                this.viewerOptions.viewerApplicationOptions);
 
-      // Register a basic extension that will help us report events. This is a bit tricky
-      // as we've lazy loaded the Autodesk scripts; if we use `import` instead of
-      // `require`, the Autodesk namespace won't be found
-      const exts = require('./extensions'); //tslint:disable-line
-      exts.BasicExtension.registerExtension();
-
-      const config: Autodesk.Viewing.ViewerConfig = Object.assign(
-        {},
-        this.viewerOptions.viewerConfig,
-        { extensions: [] },
-      );
-
-      // We will always load our basic extension with any others specified by the caller
-      if (this.viewerOptions.viewerConfig && this.viewerOptions.viewerConfig.extensions) {
-        config.extensions = [...this.viewerOptions.viewerConfig.extensions, exts.BasicExtension.extensionName];
-      } else {
-        config.extensions = [exts.BasicExtension.extensionName];
-      }
+      // Register an extension to help us raise events
+      const extName = this.registerBasicExtension();
+      const config = this.addBasicExtensionConfig(extName);
 
       // Register a viewer with the application (passign through any additional config)
       this.viewerApp.registerViewer(this.viewerApp.k3D,
@@ -213,5 +198,37 @@ export class ViewerComponent implements OnChanges {
   private onItemLoadFail(errorCode: Autodesk.Viewing.ErrorCodes) {
     console.error('onItemLoadFail() - errorCode:' + errorCode);
     this.onError.emit(errorCode);
+  }
+
+  private registerBasicExtension(): string {
+    // Register a basic extension that will help us report events. This is a bit tricky
+    // as we've lazy loaded the Autodesk scripts; if we use `import` instead of
+    // `require`, the Autodesk namespace won't be found
+    const exts = require('./extensions'); //tslint:disable-line
+    exts.BasicExtension.registerExtension();
+    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.SELECTION_CHANGED_EVENT, this.viewerEventSelectionChanged);
+
+    return exts.BasicExtension.extensionName;
+  }
+
+  private addBasicExtensionConfig(extName: string): Autodesk.Viewing.ViewerConfig {
+    const config: Autodesk.Viewing.ViewerConfig = Object.assign(
+      {},
+      this.viewerOptions.viewerConfig,
+      { extensions: [] },
+    );
+
+    // We will always load our basic extension with any others specified by the caller
+    if (this.viewerOptions.viewerConfig && this.viewerOptions.viewerConfig.extensions) {
+      config.extensions = [...this.viewerOptions.viewerConfig.extensions, extName];
+    } else {
+      config.extensions = [extName];
+    }
+
+    return config;
+  }
+
+  private viewerEventSelectionChanged(args) {
+    alert(args);
   }
 }
