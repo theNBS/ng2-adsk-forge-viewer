@@ -26,6 +26,12 @@ declare namespace Autodesk.Viewing {
     LAST_OBJECT,
   }
 
+  enum ProgressState {
+    ROOT_LOADED,
+    LOADING,
+    RENDERING,
+  }
+
   interface InitializerOptions {
     env?: 'Development'|'Staging'|'Production'|'AutodeskDevelopment'|'AutodeskStaging'|'AutodeskProduction'|string;
     accessToken?: string;
@@ -128,10 +134,6 @@ declare namespace Autodesk.Viewing {
     [key: string]: any;
   }
 
-  interface ViewerEventArgs {
-    target?: Viewer3D;
-    type?: string;
-  }
   const AGGREGATE_SELECTION_CHANGED_EVENT = 'aggregateSelection';
   const ANIMATION_READY_EVENT = 'animationReady';
   const CAMERA_CHANGE_EVENT = 'cameraChanged';
@@ -163,12 +165,6 @@ declare namespace Autodesk.Viewing {
   const RESET_EVENT = 'reset';
   const RESTORE_DEFAULT_SETTINGS_EVENT = 'restoreDefaultSettings';
   const SELECTION_CHANGED_EVENT = 'selection';
-  interface SelectionChangedEventArgs extends ViewerEventArgs {
-    fragIdsArray: number[];
-    dbIdArray: number[];
-    nodeArray: number[];
-    model: ViewerItem;
-  }
   const SHOW_EVENT = 'show';
   const TEXTURES_LOADED_EVENT = 'texturesLoaded';
   const TOOL_CHANGE_EVENT = 'toolChanged';
@@ -176,6 +172,108 @@ declare namespace Autodesk.Viewing {
   const VIEWER_RESIZE_EVENT = 'viewerResize';
   const VIEWER_STATE_RESTORED_EVENT = 'viewerStateRestored';
   const VIEWER_UNINITIALIZED = 'viewerUninitialized';
+
+  interface ViewerEventArgs {
+    target?: Viewer3D;
+    type?: string;
+    [key: string]: any;
+  }
+  interface AggregationSelectionChangedEventArgs extends ViewerEventArgs {
+    selections: ViewerItem[];
+  }
+  interface CameraChangedEventArgs extends ViewerEventArgs {
+    camera: THREE.Camera;
+  }
+  interface CutplanesChangedEventArgs extends ViewerEventArgs {
+    cutplanes: Object[];
+  }
+  interface ExplodeChangedEventArgs extends ViewerEventArgs {
+    scale: number;
+  }
+  interface ExtensionLoadedUnloadedEventArgs extends ViewerEventArgs {
+    extensionId: string;
+  }
+  interface FinalFrameRenderedChangedEventArgs extends ViewerEventArgs {
+    planes: Object[];
+  }
+  interface FitToViewEventArgs extends ViewerEventArgs {
+    immediate: boolean;
+    nodeIdArray: number[];
+    model: ViewerItem;
+  }
+  interface FragmentsLoadedEventArgs extends ViewerEventArgs {
+    model: ViewerItem;
+    getFragIds: () => void;
+    data: Object;
+  }
+  interface FullscreenEventArgs extends ViewerEventArgs {
+    mode: Autodesk.Viewing.ScreenMode;
+  }
+  interface GeometryLoadedEventArgs extends ViewerEventArgs {
+    model: ViewerItem;
+  }
+  interface HideEventArgs extends ViewerEventArgs {
+    nodeIdArray: number[];
+    model: ViewerItem;
+  }
+  interface HyperlinkEventArgs extends ViewerEventArgs {
+    data: Object; // TODO: Can his be stronger?
+  }
+  interface IsolateEventArgs extends ViewerEventArgs {
+    nodeIdArray: number[];
+    model: ViewerItem;
+  }
+  interface LoadMissingGeometryEventArgs extends ViewerEventArgs {
+    delay: boolean;
+  }
+  interface ModelRootLoadedEventArgs extends ViewerEventArgs {
+    svf: Object; // TODO: can this be stronger
+    model: ViewerItem;
+  }
+  interface ModelUnloadedEventArgs extends ViewerEventArgs {
+    model: ViewerItem;
+  }
+  interface NavigationModeChangedEventArgs extends ViewerEventArgs {
+    id: string;
+  }
+  interface ObjectTreeEventArgs extends ViewerEventArgs {
+    svf: Object; // TODO: can this be stronger
+    model: ViewerItem;
+  }
+  interface PrefEventArgs extends ViewerEventArgs {
+    name: string;
+    value: Object;
+  }
+  interface ProgressUpdateEventArgs extends ViewerEventArgs {
+    percent: number;
+    state: Autodesk.Viewing.ProgressState;
+  }
+  interface SelectionChangedEventArgs extends ViewerEventArgs {
+    fragIdsArray: number[];
+    dbIdArray: number[];
+    nodeArray: number[];
+    model: ViewerItem;
+  }
+  interface ShowEventArgs extends ViewerEventArgs {
+    nodeArrayId: number[];
+    model: ViewerItem;
+  }
+  interface TexturesLoadedEventArgs extends ViewerEventArgs {
+    model: ViewerItem;
+  }
+  interface ToolChangedEventArgs extends ViewerEventArgs {
+    toolName: string;
+    tool: Object;
+    active: boolean;
+  }
+  interface ViewerResizeEventArgs extends ViewerEventArgs {
+    width: number;
+    height: number;
+  }
+  interface ViewerStateRestoredEventArgs extends ViewerEventArgs {
+    value: boolean;
+  }
+
 
   class BubbleNode {
     parent: BubbleNode;
