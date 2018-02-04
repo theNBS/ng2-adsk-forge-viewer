@@ -1,4 +1,12 @@
+export interface BasicExtensionEventSuscription {
+  caller: Object;
+  eventName: string;
+  callback: (args) => void;
+}
+
 export class BasicExtension extends Autodesk.Viewing.Extension {
+  private static supscriptions: { [key: string]: BasicExtensionEventSuscription[] } = {};
+
   private viewer: Autodesk.Viewing.Viewer3D;
   private extOptions: Autodesk.Viewing.ExtensionOptions;
 
@@ -12,6 +20,19 @@ export class BasicExtension extends Autodesk.Viewing.Extension {
 
   static onSelectionEvent(args: Autodesk.Viewing.SelectionChangedEventArgs) {
     console.log('item selected:', args.fragIdsArray, args.dbIdArray, args.nodeArray, args.model);
+  }
+
+  static subscribeEvent(caller: Object, event: string, callback: (...args) => void) {
+
+  }
+
+  static unsubscribeEvent(caller: Object, event: string) {
+
+  }
+
+  private static publish(event, args) {
+    const subscribers: any[] = BasicExtension.supscriptions[event];
+    subscribers.forEach(item => item.callback(args));
   }
 
   constructor(viewer: Autodesk.Viewing.Viewer3D, options: Autodesk.Viewing.ExtensionOptions) {
