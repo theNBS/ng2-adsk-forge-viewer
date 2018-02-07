@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+
 import { ScriptService } from './services/script.service';
 
 declare const require;
@@ -38,6 +39,44 @@ export class ViewerComponent implements OnChanges {
   @Output() public onDocumentChanged = new EventEmitter<DocumentChangedEvent>();
   @Output() public onItemLoaded = new EventEmitter<ItemLoadedEvent>();
   @Output() public onError = new EventEmitter<Autodesk.Viewing.ErrorCodes>();
+
+  // Viewer events
+  @Output() public onAggregationSelectionChanged
+    = new EventEmitter<Autodesk.Viewing.AggregationSelectionChangedEventArgs>();
+  @Output() public onAnimationReady = new EventEmitter<Autodesk.Viewing.ViewerEventArgs>();
+  @Output() public onCameraChanged = new EventEmitter<Autodesk.Viewing.CameraChangedEventArgs>();
+  @Output() public onCutplanesChanged = new EventEmitter<Autodesk.Viewing.CutplanesChangedEventArgs>();
+  @Output() public onEscape = new EventEmitter<Autodesk.Viewing.ViewerEventArgs>();
+  @Output() public onExplodeChanged = new EventEmitter<Autodesk.Viewing.ExplodeChangedEventArgs>();
+  @Output() public onExtensionLoaded = new EventEmitter<Autodesk.Viewing.ExtensionLoadedUnloadedEventArgs>();
+  @Output() public onExtensionUnloaded = new EventEmitter<Autodesk.Viewing.ExtensionLoadedUnloadedEventArgs>();
+  @Output() public onFinalFrameRenderedChanged
+    = new EventEmitter<Autodesk.Viewing.FinalFrameRenderedChangedEventArgs>();
+  @Output() public onFitToView = new EventEmitter<Autodesk.Viewing.FitToViewEventArgs>();
+  @Output() public onFragmentsLoaded = new EventEmitter<Autodesk.Viewing.FragmentsLoadedEventArgs>();
+  @Output() public onFullscreen = new EventEmitter<Autodesk.Viewing.FullscreenEventArgs>();
+  @Output() public onGeometryLoaded = new EventEmitter<Autodesk.Viewing.GeometryLoadedEventArgs>();
+  @Output() public onHide = new EventEmitter<Autodesk.Viewing.HideEventArgs>();
+  @Output() public onHyperlink = new EventEmitter<Autodesk.Viewing.HyperlinkEventArgs>();
+  @Output() public onIsolate = new EventEmitter<Autodesk.Viewing.IsolateEventArgs>();
+  @Output() public onLayerVisibilityChanged = new EventEmitter<Autodesk.Viewing.ViewerEventArgs>();
+  @Output() public onLoadMissingGeometry = new EventEmitter<Autodesk.Viewing.LoadMissingGeometryEventArgs>();
+  @Output() public onModelRootLoaded = new EventEmitter<Autodesk.Viewing.ModelRootLoadedEventArgs>();
+  @Output() public onModelUnloaded = new EventEmitter<Autodesk.Viewing.ModelUnloadedEventArgs>();
+  @Output() public onNavigationModeChanged = new EventEmitter<Autodesk.Viewing.NavigationModeChangedEventArgs>();
+  @Output() public onObjectTreeCreated = new EventEmitter<Autodesk.Viewing.ObjectTreeEventArgs>();
+  @Output() public onObjectTreeUnavailable = new EventEmitter<Autodesk.Viewing.ObjectTreeEventArgs>();
+  @Output() public onPrefChanged = new EventEmitter<Autodesk.Viewing.PrefEventArgs>();
+  @Output() public onPrefReset = new EventEmitter<Autodesk.Viewing.PrefEventArgs>();
+  @Output() public onProgressUpdate = new EventEmitter<Autodesk.Viewing.ProgressUpdateEventArgs>();
+  @Output() public onRenderOptionChanged = new EventEmitter<Autodesk.Viewing.ViewerEventArgs>();
+  @Output() public onRenderPresented = new EventEmitter<Autodesk.Viewing.ViewerEventArgs>();
+  @Output() public onReset = new EventEmitter<Autodesk.Viewing.ViewerEventArgs>();
+  @Output() public onRestoreDefaultSettings = new EventEmitter<Autodesk.Viewing.ViewerEventArgs>();
+  @Output() public onSelectionChanged = new EventEmitter<Autodesk.Viewing.SelectionChangedEventArgs>();
+  @Output() public onShow = new EventEmitter<Autodesk.Viewing.ShowEventArgs>();
+  @Output() public onTexturesLoaded = new EventEmitter<Autodesk.Viewing.TexturesLoadedEventArgs>();
+
 
   private viewerInitialized = false;
   private viewerApp: Autodesk.Viewing.ViewingApplication;
