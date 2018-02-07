@@ -76,6 +76,11 @@ export class ViewerComponent implements OnChanges {
   @Output() public onSelectionChanged = new EventEmitter<Autodesk.Viewing.SelectionChangedEventArgs>();
   @Output() public onShow = new EventEmitter<Autodesk.Viewing.ShowEventArgs>();
   @Output() public onTexturesLoaded = new EventEmitter<Autodesk.Viewing.TexturesLoadedEventArgs>();
+  @Output() public onToolChanged = new EventEmitter<Autodesk.Viewing.ToolChangedEventArgs>();
+  @Output() public onViewerInitialized = new EventEmitter<Autodesk.Viewing.ViewerEventArgs>();
+  @Output() public onViewerResize = new EventEmitter<Autodesk.Viewing.ViewerResizeEventArgs>();
+  @Output() public onViewerStateRestored = new EventEmitter<Autodesk.Viewing.ViewerStateRestoredEventArgs>();
+  @Output() public onViewerUninitialized = new EventEmitter<Autodesk.Viewing.ViewerEventArgs>();
 
 
   private viewerInitialized = false;
