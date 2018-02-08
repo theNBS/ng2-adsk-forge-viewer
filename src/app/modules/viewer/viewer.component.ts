@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges} from '@angular/core';
 
 import { ScriptService } from './services/script.service';
 
@@ -29,7 +29,7 @@ export interface ViewerOptions {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ViewerComponent implements OnChanges {
+export class ViewerComponent implements OnChanges, OnDestroy {
   readonly containerId = 'ng2-adsk-forge-viewer-container';
 
   @Input() public documentId: string;
@@ -80,6 +80,10 @@ export class ViewerComponent implements OnChanges {
     if (!this.viewerInitialized && changes.viewerOptions && changes.viewerOptions.currentValue) {
       this.initialiseApplication();
     }
+  }
+
+  ngOnDestroy() {
+
   }
 
   /**
@@ -223,9 +227,36 @@ export class ViewerComponent implements OnChanges {
     // `require`, the Autodesk namespace won't be found
     const exts = require('./extensions'); //tslint:disable-line
     exts.BasicExtension.registerExtension();
-    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.SELECTION_CHANGED_EVENT, this.viewerEventSelectionChanged);
+    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.FIT_TO_VIEW_EVENT, args => this.onFitToView.emit(args));
+    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.FULLSCREEN_MODE_EVENT, args => this.onFullscreen.emit(args));
+    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.GEOMETRY_LOADED_EVENT, args => this.onGeometryLoaded.emit(args));
+    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.HIDE_EVENT, args => this.onHide.emit(args));
+    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.ISOLATE_EVENT, args => this.onIsolate.emit(args));
+    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.MODEL_ROOT_LOADED_EVENT, args => this.onModelRootLoaded.emit(args));
+    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.MODEL_UNLOADED_EVENT, args => this.onModelUnloaded.emit(args));
+    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, args => this.onObjectTreeCreated.emit(args));
+    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.OBJECT_TREE_UNAVAILABLE_EVENT, args => this.onObjectTreeCreated.emit(args));
+    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.RESET_EVENT, args => this.onHide.emit(args));
+    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.SELECTION_CHANGED_EVENT, args => this.onSelectionChanged.emit(args));
+    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.SHOW_EVENT, args => this.onHide.emit(args));
 
     return exts.BasicExtension.extensionName;
+  }
+
+  private unregisterBasicExtension() {
+    const exts = require('./extensions'); //tslint:disable-line
+    exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.FIT_TO_VIEW_EVENT);
+    exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.FULLSCREEN_MODE_EVENT);
+    exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.GEOMETRY_LOADED_EVENT);
+    exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.HIDE_EVENT);
+    exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.ISOLATE_EVENT);
+    exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.MODEL_ROOT_LOADED_EVENT);
+    exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.MODEL_UNLOADED_EVENT);
+    exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT);
+    exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.OBJECT_TREE_UNAVAILABLE_EVENT);
+    exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.RESET_EVENT);
+    exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.SELECTION_CHANGED_EVENT);
+    exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.SHOW_EVENT);
   }
 
   private addBasicExtensionConfig(extName: string): Autodesk.Viewing.ViewerConfig {
@@ -243,9 +274,5 @@ export class ViewerComponent implements OnChanges {
     }
 
     return config;
-  }
-
-  private viewerEventSelectionChanged(args) {
-    alert(args);
   }
 }
