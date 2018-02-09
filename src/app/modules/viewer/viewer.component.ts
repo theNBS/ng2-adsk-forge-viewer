@@ -1,4 +1,5 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges} from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy,
+  Output, SimpleChanges } from '@angular/core';
 
 import { ScriptService } from './services/script.service';
 
@@ -7,18 +8,22 @@ declare const require;
 export interface DocumentChangedEvent {
   document: Autodesk.Viewing.Document;
   viewingApplication: Autodesk.Viewing.ViewingApplication;
+  viewerComponent: ViewerComponent;
 }
 
 export interface ItemLoadedEvent {
   item: Autodesk.Viewing.ViewerItem;
   viewingApplication: Autodesk.Viewing.ViewingApplication;
   currentViewer: Autodesk.Viewing.Viewer3D;
+  viewerComponent: ViewerComponent;
 }
 
 export interface ViewerOptions {
   initializerOptions: Autodesk.Viewing.InitializerOptions;
   viewerApplicationOptions?: Autodesk.Viewing.ViewingApplicationOptions;
   viewerConfig?: Autodesk.Viewing.ViewerConfig;
+  headlessViewer?: boolean;
+  showFirstViewable?: boolean;
 }
 
 @Component({
@@ -47,8 +52,6 @@ export class ViewerComponent implements OnChanges, OnDestroy {
   @Output() public onGeometryLoaded = new EventEmitter<Autodesk.Viewing.GeometryLoadedEventArgs>();
   @Output() public onHide = new EventEmitter<Autodesk.Viewing.HideEventArgs>();
   @Output() public onIsolate = new EventEmitter<Autodesk.Viewing.IsolateEventArgs>();
-  @Output() public onModelRootLoaded = new EventEmitter<Autodesk.Viewing.ModelRootLoadedEventArgs>();
-  @Output() public onModelUnloaded = new EventEmitter<Autodesk.Viewing.ModelUnloadedEventArgs>();
   @Output() public onObjectTreeCreated = new EventEmitter<Autodesk.Viewing.ObjectTreeEventArgs>();
   @Output() public onObjectTreeUnavailable = new EventEmitter<Autodesk.Viewing.ObjectTreeEventArgs>();
   @Output() public onReset = new EventEmitter<Autodesk.Viewing.ViewerEventArgs>();
@@ -83,7 +86,13 @@ export class ViewerComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.unregisterBasicExtension();
 
+    if (this.viewerApp) {
+      const viewer = this.viewerApp.getCurrentViewer();
+      viewer.tearDown();
+      viewer.uninitialize();
+    }
   }
 
   /**
@@ -119,6 +128,10 @@ export class ViewerComponent implements OnChanges, OnDestroy {
     return this.viewerApp.getCurrentViewer();
   }
 
+  public selectItem(item: Autodesk.Viewing.ViewerItem|Autodesk.Viewing.BubbleNode) {
+    this.viewerApp.selectItem(item, this.onItemLoadSuccess.bind(this), this.onItemLoadFail.bind(this));
+  }
+
   /**
    * We don't bundle Autodesk's scripts with the component, and we don't really want users to have
    * to add the scripts to their index.html pages. So we'll load them when required.
@@ -139,23 +152,39 @@ export class ViewerComponent implements OnChanges, OnDestroy {
    * Initialises a ViewingApplication
    */
   private initialiseApplication() {
-    Autodesk.Viewing.Initializer(this.viewerOptions.initializerOptions, () => {
-      this.viewerApp = new Autodesk.Viewing.ViewingApplication(this.containerId,
-                                                               this.viewerOptions.viewerApplicationOptions);
+    // Check if the viewer has already been initialised - this isn't the nicest, but we've set the env in our
+    // options above so we at least know that it was us who did this!
+    if (!Autodesk.Viewing.Private.env) {
+      Autodesk.Viewing.Initializer(this.viewerOptions.initializerOptions, () => {
+        this.initialized();
+      });
+    } else {
+      // We need to give an initialised viewing application a tick to allow the DOM element
+      // to be established before we re-draw
+      setTimeout(() => {
+        this.initialized();
+      });
+    }
+  }
 
-      // Register an extension to help us raise events
-      const extName = this.registerBasicExtension();
-      const config = this.addBasicExtensionConfig(extName);
+  private initialized() {
+    this.viewerApp = new Autodesk.Viewing.ViewingApplication(this.containerId,
+                                                             this.viewerOptions.viewerApplicationOptions);
 
-      // Register a viewer with the application (passign through any additional config)
-      this.viewerApp.registerViewer(this.viewerApp.k3D,
-                                    Autodesk.Viewing.Private.GuiViewer3D,
-                                    config);
+    // Register an extension to help us raise events
+    const extName = this.registerBasicExtension();
+    const config = this.addBasicExtensionConfig(extName);
 
-      // Viewer is ready - scripts are loaded and we've create a new viewing application
-      this.viewerInitialized = true;
-      this.onViewingApplicationInitialized.emit(true);
-    });
+    // Register a viewer with the application (passign through any additional config)
+    this.viewerApp.registerViewer(
+      this.viewerApp.k3D,
+      (this.viewerOptions.headlessViewer) ? Autodesk.Viewing.Viewer3D : Autodesk.Viewing.Private.GuiViewer3D,
+      config,
+    );
+
+    // Viewer is ready - scripts are loaded and we've create a new viewing application
+    this.viewerInitialized = true;
+    this.onViewingApplicationInitialized.emit(true);
   }
 
   /**
@@ -178,16 +207,18 @@ export class ViewerComponent implements OnChanges, OnDestroy {
   private onDocumentLoadSuccess(document: Autodesk.Viewing.Document) {
     // Emit an event so the caller can do something
     // TODO: config option to specify which viewable to display (how?)
-    this.onDocumentChanged.emit({ document, viewingApplication: this.viewerApp });
+    this.onDocumentChanged.emit({ document, viewingApplication: this.viewerApp, viewerComponent: this });
 
-    // This will be the default behaviour -- show the first viewable
-    // We could still make use of Document.getSubItemsWithProperties()
-    // However, when using a ViewingApplication, we have access to the **bubble** attribute,
-    // which references the root node of a graph that wraps each object from the Manifest JSON.
-    const viewables = this.viewerApp.bubble.search({ type: 'geometry' });
+    if (this.viewerOptions.showFirstViewable === undefined || this.viewerOptions.showFirstViewable) {
+      // This will be the default behaviour -- show the first viewable
+      // We could still make use of Document.getSubItemsWithProperties()
+      // However, when using a ViewingApplication, we have access to the **bubble** attribute,
+      // which references the root node of a graph that wraps each object from the Manifest JSON.
+      const viewables = this.viewerApp.bubble.search({ type: 'geometry' });
 
-    if (viewables && viewables.length > 0) {
-      this.viewerApp.selectItem(viewables[0].data, this.onItemLoadSuccess.bind(this), this.onItemLoadFail.bind(this));
+      if (viewables && viewables.length > 0) {
+        this.viewerApp.selectItem(viewables[0].data, this.onItemLoadSuccess.bind(this), this.onItemLoadFail.bind(this));
+      }
     }
   }
 
@@ -209,7 +240,11 @@ export class ViewerComponent implements OnChanges, OnDestroy {
     console.log('onItemLoadSuccess()', viewer, item);
     console.log('Viewers are equal: ' + (viewer === this.viewerApp.getCurrentViewer()));
 
-    this.onItemLoaded.emit({ item, currentViewer: viewer, viewingApplication: this.viewerApp });
+    this.onItemLoaded.emit({
+      item, currentViewer: viewer,
+      viewingApplication: this.viewerApp,
+      viewerComponent: this,
+    });
   }
 
   /**
@@ -232,8 +267,6 @@ export class ViewerComponent implements OnChanges, OnDestroy {
     exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.GEOMETRY_LOADED_EVENT, args => this.onGeometryLoaded.emit(args));
     exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.HIDE_EVENT, args => this.onHide.emit(args));
     exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.ISOLATE_EVENT, args => this.onIsolate.emit(args));
-    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.MODEL_ROOT_LOADED_EVENT, args => this.onModelRootLoaded.emit(args));
-    exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.MODEL_UNLOADED_EVENT, args => this.onModelUnloaded.emit(args));
     exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, args => this.onObjectTreeCreated.emit(args));
     exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.OBJECT_TREE_UNAVAILABLE_EVENT, args => this.onObjectTreeCreated.emit(args));
     exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.RESET_EVENT, args => this.onHide.emit(args));
@@ -250,13 +283,12 @@ export class ViewerComponent implements OnChanges, OnDestroy {
     exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.GEOMETRY_LOADED_EVENT);
     exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.HIDE_EVENT);
     exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.ISOLATE_EVENT);
-    exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.MODEL_ROOT_LOADED_EVENT);
-    exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.MODEL_UNLOADED_EVENT);
     exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT);
     exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.OBJECT_TREE_UNAVAILABLE_EVENT);
     exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.RESET_EVENT);
     exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.SELECTION_CHANGED_EVENT);
     exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.SHOW_EVENT);
+    exts.BasicExtension.unregisterExtension();
   }
 
   private addBasicExtensionConfig(extName: string): Autodesk.Viewing.ViewerConfig {

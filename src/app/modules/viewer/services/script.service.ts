@@ -25,6 +25,10 @@ export class ScriptService {
     const promises: Promise<ScriptInfo>[] = [];
 
     urls.forEach((src) => {
+      if (this.scripts[src] && this.scripts[src].loaded) {
+        return;
+      }
+
       this.scripts[src] = { src, loaded: false };
       return promises.push(this.loadScript(src));
     });

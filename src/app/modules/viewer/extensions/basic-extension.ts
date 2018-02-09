@@ -16,14 +16,11 @@ export class BasicExtension extends Autodesk.Viewing.Extension {
     Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
     Autodesk.Viewing.HIDE_EVENT,
     Autodesk.Viewing.ISOLATE_EVENT,
-    Autodesk.Viewing.MODEL_ROOT_LOADED_EVENT,
-    Autodesk.Viewing.MODEL_UNLOADED_EVENT,
     Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT,
     Autodesk.Viewing.OBJECT_TREE_UNAVAILABLE_EVENT,
     Autodesk.Viewing.RESET_EVENT,
     Autodesk.Viewing.SELECTION_CHANGED_EVENT,
     Autodesk.Viewing.SHOW_EVENT,
-    Autodesk.Viewing.SELECTION_CHANGED_EVENT,
   ];
 
   static get extensionName() {
@@ -34,8 +31,12 @@ export class BasicExtension extends Autodesk.Viewing.Extension {
     Autodesk.Viewing.theExtensionManager.registerExtension(BasicExtension.extensionName, BasicExtension);
   }
 
+  static unregisterExtension() {
+    Autodesk.Viewing.theExtensionManager.unregisterExtension(BasicExtension.extensionName);
+  }
+
   static onViewerEvent(args: Autodesk.Viewing.ViewerEventArgs) {
-    console.log('Event fired', args);
+    // console.log('Event fired', args);
     BasicExtension.publishEvent(args.type, args);
   }
 

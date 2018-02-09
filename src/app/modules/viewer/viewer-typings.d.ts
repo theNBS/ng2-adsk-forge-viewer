@@ -554,6 +554,7 @@ declare namespace Autodesk.Viewing {
     start(url?: string, options?: LoadModelOptions,
           onSuccessCallback?: Function,
           onErrorCallback?: Function): number|ErrorCodes;
+    tearDown(): void;
     toggleSelect(dbid: number, selectionType: SelectionMode): void;
     toggleVisibility(node: number): void;
     trackADPSettingsOptions(): void;
@@ -825,6 +826,8 @@ declare namespace Autodesk.Viewing {
   }
 
   namespace Private {
+    const env: string;
+
     interface PreferencesOptions {
       localStorage?: boolean;
       prefix?: string;
