@@ -90,6 +90,8 @@ export class BasicExtension extends Autodesk.Viewing.Extension {
 
   private static publishEvent(eventName, args) {
     const subscribers: EventSubscription[] = BasicExtension.supscriptions[eventName];
+
+    if (!subscribers || subscribers.length === 0) return;
     subscribers.forEach(item => item.callback(args));
   }
 
