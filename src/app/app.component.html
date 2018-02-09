@@ -1,4 +1,8 @@
-<adsk-forge-viewer [viewerOptions]="viewerOptions"
-                   [documentId]="documentId"
-                   (onViewerScriptsLoaded)="setViewerOptions()"
-                   (onViewingApplicationInitialized)="loadDocument()"></adsk-forge-viewer>
+<h1>Forge Viewer</h1>
+
+<nav>
+  <a routerLink="/viewer">Viewer</a>
+  <a routerLink="/help">Help</a>
+</nav>
+
+<router-outlet></router-outlet>
