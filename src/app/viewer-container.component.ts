@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { DocumentChangedEvent, ViewerOptions } from './modules/viewer/viewer.component';
 
 @Component({

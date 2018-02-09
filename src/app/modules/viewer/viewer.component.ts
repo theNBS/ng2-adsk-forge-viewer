@@ -261,7 +261,10 @@ export class ViewerComponent implements OnChanges, OnDestroy {
     // as we've lazy loaded the Autodesk scripts; if we use `import` instead of
     // `require`, the Autodesk namespace won't be found
     const exts = require('./extensions'); //tslint:disable-line
+
     exts.BasicExtension.registerExtension();
+
+    // tslint:disable:max-line-length
     exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.FIT_TO_VIEW_EVENT, args => this.onFitToView.emit(args));
     exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.FULLSCREEN_MODE_EVENT, args => this.onFullscreen.emit(args));
     exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.GEOMETRY_LOADED_EVENT, args => this.onGeometryLoaded.emit(args));
@@ -272,12 +275,14 @@ export class ViewerComponent implements OnChanges, OnDestroy {
     exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.RESET_EVENT, args => this.onHide.emit(args));
     exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.SELECTION_CHANGED_EVENT, args => this.onSelectionChanged.emit(args));
     exts.BasicExtension.subscribeEvent(this, Autodesk.Viewing.SHOW_EVENT, args => this.onHide.emit(args));
+    // tslint:enable:max-line-length
 
     return exts.BasicExtension.extensionName;
   }
 
   private unregisterBasicExtension() {
     const exts = require('./extensions'); //tslint:disable-line
+
     exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.FIT_TO_VIEW_EVENT);
     exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.FULLSCREEN_MODE_EVENT);
     exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.GEOMETRY_LOADED_EVENT);
@@ -288,6 +293,7 @@ export class ViewerComponent implements OnChanges, OnDestroy {
     exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.RESET_EVENT);
     exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.SELECTION_CHANGED_EVENT);
     exts.BasicExtension.unsubscribeEvent(this, this, Autodesk.Viewing.SHOW_EVENT);
+
     exts.BasicExtension.unregisterExtension();
   }
 
