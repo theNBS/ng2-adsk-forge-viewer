@@ -828,6 +828,11 @@ declare namespace Autodesk.Viewing {
   namespace Private {
     const env: string;
 
+    function formatValueWithUnits(value: number, units: string, type: number, precision: number);
+    function convertUnits(fromUnits: string, toUnits: string, calibrationFactor: number,
+                          d: number, type: string): number;
+    function calculatePrecision(value: string|number): number;
+
     interface PreferencesOptions {
       localStorage?: boolean;
       prefix?: string;
