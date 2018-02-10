@@ -18,6 +18,11 @@ export interface ItemLoadedEvent {
   viewerComponent: ViewerComponent;
 }
 
+export interface ViewingApplicationInitializedEvent {
+  viewingApplication: Autodesk.Viewing.ViewingApplication;
+  viewerComponent: ViewerComponent;
+}
+
 export interface ViewerOptions {
   initializerOptions: Autodesk.Viewing.InitializerOptions;
   viewerApplicationOptions?: Autodesk.Viewing.ViewingApplicationOptions;
@@ -25,6 +30,7 @@ export interface ViewerOptions {
   headlessViewer?: boolean;
   showFirstViewable?: boolean;
 }
+
 
 @Component({
   selector: 'adsk-forge-viewer',
@@ -37,11 +43,10 @@ export interface ViewerOptions {
 export class ViewerComponent implements OnChanges, OnDestroy {
   readonly containerId = 'ng2-adsk-forge-viewer-container';
 
-  @Input() public documentId: string;
   @Input() public viewerOptions: ViewerOptions;
 
   @Output() public onViewerScriptsLoaded = new EventEmitter<boolean>();
-  @Output() public onViewingApplicationInitialized = new EventEmitter<boolean>();
+  @Output() public onViewingApplicationInitialized = new EventEmitter<ViewingApplicationInitializedEvent>();
   @Output() public onDocumentChanged = new EventEmitter<DocumentChangedEvent>();
   @Output() public onItemLoaded = new EventEmitter<ItemLoadedEvent>();
   @Output() public onError = new EventEmitter<Autodesk.Viewing.ErrorCodes>();
@@ -61,6 +66,7 @@ export class ViewerComponent implements OnChanges, OnDestroy {
 
   private viewerInitialized = false;
   private viewerApp: Autodesk.Viewing.ViewingApplication;
+  private documentId: string;
 
   /**
    * Helper to allow callers to specify documentId with or without the required urn: prefix
@@ -76,10 +82,6 @@ export class ViewerComponent implements OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.documentId && changes.documentId.currentValue) {
-      this.loadDocument(changes.documentId.currentValue);
-    }
-
     if (!this.viewerInitialized && changes.viewerOptions && changes.viewerOptions.currentValue) {
       this.initialiseApplication();
     }
@@ -93,6 +95,9 @@ export class ViewerComponent implements OnChanges, OnDestroy {
       viewer.tearDown();
       viewer.uninitialize();
     }
+
+    this.viewerApp = null;
+    this.viewerInitialized = false;
   }
 
   /**
@@ -126,6 +131,15 @@ export class ViewerComponent implements OnChanges, OnDestroy {
    */
   public get Viewer3D() {
     return this.viewerApp.getCurrentViewer();
+  }
+
+  public get DocumentId() {
+    return this.documentId;
+  }
+
+  public set DocumentId(value: string) {
+    this.documentId = value;
+    this.loadDocument(this.documentId);
   }
 
   public selectItem(item: Autodesk.Viewing.ViewerItem|Autodesk.Viewing.BubbleNode) {
@@ -184,7 +198,7 @@ export class ViewerComponent implements OnChanges, OnDestroy {
 
     // Viewer is ready - scripts are loaded and we've create a new viewing application
     this.viewerInitialized = true;
-    this.onViewingApplicationInitialized.emit(true);
+    this.onViewingApplicationInitialized.emit({ viewingApplication: this.viewerApp, viewerComponent: this });
   }
 
   /**
@@ -214,7 +228,7 @@ export class ViewerComponent implements OnChanges, OnDestroy {
       // We could still make use of Document.getSubItemsWithProperties()
       // However, when using a ViewingApplication, we have access to the **bubble** attribute,
       // which references the root node of a graph that wraps each object from the Manifest JSON.
-      const viewables = this.viewerApp.bubble.search({ type: 'geometry' });
+      const viewables = this.viewerApp.bubble.search(Autodesk.Viewing.BubbleNode.MODEL_NODE);
 
       if (viewables && viewables.length > 0) {
         this.viewerApp.selectItem(viewables[0].data, this.onItemLoadSuccess.bind(this), this.onItemLoadFail.bind(this));

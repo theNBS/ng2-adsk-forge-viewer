@@ -274,8 +274,19 @@ declare namespace Autodesk.Viewing {
     value: boolean;
   }
 
+  interface BubbleNodeSearchProps {
+    role?: string;
+    type?: string;
+    mime?: string;
+  }
 
   class BubbleNode {
+    static MODEL_NODE: BubbleNodeSearchProps;
+    static GEOMETRY_SVF_NODE: BubbleNodeSearchProps;
+    static SHEET_NODE: BubbleNodeSearchProps;
+    static GEOMETRY_F2D_NODE: BubbleNodeSearchProps;
+    static VIEWABLE_NODE: BubbleNodeSearchProps;
+
     parent: BubbleNode;
     id: number;
     data: ViewerItem;
@@ -306,7 +317,7 @@ declare namespace Autodesk.Viewing {
     isMetadata(): boolean;
     isViewable(): boolean;
     name(): string;
-    search(propsToMatch: Object): BubbleNode[];
+    search(propsToMatch: BubbleNodeSearchProps): BubbleNode[];
     searchByTag(tagsToMatch: Object): BubbleNode[];
     setTag(tag: string, value: any);
     traverse(cb: Function): boolean;

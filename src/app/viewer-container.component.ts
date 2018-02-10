@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
-import { DocumentChangedEvent, ViewerOptions } from './modules/viewer/viewer.component';
+import {
+  DocumentChangedEvent, ViewerOptions,
+  ViewingApplicationInitializedEvent,
+} from './modules/viewer/viewer.component';
 
 @Component({
   selector: 'app-viewer-container',
@@ -26,8 +29,8 @@ export class ViewerContainerComponent {
     };
   }
 
-  loadDocument() {
-    this.documentId = '<DOCUMENT_URN_GOES_HERE>';
+  loadDocument(event: ViewingApplicationInitializedEvent) {
+    event.viewerComponent.DocumentId = '<DOCUMENT_URN_GOES_HERE>';
   }
 
   documentChanged(event: DocumentChangedEvent) {

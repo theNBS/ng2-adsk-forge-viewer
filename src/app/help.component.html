@@ -1,3 +1,18 @@
-<p>
-  help works!
-</p>
+<button (click)="threeD()" [disabled]="disableButtons">3D</button>
+<button (click)="twoD()" [disabled]="disableButtons">2D</button>
+
+<div *ngIf="showThreeD">
+  <adsk-forge-viewer [viewerOptions]="viewerOptions"
+                     (onViewerScriptsLoaded)="setViewerOptions()"
+                     (onViewingApplicationInitialized)="loadDocument($event)"
+                     (onDocumentChanged)="documentChanged($event)"
+                     (onGeometryLoaded)="viewerFinished($event)"></adsk-forge-viewer>
+</div>
+
+<div *ngIf="!showThreeD">
+  <adsk-forge-viewer [viewerOptions]="viewerOptions"
+                     (onViewerScriptsLoaded)="setViewerOptions()"
+                     (onViewingApplicationInitialized)="loadDocument($event)"
+                     (onDocumentChanged)="documentChanged($event)"
+                     (onGeometryLoaded)="viewerFinished($event)"></adsk-forge-viewer>
+</div>
