@@ -33,6 +33,9 @@ export class HelpComponent {
           onGetAccessToken(accessToken, expireTimeSeconds);
         },
       },
+      viewerConfig: {
+        theme: 'light-theme',
+      },
       showFirstViewable: false,
       // headlessViewer: true,
     };

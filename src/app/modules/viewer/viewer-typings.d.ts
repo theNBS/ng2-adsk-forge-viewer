@@ -44,6 +44,7 @@ declare namespace Autodesk.Viewing {
 
   interface Viewer3DConfig {
     startOnInitialize?: boolean;
+    theme?: 'dark-theme'|'light-theme'|string;
     [key: string]: any;
   }
 
@@ -62,6 +63,7 @@ declare namespace Autodesk.Viewing {
     canvasConfig?: any;
     startOnInitialize?: boolean;
     experimental?: any[];
+    theme?: 'dark-theme'|'light-theme'|string;
     [key: string]: any;
   }
 

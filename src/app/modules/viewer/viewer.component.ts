@@ -4,6 +4,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnD
 import { ScriptService } from './services/script.service';
 
 declare const require;
+const VER_STRING = '?v=4.*.*';
 
 export interface DocumentChangedEvent {
   document: Autodesk.Viewing.Document;
@@ -29,6 +30,7 @@ export interface ViewerOptions {
   viewerConfig?: Autodesk.Viewing.ViewerConfig;
   headlessViewer?: boolean;
   showFirstViewable?: boolean;
+  versionString?: string;
 }
 
 
@@ -152,8 +154,8 @@ export class ViewerComponent implements OnChanges, OnDestroy {
    */
   private loadScripts() {
     this.script.load(
-      'https://developer.api.autodesk.com/modelderivative/v2/viewers/three.min.js?v=3.3.*',
-      'https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=3.3.*',
+      'https://developer.api.autodesk.com/modelderivative/v2/viewers/three.min.js?v=4.*.*',
+      'https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=4.*.*',
     )
       .then((data) => {
         console.log('script loaded ', data);
