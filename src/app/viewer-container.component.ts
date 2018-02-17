@@ -4,6 +4,9 @@ import {
   ViewingApplicationInitializedEvent,
 } from './modules/viewer/viewer.component';
 
+export const ACCESS_TOKEN = '<TOKEN_GOES_HERE>';
+export const DOCUMENT_URN = '<DOCUMENT_URN_GOES_HERE>';
+
 @Component({
   selector: 'app-viewer-container',
   templateUrl: './viewer-container.component.html',
@@ -19,9 +22,8 @@ export class ViewerContainerComponent {
       initializerOptions: {
         env: 'AutodeskProduction',
         getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => {
-          const accessToken = '<TOKEN_GOES_HERE>';
           const expireTimeSeconds = 60 * 30;
-          onGetAccessToken(accessToken, expireTimeSeconds);
+          onGetAccessToken(ACCESS_TOKEN, expireTimeSeconds);
         },
       },
       // showFirstViewable: false,
@@ -30,7 +32,7 @@ export class ViewerContainerComponent {
   }
 
   loadDocument(event: ViewingApplicationInitializedEvent) {
-    event.viewerComponent.DocumentId = '<DOCUMENT_URN_GOES_HERE>';
+    event.viewerComponent.DocumentId = DOCUMENT_URN;
   }
 
   documentChanged(event: DocumentChangedEvent) {

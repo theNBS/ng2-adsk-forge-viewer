@@ -3,6 +3,7 @@ import {
   DocumentChangedEvent, ViewerOptions,
   ViewingApplicationInitializedEvent,
 } from './modules/viewer/viewer.component';
+import { ACCESS_TOKEN, DOCUMENT_URN } from './viewer-container.component';
 
 @Component({
   selector: 'app-help',
@@ -28,9 +29,8 @@ export class HelpComponent {
       initializerOptions: {
         env: 'AutodeskProduction',
         getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => {
-          const accessToken = '<TOKEN_GOES_HERE>';
           const expireTimeSeconds = 60 * 30;
-          onGetAccessToken(accessToken, expireTimeSeconds);
+          onGetAccessToken(ACCESS_TOKEN, expireTimeSeconds);
         },
       },
       viewerConfig: {
@@ -42,7 +42,7 @@ export class HelpComponent {
   }
 
   loadDocument(event: ViewingApplicationInitializedEvent) {
-    event.viewerComponent.DocumentId = '<DOCUMENT_URN_GOES_HERE>';
+    event.viewerComponent.DocumentId = DOCUMENT_URN;
   }
 
   documentChanged(event: DocumentChangedEvent) {
