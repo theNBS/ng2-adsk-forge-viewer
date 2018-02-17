@@ -3,9 +3,7 @@ import {
   DocumentChangedEvent, ViewerOptions,
   ViewingApplicationInitializedEvent,
 } from './modules/viewer/viewer.component';
-
-export const ACCESS_TOKEN = '<TOKEN_GOES_HERE>';
-export const DOCUMENT_URN = '<DOCUMENT_URN_GOES_HERE>';
+import { ACCESS_TOKEN, DOCUMENT_URN } from './app.component';
 
 @Component({
   selector: 'app-viewer-container',

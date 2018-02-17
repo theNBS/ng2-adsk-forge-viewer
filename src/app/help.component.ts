@@ -3,7 +3,7 @@ import {
   DocumentChangedEvent, ViewerOptions,
   ViewingApplicationInitializedEvent,
 } from './modules/viewer/viewer.component';
-import { ACCESS_TOKEN, DOCUMENT_URN } from './viewer-container.component';
+import { ACCESS_TOKEN, DOCUMENT_URN } from './app.component';
 
 @Component({
   selector: 'app-help',
