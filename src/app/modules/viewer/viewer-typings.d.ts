@@ -453,6 +453,7 @@ declare namespace Autodesk.Viewing {
     constructor(container: HTMLElement, config: Viewer3DConfig);
 
     activateLayerState(stateName: string): void;
+    activateExtension(extensionID: string, mode: string): boolean;
     anyLayerHidden(): boolean;
     applyCamera(camera: THREE.Camera, fit?: boolean): void;
     areAllVisible(): boolean;
@@ -460,6 +461,7 @@ declare namespace Autodesk.Viewing {
     clearThemingColors(model?: any): void; // RenderModel?
     clientToWorld(clientX: number, clientY: number, ignoreTransparent?: boolean): Object | null;
     createViewCube(): void;
+    deactivateExtension(extensionID: string): boolean;
     displayViewCube(display: boolean): void;
     displayViewCubeUI(display: boolean): void;
     explode(scale: number): void;
@@ -474,6 +476,7 @@ declare namespace Autodesk.Viewing {
     getDefaultNavigationToolName(): Object;
     getDimensions(): Object;
     getExplodeScale(): number;
+    getExtensionModes(extensionID: string): string[];
     getFirstPersonToolPopup(): boolean;
     getFocalLength(): number;
     getFOV(): number;
@@ -481,6 +484,7 @@ declare namespace Autodesk.Viewing {
     getHiddenNodes(): any[];   // Array of nodes
     getIsolatedNodes(): any[]; // Array of nodes
     getLayerStates(): any[];
+    getLoadedExtensions(): any[];
     getMemoryInfo(): any;
     getNavigationLock(): boolean;
     getNavigationLockSettings(): Object;
@@ -498,6 +502,8 @@ declare namespace Autodesk.Viewing {
     hidePoints(hide: boolean): void;
     initialize(): number | ErrorCodes;
     initSettings(): void;
+    isExtensionActive(extensionID: string): boolean;
+    isExtensionLoaded(extensionID: string): boolean;
     isLayerVisible(node: Object): boolean;
     isNodeVisible(nodeId: number, model?: Model): boolean;
     isolate(node: number[]|number): void;
@@ -553,6 +559,7 @@ declare namespace Autodesk.Viewing {
     setSelectionColor(color: THREE.Color, selectionType: SelectionMode): void;
     setSelectionMode(selectionType: SelectionMode): void;
     setSwapBlackAndWhite(value: boolean): void;
+    setTheme(name: 'dark-theme'|'light-theme'|string): void;
     setThemingColor(dbId: number, color: THREE.Vector4, model?: any): void; // RenderModel
     setUseLeftHandedInput(value: boolean): void;
     setUsePivotAlways(value: boolean): void;
