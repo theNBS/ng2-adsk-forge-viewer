@@ -1,3 +1,4 @@
+///<reference path="viewer-typings.d.ts"/>
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy,
   Output, SimpleChanges } from '@angular/core';
 
@@ -72,8 +73,6 @@ export class ViewerComponent implements OnChanges, OnDestroy {
 
   /**
    * Helper to allow callers to specify documentId with or without the required urn: prefix
-   * @param {string} documentId
-   * @returns {string}
    */
   private static verifyUrn(documentId: string): string {
     return (documentId.startsWith('urn:')) ? documentId : `urn:${documentId}`;
@@ -104,8 +103,6 @@ export class ViewerComponent implements OnChanges, OnDestroy {
 
   /**
    * Helper method to get some default viewer options
-   * @param {(cb: Function) => void} getAccessToken
-   * @returns {ViewerOptions}
    */
   getDefaultViewerOptions(getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => void)
   : ViewerOptions {
@@ -119,8 +116,6 @@ export class ViewerComponent implements OnChanges, OnDestroy {
 
   /**
    * Get a reference to the current viewing application
-   * @returns {Autodesk.Viewing.ViewingApplication}
-   * @constructor
    */
   public get ViewerApplication() {
     return this.viewerApp;
@@ -128,8 +123,6 @@ export class ViewerComponent implements OnChanges, OnDestroy {
 
   /**
    * Get a reference to the current 3D viewer
-   * @returns {Autodesk.Viewing.Viewer3D}
-   * @constructor
    */
   public get Viewer3D() {
     return this.viewerApp.getCurrentViewer();
@@ -205,7 +198,6 @@ export class ViewerComponent implements OnChanges, OnDestroy {
 
   /**
    * Loads a model in to the viewer via it's urn
-   * @param {string} documentId
    */
   private loadDocument(documentId: string) {
     if (!documentId) return;
@@ -218,7 +210,6 @@ export class ViewerComponent implements OnChanges, OnDestroy {
 
   /**
    * Document successfully loaded
-   * @param {Autodesk.Viewing.Document} document
    */
   private onDocumentLoadSuccess(document: Autodesk.Viewing.Document) {
     // Emit an event so the caller can do something
@@ -240,7 +231,6 @@ export class ViewerComponent implements OnChanges, OnDestroy {
 
   /**
    * Failed to load document
-   * @param {Autodesk.Viewing.ErrorCodes} errorCode
    */
   private onDocumentLoadFailure(errorCode: Autodesk.Viewing.ErrorCodes) {
     console.error('onDocumentLoadFailure() - errorCode:' + errorCode);
@@ -249,8 +239,6 @@ export class ViewerComponent implements OnChanges, OnDestroy {
 
   /**
    * View from the document was successfully loaded
-   * @param {Autodesk.Viewing.Viewer3D} viewer
-   * @param {Autodesk.Viewing.ViewerItem} item
    */
   private onItemLoadSuccess(viewer: Autodesk.Viewing.Viewer3D, item: Autodesk.Viewing.ViewerItem) {
     console.log('onItemLoadSuccess()', viewer, item);
@@ -265,7 +253,6 @@ export class ViewerComponent implements OnChanges, OnDestroy {
 
   /**
    * Failed to load a view from the document
-   * @param {Autodesk.Viewing.ErrorCodes} errorCode
    */
   private onItemLoadFail(errorCode: Autodesk.Viewing.ErrorCodes) {
     console.error('onItemLoadFail() - errorCode:' + errorCode);
