@@ -1,1 +1,4 @@
-<adsk-forge-viewer></adsk-forge-viewer>
+<adsk-forge-viewer [viewerOptions]="viewerOptions"
+                   (onViewerScriptsLoaded)="setViewerOptions()"
+                   (onViewingApplicationInitialized)="loadDocument($event)"
+                   (onDocumentChanged)="documentChanged($event)"></adsk-forge-viewer>
