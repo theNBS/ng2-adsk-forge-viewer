@@ -44,9 +44,6 @@ yarn-error.log
 Thumbs.db
 
 # Build files
-/src/demo/*.js
-/src/demo/*.map
-/src/demo/*.d.ts
-/src/lib/*.js
-/src/lib/*.map
-/src/lib/*.d.ts
+/src/**/*.js
+/src/**/*.map
+/src/**/*.d.ts
