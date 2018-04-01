@@ -1,4 +1,6 @@
-///<reference path="viewer-typings.d.ts"/>
+/// <reference types="three" />
+/// <reference path="viewer-typings.d.ts" />
+
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy,
   Output, SimpleChanges } from '@angular/core';
 
@@ -6,7 +8,6 @@ import { ScriptService } from '../service/script.service';
 import { BasicExtension } from '../extensions/basic-extension';
 
 declare const require: any;
-const VER_STRING = '?v=4.*.*';
 
 export interface DocumentChangedEvent {
   document: Autodesk.Viewing.Document;

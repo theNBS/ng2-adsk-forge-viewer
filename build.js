@@ -40,6 +40,7 @@ return Promise.resolve()
   .then(() => Promise.resolve()
     .then(() => _relativeCopy('**/*.d.ts', es2015OutputFolder, distFolder))
     .then(() => _relativeCopy('**/*.metadata.json', es2015OutputFolder, distFolder))
+    .then(() => _relativeCopy('viewer-typings.d.ts', path.join(tempLibFolder, '/src/component'), path.join(distFolder, '/src/component')))
     .then(() => console.log('Typings and metadata copy succeeded.'))
   )
   // Bundle lib.
@@ -64,6 +65,9 @@ return Promise.resolve()
         // See https://github.com/rollup/rollup/wiki/JavaScript-API#external for more.
         '@angular/core'
       ],
+      paths: {
+       'three/index': 'three',
+      },
       plugins: [
         commonjs({
           include: ['node_modules/rxjs/**']
@@ -117,6 +121,10 @@ return Promise.resolve()
     .then(() => _relativeCopy('LICENSE', rootFolder, distFolder))
     .then(() => _relativeCopy('package.json', rootFolder, distFolder))
     .then(() => _relativeCopy('README.md', rootFolder, distFolder))
+    // We need to automate the fixing of the viewer.component.d.ts file
+    // in the distFolder/src/component. It needs the following at the start of it
+    /// <reference types="three" />
+    /// <reference path="viewer-typings.d.ts" />
     .then(() => console.log('Package files copy succeeded.'))
   )
   .catch(e => {
