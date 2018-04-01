@@ -32,6 +32,7 @@
 npm-debug.log
 testem.log
 /typings
+yarn-error.log
 
 # e2e
 /e2e/*.js
@@ -40,3 +41,9 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Build files
+/src/demo/*.js
+/src/demo/*.map
+/src/lib/*.js
+/src/lib/*.map
