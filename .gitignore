@@ -35,12 +35,9 @@ testem.log
 yarn-error.log
 
 # e2e
-/integration/e2e/*.js
-/integration/e2e/*.map
-/integration/e2e/*.d.ts
-/integration/src/*.js
-/integration/src/*.map
-/integration/src/*.d.ts
+/integration/**/*.js
+/integration/**/*.map
+/integration/**/*.d.ts
 
 # System Files
 .DS_Store
