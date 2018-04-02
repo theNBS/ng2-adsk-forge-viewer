@@ -47,3 +47,4 @@ Thumbs.db
 /src/**/*.js
 /src/**/*.map
 /src/**/*.d.ts
+!/src/lib/src/component/viewer-typings.d.ts
