@@ -123,8 +123,7 @@ return Promise.resolve()
     .then(() => _relativeCopy('README.md', rootFolder, distFolder))
     // We need to automate the fixing of the viewer.component.d.ts file
     // in the distFolder/src/component. It needs the following at the start of it
-    /// <reference types="three" />
-    /// <reference path="viewer-typings.d.ts" />
+    .then(() => _stampReferencePath(distFolder))
     .then(() => console.log('Package files copy succeeded.'))
   )
   .catch(e => {
@@ -157,4 +156,30 @@ function _recursiveMkDir(dir) {
     _recursiveMkDir(path.dirname(dir));
     fs.mkdirSync(dir);
   }
+}
+
+// We need to automate the fixing of the viewer.component.d.ts file
+// in the distFolder/src/component. It needs the following at the start of it
+function _stampReferencePath(distFolder) {
+  const fileName = path.join(distFolder, 'src/component/viewer.component.d.ts');
+
+  return new Promise((resolve) => {
+    console.log('Correcting reference paths...');
+
+    // Read file
+    let contents = fs.readFileSync(fileName).toString();
+
+    // Remove first line
+    contents = contents.substring(contents.indexOf('\n') + 1);
+    // Replace with correct reference paths
+    contents = '/// <reference types="three" />\n'
+      + '/// <reference path="viewer-typings.d.ts" />\n'
+      + contents;
+
+    // Write file
+    fs.writeFileSync(fileName, contents);
+
+    resolve();
+  });
+
 }
