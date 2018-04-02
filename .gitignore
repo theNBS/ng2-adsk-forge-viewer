@@ -49,4 +49,4 @@ Thumbs.db
 /src/**/*.d.ts
 
 !/src/lib/src/component/viewer-typings.d.ts
-!/src/lib/src/typings.d.ts
+!/src/lib/typings.d.ts
