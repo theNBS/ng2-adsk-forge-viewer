@@ -1,9 +1,9 @@
 export abstract class Extension {
-  public static extLoadedCallback: (ext: Extension) => void;
-  public static extensionName: string;
+  public static extLoadedCallback: (ext: Extension) => void = undefined;
+  public static extensionName: string = '';
 
-  protected viewer: Autodesk.Viewing.Viewer3D;
-  protected extOptions: Autodesk.Viewing.ExtensionOptions;
+  protected viewer: Autodesk.Viewing.Viewer3D = undefined;
+  protected extOptions: Autodesk.Viewing.ExtensionOptions = undefined;
 
   private eventArgsTypeMap: { [key: string]: Function } = {};
 

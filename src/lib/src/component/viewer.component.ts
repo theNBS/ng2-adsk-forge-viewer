@@ -14,7 +14,7 @@ import {
   HideEventArgs,
   IsolateEventArgs,
   ObjectTreeCreatedEventArgs,
-  ObjectTreeUnavailableEventArgs,
+  ObjectTreeUnavailableEventArgs, ResetEventArgs,
   SelectionChangedEventArgs,
   ShowEventArgs,
   ViewerEventArgs,
@@ -74,7 +74,7 @@ export class ViewerComponent implements OnChanges, OnDestroy {
   @Output() public onIsolate = new EventEmitter<IsolateEventArgs>();
   @Output() public onObjectTreeCreated = new EventEmitter<ObjectTreeCreatedEventArgs>();
   @Output() public onObjectTreeUnavailable = new EventEmitter<ObjectTreeUnavailableEventArgs>();
-  @Output() public onReset = new EventEmitter<ViewerEventArgs>();
+  @Output() public onReset = new EventEmitter<ResetEventArgs>();
   @Output() public onSelectionChanged = new EventEmitter<SelectionChangedEventArgs>();
   @Output() public onShow = new EventEmitter<ShowEventArgs>();
 
@@ -287,6 +287,28 @@ export class ViewerComponent implements OnChanges, OnDestroy {
       .takeUntil(this.unsubscribe)
       .subscribe((item: ViewerEventArgs) => {
         console.log(item);
+
+        if (item instanceof FitToViewEventArgs) {
+          this.onFitToView.emit(item);
+        } else if (item instanceof FullscreenEventArgs) {
+          this.onFullscreen.emit(item);
+        } else if (item instanceof GeometryLoadedEventArgs) {
+          this.onGeometryLoaded.emit(item);
+        } else if (item instanceof HideEventArgs) {
+          this.onHide.emit(item);
+        } else if (item instanceof IsolateEventArgs) {
+          this.onIsolate.emit(item);
+        } else if (item instanceof ObjectTreeCreatedEventArgs) {
+          this.onObjectTreeCreated.emit(item);
+        } else if (item instanceof ObjectTreeUnavailableEventArgs) {
+          this.onObjectTreeUnavailable.emit(item);
+        } else if (item instanceof ResetEventArgs) {
+          this.onReset.emit(item);
+        } else if (item instanceof SelectionChangedEventArgs) {
+          this.onSelectionChanged.emit(item);
+        } else if (item instanceof ShowEventArgs) {
+          this.onShow.emit(item);
+        }
       });
   }
 
