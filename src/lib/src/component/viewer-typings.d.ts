@@ -1,5 +1,6 @@
 /// <reference types="three" />
 
+// tslint:disable
 declare namespace Autodesk.Viewing {
   enum ErrorCodes {
     UNKNOWN_FAILURE,
@@ -176,104 +177,10 @@ declare namespace Autodesk.Viewing {
   const VIEWER_UNINITIALIZED = 'viewerUninitialized';
 
   interface ViewerEventArgs {
-    target?: Viewer3D;
-    type?: string;
+    target?: Autodesk.Viewing.Viewer3D;
+    model?: Autodesk.Viewing.ViewerItem;
+    type: string;
     [key: string]: any;
-  }
-  interface AggregationSelectionChangedEventArgs extends ViewerEventArgs {
-    selections: ViewerItem[];
-  }
-  interface CameraChangedEventArgs extends ViewerEventArgs {
-    camera: THREE.Camera;
-  }
-  interface CutplanesChangedEventArgs extends ViewerEventArgs {
-    cutplanes: Object[];
-  }
-  interface ExplodeChangedEventArgs extends ViewerEventArgs {
-    scale: number;
-  }
-  interface ExtensionLoadedUnloadedEventArgs extends ViewerEventArgs {
-    extensionId: string;
-  }
-  interface FinalFrameRenderedChangedEventArgs extends ViewerEventArgs {
-    planes: Object[];
-  }
-  interface FitToViewEventArgs extends ViewerEventArgs {
-    immediate: boolean;
-    nodeIdArray: number[];
-    model: ViewerItem;
-  }
-  interface FragmentsLoadedEventArgs extends ViewerEventArgs {
-    model: ViewerItem;
-    getFragIds: () => void;
-    data: Object;
-  }
-  interface FullscreenEventArgs extends ViewerEventArgs {
-    mode: Autodesk.Viewing.ScreenMode;
-  }
-  interface GeometryLoadedEventArgs extends ViewerEventArgs {
-    model: ViewerItem;
-  }
-  interface HideEventArgs extends ViewerEventArgs {
-    nodeIdArray: number[];
-    model: ViewerItem;
-  }
-  interface HyperlinkEventArgs extends ViewerEventArgs {
-    data: Object; // TODO: Can his be stronger?
-  }
-  interface IsolateEventArgs extends ViewerEventArgs {
-    nodeIdArray: number[];
-    model: ViewerItem;
-  }
-  interface LoadMissingGeometryEventArgs extends ViewerEventArgs {
-    delay: boolean;
-  }
-  interface ModelRootLoadedEventArgs extends ViewerEventArgs {
-    svf: Object; // TODO: can this be stronger
-    model: ViewerItem;
-  }
-  interface ModelUnloadedEventArgs extends ViewerEventArgs {
-    model: ViewerItem;
-  }
-  interface NavigationModeChangedEventArgs extends ViewerEventArgs {
-    id: string;
-  }
-  interface ObjectTreeEventArgs extends ViewerEventArgs {
-    svf: Object; // TODO: can this be stronger
-    model: ViewerItem;
-  }
-  interface PrefEventArgs extends ViewerEventArgs {
-    name: string;
-    value: Object;
-  }
-  interface ProgressUpdateEventArgs extends ViewerEventArgs {
-    percent: number;
-    state: Autodesk.Viewing.ProgressState;
-  }
-  interface SelectionChangedEventArgs extends ViewerEventArgs {
-    fragIdsArray: number[];
-    dbIdArray: number[];
-    nodeArray: number[];
-    model: ViewerItem;
-  }
-  interface ShowEventArgs extends ViewerEventArgs {
-    nodeArrayId: number[];
-    model: ViewerItem;
-  }
-  interface TexturesLoadedEventArgs extends ViewerEventArgs {
-    model: ViewerItem;
-  }
-  interface ToolChangedEventArgs extends ViewerEventArgs {
-    toolName: string;
-    tool: Object;
-    active: boolean;
-  }
-  interface ViewerResizeEventArgs extends ViewerEventArgs {
-    width: number;
-    height: number;
-  }
-  interface ViewerStateRestoredEventArgs extends ViewerEventArgs {
-    value: boolean;
   }
 
   interface BubbleNodeSearchProps {

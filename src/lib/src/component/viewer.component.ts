@@ -3,11 +3,23 @@
 
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy,
   Output, SimpleChanges } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/takeUntil';
 
 import { ScriptService } from '../service/script.service';
+import {
+  FitToViewEventArgs,
+  FullscreenEventArgs,
+  GeometryLoadedEventArgs,
+  HideEventArgs,
+  IsolateEventArgs,
+  ObjectTreeCreatedEventArgs,
+  ObjectTreeUnavailableEventArgs,
+  SelectionChangedEventArgs,
+  ShowEventArgs,
+  ViewerEventArgs,
+} from '../extensions/extension';
 import { BasicExtension } from '../extensions/basic-extension';
-
-declare const require: any;
 
 export interface DocumentChangedEvent {
   document: Autodesk.Viewing.Document;
@@ -55,21 +67,21 @@ export class ViewerComponent implements OnChanges, OnDestroy {
   @Output() public onError = new EventEmitter<Autodesk.Viewing.ErrorCodes>();
 
   // Viewer events
-  @Output() public onFitToView = new EventEmitter<Autodesk.Viewing.FitToViewEventArgs>();
-  @Output() public onFullscreen = new EventEmitter<Autodesk.Viewing.FullscreenEventArgs>();
-  @Output() public onGeometryLoaded = new EventEmitter<Autodesk.Viewing.GeometryLoadedEventArgs>();
-  @Output() public onHide = new EventEmitter<Autodesk.Viewing.HideEventArgs>();
-  @Output() public onIsolate = new EventEmitter<Autodesk.Viewing.IsolateEventArgs>();
-  @Output() public onObjectTreeCreated = new EventEmitter<Autodesk.Viewing.ObjectTreeEventArgs>();
-  @Output() public onObjectTreeUnavailable = new EventEmitter<Autodesk.Viewing.ObjectTreeEventArgs>();
-  @Output() public onReset = new EventEmitter<Autodesk.Viewing.ViewerEventArgs>();
-  @Output() public onSelectionChanged = new EventEmitter<Autodesk.Viewing.SelectionChangedEventArgs>();
-  @Output() public onShow = new EventEmitter<Autodesk.Viewing.ShowEventArgs>();
-
+  @Output() public onFitToView = new EventEmitter<FitToViewEventArgs>();
+  @Output() public onFullscreen = new EventEmitter<FullscreenEventArgs>();
+  @Output() public onGeometryLoaded = new EventEmitter<GeometryLoadedEventArgs>();
+  @Output() public onHide = new EventEmitter<HideEventArgs>();
+  @Output() public onIsolate = new EventEmitter<IsolateEventArgs>();
+  @Output() public onObjectTreeCreated = new EventEmitter<ObjectTreeCreatedEventArgs>();
+  @Output() public onObjectTreeUnavailable = new EventEmitter<ObjectTreeUnavailableEventArgs>();
+  @Output() public onReset = new EventEmitter<ViewerEventArgs>();
+  @Output() public onSelectionChanged = new EventEmitter<SelectionChangedEventArgs>();
+  @Output() public onShow = new EventEmitter<ShowEventArgs>();
 
   private viewerInitialized = false;
   private viewerApp: Autodesk.Viewing.ViewingApplication;
   private documentId: string;
+  private unsubscribe: Subject<boolean> = new Subject();
 
   /**
    * Helper to allow callers to specify documentId with or without the required urn: prefix
@@ -99,13 +111,17 @@ export class ViewerComponent implements OnChanges, OnDestroy {
 
     this.viewerApp = null;
     this.viewerInitialized = false;
+
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
   }
 
   /**
    * Helper method to get some default viewer options
    */
-  getDefaultViewerOptions(getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => void)
-  : ViewerOptions {
+  getDefaultViewerOptions(
+    getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => void,
+  ): ViewerOptions {
     return {
       initializerOptions: {
         env: 'AutodeskProduction',
@@ -200,7 +216,9 @@ export class ViewerComponent implements OnChanges, OnDestroy {
    * Loads a model in to the viewer via it's urn
    */
   private loadDocument(documentId: string) {
-    if (!documentId) return;
+    if (!documentId) {
+      return;
+    }
 
     // Add urn: to the beginning of document id if needed
     this.viewerApp.loadDocument(ViewerComponent.verifyUrn(documentId),
@@ -260,36 +278,19 @@ export class ViewerComponent implements OnChanges, OnDestroy {
   }
 
   private registerBasicExtension(): string {
-    BasicExtension.registerExtension();
-
-    // tslint:disable:max-line-length
-    BasicExtension.subscribeEvent(this, Autodesk.Viewing.FIT_TO_VIEW_EVENT, (args: Autodesk.Viewing.FitToViewEventArgs) => this.onFitToView.emit(args));
-    BasicExtension.subscribeEvent(this, Autodesk.Viewing.FULLSCREEN_MODE_EVENT, (args: Autodesk.Viewing.FullscreenEventArgs) => this.onFullscreen.emit(args));
-    BasicExtension.subscribeEvent(this, Autodesk.Viewing.GEOMETRY_LOADED_EVENT, (args: Autodesk.Viewing.GeometryLoadedEventArgs) => this.onGeometryLoaded.emit(args));
-    BasicExtension.subscribeEvent(this, Autodesk.Viewing.HIDE_EVENT, (args: Autodesk.Viewing.HideEventArgs) => this.onHide.emit(args));
-    BasicExtension.subscribeEvent(this, Autodesk.Viewing.ISOLATE_EVENT, (args: Autodesk.Viewing.IsolateEventArgs) => this.onIsolate.emit(args));
-    BasicExtension.subscribeEvent(this, Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT, (args: Autodesk.Viewing.ObjectTreeEventArgs) => this.onObjectTreeCreated.emit(args));
-    BasicExtension.subscribeEvent(this, Autodesk.Viewing.OBJECT_TREE_UNAVAILABLE_EVENT, (args: Autodesk.Viewing.ObjectTreeEventArgs) => this.onObjectTreeCreated.emit(args));
-    BasicExtension.subscribeEvent(this, Autodesk.Viewing.RESET_EVENT, (args: Autodesk.Viewing.ViewerEventArgs) => this.onReset.emit(args));
-    BasicExtension.subscribeEvent(this, Autodesk.Viewing.SELECTION_CHANGED_EVENT, (args: Autodesk.Viewing.SelectionChangedEventArgs) => this.onSelectionChanged.emit(args));
-    BasicExtension.subscribeEvent(this, Autodesk.Viewing.SHOW_EVENT, (args: Autodesk.Viewing.ShowEventArgs) => this.onShow.emit(args));
-    // tslint:enable:max-line-length
-
+    BasicExtension.registerExtension(this.extensionLoaded.bind(this));
     return BasicExtension.extensionName;
   }
 
-  private unregisterBasicExtension() {
-    BasicExtension.unsubscribeEvent(this, Autodesk.Viewing.FIT_TO_VIEW_EVENT);
-    BasicExtension.unsubscribeEvent(this, Autodesk.Viewing.FULLSCREEN_MODE_EVENT);
-    BasicExtension.unsubscribeEvent(this, Autodesk.Viewing.GEOMETRY_LOADED_EVENT);
-    BasicExtension.unsubscribeEvent(this, Autodesk.Viewing.HIDE_EVENT);
-    BasicExtension.unsubscribeEvent(this, Autodesk.Viewing.ISOLATE_EVENT);
-    BasicExtension.unsubscribeEvent(this, Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT);
-    BasicExtension.unsubscribeEvent(this, Autodesk.Viewing.OBJECT_TREE_UNAVAILABLE_EVENT);
-    BasicExtension.unsubscribeEvent(this, Autodesk.Viewing.RESET_EVENT);
-    BasicExtension.unsubscribeEvent(this, Autodesk.Viewing.SELECTION_CHANGED_EVENT);
-    BasicExtension.unsubscribeEvent(this, Autodesk.Viewing.SHOW_EVENT);
+  private extensionLoaded(ext: BasicExtension) {
+    ext.viewerEvents
+      .takeUntil(this.unsubscribe)
+      .subscribe((item: ViewerEventArgs) => {
+        console.log(item);
+      });
+  }
 
+  private unregisterBasicExtension() {
     BasicExtension.unregisterExtension();
   }
 

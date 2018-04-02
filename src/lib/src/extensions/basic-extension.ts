@@ -1,17 +1,15 @@
-interface EventSubscription {
-  caller: Object;
-  eventName: string;
-  callback: (args: any) => void;
-}
+import { Observable } from 'rxjs/Observable';
+import { fromEvent } from 'rxjs/Observable/fromEvent';
+import { merge } from 'rxjs/Observable/merge';
+import 'rxjs/add/operator/map';
 
-export class BasicExtension {
+import { Extension, ViewerEventArgs } from './extension';
+
+export class BasicExtension extends Extension {
   public static extensionName: string = 'BasicExtension';
 
-  // TODO: Refactor to use RxJS -- could be a subject and we could return an observable
-  private static supscriptions: { [key: string]: EventSubscription[] } = {};
-
-  private viewer: Autodesk.Viewing.Viewer3D;
-  private extOptions: Autodesk.Viewing.ExtensionOptions;
+  public viewerEvents: Observable<ViewerEventArgs>;
+  private eventStreams: Observable<ViewerEventArgs>[] = [];
 
   private readonly events: string[] = [
     Autodesk.Viewing.FIT_TO_VIEW_EVENT,
@@ -26,67 +24,29 @@ export class BasicExtension {
     Autodesk.Viewing.SHOW_EVENT,
   ];
 
-  static registerExtension() {
-    Autodesk.Viewing.theExtensionManager.registerExtension(this.extensionName, BasicExtension);
+  public static registerExtension(callback: (ext: Extension) => void) {
+    super.registerExtension(BasicExtension, callback);
   }
 
-  static unregisterExtension() {
-    Autodesk.Viewing.theExtensionManager.unregisterExtension(this.extensionName);
+  public static unregisterExtension() {
+    super.unregisterExtension();
   }
 
-  static onViewerEvent(args: Autodesk.Viewing.ViewerEventArgs) {
-    // console.log('Event fired', args);
-    BasicExtension.publishEvent(args.type, args);
-  }
-
-  static subscribeEvent(caller: Object, eventName: string, callback: (args: Autodesk.Viewing.ViewerEventArgs) => void) {
-    const info: EventSubscription = { caller, eventName, callback };
-
-    if (!this.supscriptions[info.eventName]) {
-      this.supscriptions[info.eventName] = [];
-    }
-
-    const alreadySubscribed = this.supscriptions[info.eventName].find(item => item.caller === info.caller);
-    if (!alreadySubscribed) {
-      this.supscriptions[info.eventName].push(info);
-    }
-  }
-
-  static unsubscribeEvent(caller: Object, eventName: string) {
-    if (!this.supscriptions[eventName]) return;
-
-    const subscriber = this.supscriptions[eventName].find(item => item.caller === caller);
-    if (subscriber) {
-      const index = this.supscriptions[eventName].indexOf(subscriber);
-      this.supscriptions[eventName].splice(index, 1);
-    }
-  }
-
-  private static publishEvent(eventName: string, args: Autodesk.Viewing.ViewerEventArgs) {
-    const subscribers: EventSubscription[] = BasicExtension.supscriptions[eventName];
-
-    if (!subscribers || subscribers.length === 0) return;
-    subscribers.forEach(item => item.callback(args));
-  }
-
-  constructor(viewer: Autodesk.Viewing.Viewer3D, options: Autodesk.Viewing.ExtensionOptions) {
-    this.viewer = viewer;
-    this.extOptions = options;
-  }
-
-  load() {
+  public load() {
     this.events.forEach((eventName) => {
-      this.viewer.addEventListener(eventName, BasicExtension.onViewerEvent.bind(this));
+      const obs = fromEvent(this.viewer, eventName).map(args => this.castArgs(args));
+      this.eventStreams.push(obs);
     });
 
+    this.viewerEvents = merge(...this.eventStreams);
+
     console.log(BasicExtension.extensionName, 'loaded!');
+    Extension.extLoadedCallback(this);
     return true;
   }
 
-  unload() {
-    this.events.forEach((eventName) => {
-      this.viewer.removeEventListener(eventName, BasicExtension.onViewerEvent.bind(this));
-    });
+  public unload() {
+    this.eventStreams = [];
 
     console.log(BasicExtension.extensionName, 'unloaded!');
     return true;
