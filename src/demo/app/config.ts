@@ -1,0 +1,2 @@
+export const ACCESS_TOKEN = '<TOKEN_GOES_HERE>';
+export const DOCUMENT_URN = '<DOCUMENT_URN_GOES_HERE>';
