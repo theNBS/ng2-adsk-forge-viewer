@@ -1,5 +1,19 @@
-<adsk-forge-viewer [viewerOptions]="viewerOptions"
-                   (onViewerScriptsLoaded)="setViewerOptions()"
-                   (onViewingApplicationInitialized)="loadDocument($event)"
-                   (onDocumentChanged)="documentChanged($event)"
-                   (onSelectionChanged)="selectionChanged($event)"></adsk-forge-viewer>
+<div>
+    <button (click)="threeD = true">3D</button>
+    <button (click)="threeD = false">2D</button>
+</div>
+
+<div *ngIf="threeD">
+    <adsk-forge-viewer [viewerOptions]="viewerOptions3d"
+                    (onViewerScriptsLoaded)="setViewerOptions()"
+                    (onViewingApplicationInitialized)="loadDocument($event)"
+                    (onSelectionChanged)="selectionChanged($event)"></adsk-forge-viewer>
+</div>
+
+<div *ngIf="!threeD">
+    <adsk-forge-viewer [viewerOptions]="viewerOptions2d"
+                    (onViewerScriptsLoaded)="setViewerOptions()"
+                    (onViewingApplicationInitialized)="loadDocument($event)"
+                    (onDocumentChanged)="documentChanged($event)"
+                    (onSelectionChanged)="selectionChanged($event)"></adsk-forge-viewer>
+</div>

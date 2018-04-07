@@ -184,8 +184,8 @@ declare namespace Autodesk.Viewing {
   }
 
   interface BubbleNodeSearchProps {
-    role?: string;
-    type?: string;
+    role?: '3d'|'2d'|string;
+    type?: 'view'|'geometry'|string;
     mime?: string;
   }
 

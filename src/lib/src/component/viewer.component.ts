@@ -230,6 +230,8 @@ export class ViewerComponent implements OnChanges, OnDestroy {
    * Document successfully loaded
    */
   private onDocumentLoadSuccess(document: Autodesk.Viewing.Document) {
+    if (!this.viewerApp.bubble) return;
+    
     // Emit an event so the caller can do something
     // TODO: config option to specify which viewable to display (how?)
     this.onDocumentChanged.emit({ document, viewingApplication: this.viewerApp, viewerComponent: this });
