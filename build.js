@@ -59,6 +59,9 @@ return Promise.resolve()
         // the window object.
         // See https://github.com/rollup/rollup/wiki/JavaScript-API#globals for more.
         '@angular/core': 'ng.core',
+        '@angular/common': 'ng.common',
+        '@angular/common/http': 'ng.common-http',
+        '@angular/platform-browser': 'ng.platform-browser',
         'rxjs/Observable': 'Rx',
         'rxjs/observable/fromEvent': 'Rx.Observable',
         'rxjs/observable/merge': 'Rx.Observable',
@@ -67,6 +70,9 @@ return Promise.resolve()
         // List of dependencies
         // See https://github.com/rollup/rollup/wiki/JavaScript-API#external for more.
         '@angular/core',
+        '@angular/common',
+        '@angular/common/http',
+        '@angular/platform-browser'
         'rxjs/Observable',
         // our app is within the app folder'rxjs/observable/fromEvent',
         'rxjs/observable/merge',

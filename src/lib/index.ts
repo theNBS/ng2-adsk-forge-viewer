@@ -4,3 +4,4 @@ export { ScriptService } from './src/service/script.service';
 export { ViewerModule } from './src/module';
 
 export * from './src/component/viewer.component';
+export * from './src/component/thumbnail.component';

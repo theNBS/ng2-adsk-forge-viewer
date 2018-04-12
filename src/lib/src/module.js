@@ -7,15 +7,18 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var core_1 = require("@angular/core");
+var http_1 = require("@angular/common/http");
 var viewer_component_1 = require("./component/viewer.component");
+var thumbnail_component_1 = require("./component/thumbnail.component");
 var script_service_1 = require("./service/script.service");
 var ViewerModule = (function () {
     function ViewerModule() {
     }
     ViewerModule = __decorate([
         core_1.NgModule({
-            declarations: [viewer_component_1.ViewerComponent],
-            exports: [viewer_component_1.ViewerComponent],
+            declarations: [viewer_component_1.ViewerComponent, thumbnail_component_1.ThumbnailComponent],
+            imports: [http_1.HttpClientModule],
+            exports: [viewer_component_1.ViewerComponent, thumbnail_component_1.ThumbnailComponent],
             providers: [script_service_1.ScriptService],
         })
     ], ViewerModule);

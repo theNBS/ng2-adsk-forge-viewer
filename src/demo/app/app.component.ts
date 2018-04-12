@@ -1,25 +1,40 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   ViewerOptions,
   ViewingApplicationInitializedEvent,
   DocumentChangedEvent,
   SelectionChangedEventArgs,
+  ThumbnailOptions,
 } from 'ng2-adsk-forge-viewer';
 
-import { ACCESS_TOKEN, DOCUMENT_URN } from './config';
+import { ACCESS_TOKEN, DOCUMENT_URN, THUMBNAIL_URN } from './config';
 
 @Component({
   selector: 'demo-app',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   public viewerOptions3d: ViewerOptions;
   public viewerOptions2d: ViewerOptions;
+  public thumbnailOptions: ThumbnailOptions;
   public documentId: string;
-  public threeD: boolean = true;
+  public view: number = 1;
 
-  setViewerOptions() {
+  public ngOnInit() {
+    this.thumbnailOptions = {
+      getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => {
+        const expireTimeSeconds = 60 * 30;
+        onGetAccessToken(ACCESS_TOKEN, expireTimeSeconds);
+      },
+      documentId: DOCUMENT_URN,
+      width: 400,
+      height: 400,
+      // defaultImageSrc: '',
+    };
+  }
+
+  public setViewerOptions() {
     this.viewerOptions3d = {
       initializerOptions: {
         env: 'AutodeskProduction',
@@ -35,11 +50,11 @@ export class AppComponent {
     this.viewerOptions2d = Object.assign({}, this.viewerOptions3d, { showFirstViewable: false });
   }
 
-  loadDocument(event: ViewingApplicationInitializedEvent) {
+  public loadDocument(event: ViewingApplicationInitializedEvent) {
     event.viewerComponent.DocumentId = DOCUMENT_URN;
   }
 
-  documentChanged(event: DocumentChangedEvent) {
+  public documentChanged(event: DocumentChangedEvent) {
     const viewerApp = event.viewingApplication;
     if (!viewerApp.bubble) return;
     const viewables = viewerApp.bubble.search({ type: 'geometry', role: '2d' });
@@ -49,7 +64,7 @@ export class AppComponent {
     }
   }
 
-  selectionChanged(event: SelectionChangedEventArgs) {
+  public selectionChanged(event: SelectionChangedEventArgs) {
     console.log(event);
   }
 }
