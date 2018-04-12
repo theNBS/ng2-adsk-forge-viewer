@@ -12,6 +12,8 @@ Required libraries - Angular 5 etc
 
 Getting the component working in your app
 
+Flow of initialising - ISD? to show what has to be setup before the viewer is ready
+
 ## FAQ
 
 Some common use cases - loading 3D, 2D, settings options etc

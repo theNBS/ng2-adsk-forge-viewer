@@ -9,9 +9,9 @@ export class BasicExtension extends Extension {
   public static extensionName: string = 'BasicExtension';
 
   public viewerEvents: Observable<ViewerEventArgs>;
-  private eventStreams: Observable<ViewerEventArgs>[] = [];
+  protected eventStreams: Observable<ViewerEventArgs>[] = [];
 
-  private readonly events: string[] = [
+  protected readonly events: string[] = [
     Autodesk.Viewing.FIT_TO_VIEW_EVENT,
     Autodesk.Viewing.FULLSCREEN_MODE_EVENT,
     Autodesk.Viewing.GEOMETRY_LOADED_EVENT,

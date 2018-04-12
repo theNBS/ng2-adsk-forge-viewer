@@ -1,102 +1,3 @@
-export abstract class Extension {
-  public static extLoadedCallback: (ext: Extension) => void = undefined;
-  public static extensionName: string = '';
-
-  protected viewer: Autodesk.Viewing.Viewer3D = undefined;
-  protected extOptions: Autodesk.Viewing.ExtensionOptions = undefined;
-
-  private eventArgsTypeMap: { [key: string]: Function } = {};
-
-  protected static registerExtension(extension: Object, callback: (ext: Extension) => void) {
-    Extension.extLoadedCallback = callback;
-    Autodesk.Viewing.theExtensionManager.registerExtension(this.extensionName, extension);
-  }
-
-  protected static unregisterExtension() {
-    Autodesk.Viewing.theExtensionManager.unregisterExtension(this.extensionName);
-  }
-
-  constructor(viewer: Autodesk.Viewing.Viewer3D,
-              options?: Autodesk.Viewing.ExtensionOptions) {
-    this.viewer = viewer;
-    this.extOptions = options;
-
-    this.registerEventTypes();
-  }
-
-  /** Called by Autodesk extension manager when extension is loaded */
-  public abstract load(): void;
-  /** Called by Autodesk extension manager when extension is unloaded */
-  public abstract unload(): void;
-
-  /** Register event args types that we will cast to 'proper' objects */
-  protected registerEventTypes() {
-    // tslint:disable:max-line-length
-    this.eventArgsTypeMap[Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT] = AggregationSelectionChangedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.ANIMATION_READY_EVENT] = AnimationReadyEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.CAMERA_CHANGE_EVENT] = CameraChangedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.CUTPLANES_CHANGE_EVENT] = CutplanesChangedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.ESCAPE_EVENT] = EscapeEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.EXPLODE_CHANGE_EVENT] = ExplodeChangedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.EXTENSION_LOADED_EVENT] = ExtensionLoadedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.EXTENSION_UNLOADED_EVENT] = ExtensionUnloadedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT] = FinalFrameRenderedChangedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.FIT_TO_VIEW_EVENT] = FitToViewEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.FRAGMENTS_LOADED_EVENT] = FragmentsLoadedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.FULLSCREEN_MODE_EVENT] = FullscreenEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.GEOMETRY_LOADED_EVENT] = GeometryLoadedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.HIDE_EVENT] = HideEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.HYPERLINK_EVENT] = HyperlinkEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.ISOLATE_EVENT] = IsolateEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.LAYER_VISIBILITY_CHANGED_EVENT] = LayerVisibilityEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.LOAD_MISSING_GEOMETRY] = LoadMissingGeometryEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.MODEL_ROOT_LOADED_EVENT] = ModelRootLoadedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.MODEL_UNLOADED_EVENT] = ModelUnloadedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.NAVIGATION_MODE_CHANGED_EVENT] = NavigationModeChangedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT] = ObjectTreeCreatedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.OBJECT_TREE_UNAVAILABLE_EVENT] = ObjectTreeUnavailableEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.PREF_CHANGED_EVENT] = PrefChangedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.PREF_RESET_EVENT] = PrefResetEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.PROGRESS_UPDATE_EVENT] = ProgressUpdateEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.RENDER_OPTION_CHANGED_EVENT] = RenderOptionChangedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.RENDER_PRESENTED_EVENT] = RenderPresentedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.RESET_EVENT] = ResetEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.RESTORE_DEFAULT_SETTINGS_EVENT] = RestoreDefaultSettingsEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.SELECTION_CHANGED_EVENT] = SelectionChangedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.SHOW_EVENT] = ShowEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.TEXTURES_LOADED_EVENT] = TexturesLoadedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.TOOL_CHANGE_EVENT] = ToolChangedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.VIEWER_INITIALIZED] = ViewerInitializedEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.VIEWER_RESIZE_EVENT] = ViewerResizeEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.VIEWER_STATE_RESTORED_EVENT] = ViewerStateRestoredEventArgs;
-    this.eventArgsTypeMap[Autodesk.Viewing.VIEWER_UNINITIALIZED] = ViewerUnInitializedEventArgs;
-    // tslint:enable:max-line-length
-  }
-
-  /** Cast Viewer event args to class */
-  protected castArgs(args: any): any {
-    if (Array.isArray(args)) {
-      return args.map(this.castArgs);
-    }
-
-    if (!args || typeof args !== 'object' || !args.hasOwnProperty('type')) {
-      // Can't cast this object
-      return args;
-    }
-
-    // Create new object of appropriate type
-    const clazz = this.eventArgsTypeMap[args.type];
-    const typedItem = Object.create(clazz.prototype);
-
-    // Cast any properties
-    for (const k of Object.keys(args)) {
-      typedItem[k] = this.castArgs(args[k]);
-    }
-
-    return typedItem;
-  }
-}
-
 export abstract class ViewerEventArgs {
   target?: Autodesk.Viewing.Viewer3D;
   model?: Autodesk.Viewing.ViewerItem;
@@ -254,4 +155,106 @@ export class ViewerStateRestoredEventArgs extends ViewerEventArgs {
 }
 export class ViewerUnInitializedEventArgs extends ViewerEventArgs {
   type = Autodesk.Viewing.VIEWER_UNINITIALIZED;
+}
+
+/**
+ * Base extension that all other extensions can inherit from
+ */
+export abstract class Extension {
+  public static extLoadedCallback: (ext: Extension) => void = undefined;
+  public static extensionName: string = '';
+
+  protected viewer: Autodesk.Viewing.Viewer3D = undefined;
+  protected extOptions: Autodesk.Viewing.ExtensionOptions = undefined;
+
+  protected eventArgsTypeMap: { [key: string]: Function } = {};
+
+  protected static registerExtension(extension: Object, callback: (ext: Extension) => void) {
+    Extension.extLoadedCallback = callback;
+    Autodesk.Viewing.theExtensionManager.registerExtension(this.extensionName, extension);
+  }
+
+  protected static unregisterExtension() {
+    Autodesk.Viewing.theExtensionManager.unregisterExtension(this.extensionName);
+  }
+
+  constructor(viewer: Autodesk.Viewing.Viewer3D,
+              options?: Autodesk.Viewing.ExtensionOptions) {
+    this.viewer = viewer;
+    this.extOptions = options;
+
+    this.registerEventTypes();
+  }
+
+  /** Called by Autodesk extension manager when extension is loaded */
+  public abstract load(): void;
+  /** Called by Autodesk extension manager when extension is unloaded */
+  public abstract unload(): void;
+
+  /** Register event args types that we will cast to 'proper' objects */
+  protected registerEventTypes() {
+    // tslint:disable:max-line-length
+    this.eventArgsTypeMap[Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT] = AggregationSelectionChangedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.ANIMATION_READY_EVENT] = AnimationReadyEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.CAMERA_CHANGE_EVENT] = CameraChangedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.CUTPLANES_CHANGE_EVENT] = CutplanesChangedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.ESCAPE_EVENT] = EscapeEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.EXPLODE_CHANGE_EVENT] = ExplodeChangedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.EXTENSION_LOADED_EVENT] = ExtensionLoadedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.EXTENSION_UNLOADED_EVENT] = ExtensionUnloadedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT] = FinalFrameRenderedChangedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.FIT_TO_VIEW_EVENT] = FitToViewEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.FRAGMENTS_LOADED_EVENT] = FragmentsLoadedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.FULLSCREEN_MODE_EVENT] = FullscreenEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.GEOMETRY_LOADED_EVENT] = GeometryLoadedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.HIDE_EVENT] = HideEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.HYPERLINK_EVENT] = HyperlinkEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.ISOLATE_EVENT] = IsolateEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.LAYER_VISIBILITY_CHANGED_EVENT] = LayerVisibilityEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.LOAD_MISSING_GEOMETRY] = LoadMissingGeometryEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.MODEL_ROOT_LOADED_EVENT] = ModelRootLoadedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.MODEL_UNLOADED_EVENT] = ModelUnloadedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.NAVIGATION_MODE_CHANGED_EVENT] = NavigationModeChangedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT] = ObjectTreeCreatedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.OBJECT_TREE_UNAVAILABLE_EVENT] = ObjectTreeUnavailableEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.PREF_CHANGED_EVENT] = PrefChangedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.PREF_RESET_EVENT] = PrefResetEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.PROGRESS_UPDATE_EVENT] = ProgressUpdateEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.RENDER_OPTION_CHANGED_EVENT] = RenderOptionChangedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.RENDER_PRESENTED_EVENT] = RenderPresentedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.RESET_EVENT] = ResetEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.RESTORE_DEFAULT_SETTINGS_EVENT] = RestoreDefaultSettingsEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.SELECTION_CHANGED_EVENT] = SelectionChangedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.SHOW_EVENT] = ShowEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.TEXTURES_LOADED_EVENT] = TexturesLoadedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.TOOL_CHANGE_EVENT] = ToolChangedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.VIEWER_INITIALIZED] = ViewerInitializedEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.VIEWER_RESIZE_EVENT] = ViewerResizeEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.VIEWER_STATE_RESTORED_EVENT] = ViewerStateRestoredEventArgs;
+    this.eventArgsTypeMap[Autodesk.Viewing.VIEWER_UNINITIALIZED] = ViewerUnInitializedEventArgs;
+    // tslint:enable:max-line-length
+  }
+
+  /** Cast Viewer event args to class */
+  protected castArgs(args: any): any {
+    if (Array.isArray(args)) {
+      return args.map(this.castArgs);
+    }
+
+    if (!args || typeof args !== 'object' || !args.hasOwnProperty('type')) {
+      // Can't cast this object
+      return args;
+    }
+
+    // Create new object of appropriate type
+    const clazz = this.eventArgsTypeMap[args.type];
+    const typedItem = Object.create(clazz.prototype);
+
+    // Cast any properties
+    for (const k of Object.keys(args)) {
+      typedItem[k] = this.castArgs(args[k]);
+    }
+
+    return typedItem;
+  }
 }

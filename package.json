@@ -33,7 +33,7 @@
     "integration": "npm run integration:aot && npm run integration:jit",
     "integration:jit": "cd integration && npm run e2e",
     "integration:aot": "cd integration && npm run e2e:aot",
-    "lint": "tslint ./src/**/*.ts -t verbose",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
     "release": "standard-version"
   },
   "dependencies": {

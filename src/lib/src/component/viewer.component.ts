@@ -1,8 +1,8 @@
 /// <reference types="three" />
 /// <reference path="viewer-typings.d.ts" />
 
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy,
-  Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy,
+  Output } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import 'rxjs/add/operator/takeUntil';
 
@@ -55,10 +55,8 @@ export interface ViewerOptions {
   styleUrls: ['./viewer.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ViewerComponent implements OnChanges, OnDestroy {
+export class ViewerComponent implements OnDestroy {
   readonly containerId = 'ng2-adsk-forge-viewer-container';
-
-  @Input() public viewerOptions: ViewerOptions;
 
   @Output() public onViewerScriptsLoaded = new EventEmitter<boolean>();
   @Output() public onViewingApplicationInitialized = new EventEmitter<ViewingApplicationInitializedEvent>();
@@ -78,6 +76,7 @@ export class ViewerComponent implements OnChanges, OnDestroy {
   @Output() public onSelectionChanged = new EventEmitter<SelectionChangedEventArgs>();
   @Output() public onShow = new EventEmitter<ShowEventArgs>();
 
+  private _viewerOptions: ViewerOptions = null;
   private viewerInitialized = false;
   private viewerApp: Autodesk.Viewing.ViewingApplication;
   private documentId: string;
@@ -94,10 +93,15 @@ export class ViewerComponent implements OnChanges, OnDestroy {
     this.loadScripts();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (!this.viewerInitialized && changes.viewerOptions && changes.viewerOptions.currentValue) {
+  @Input() public set viewerOptions(options: ViewerOptions) {
+    if (!this.viewerInitialized && options) {
+      this._viewerOptions = options;
       this.initialiseApplication();
     }
+  }
+
+  public get viewerOptions() {
+    return this._viewerOptions;
   }
 
   ngOnDestroy() {
@@ -231,7 +235,7 @@ export class ViewerComponent implements OnChanges, OnDestroy {
    */
   private onDocumentLoadSuccess(document: Autodesk.Viewing.Document) {
     if (!this.viewerApp.bubble) return;
-    
+
     // Emit an event so the caller can do something
     // TODO: config option to specify which viewable to display (how?)
     this.onDocumentChanged.emit({ document, viewingApplication: this.viewerApp, viewerComponent: this });
