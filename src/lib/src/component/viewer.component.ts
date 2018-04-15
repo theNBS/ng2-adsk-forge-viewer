@@ -4,6 +4,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy,
   Output } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/takeUntil';
 
 import { ScriptService } from '../service/script.service';
@@ -45,7 +46,7 @@ export interface ViewerOptions {
   viewerConfig?: Autodesk.Viewing.ViewerConfig;
   headlessViewer?: boolean;
   showFirstViewable?: boolean;
-  versionString?: string;
+  debugMessages?: boolean;
 }
 
 
@@ -81,6 +82,7 @@ export class ViewerComponent implements OnDestroy {
   private viewerApp: Autodesk.Viewing.ViewingApplication;
   private documentId: string;
   private unsubscribe: Subject<boolean> = new Subject();
+  private basicExt: BasicExtension;
 
   /**
    * Helper to allow callers to specify documentId with or without the required urn: prefix
@@ -148,13 +150,25 @@ export class ViewerComponent implements OnDestroy {
     return this.viewerApp.getCurrentViewer();
   }
 
+  /**
+   * Get the document urn that has been loaded
+   */
   public get DocumentId() {
     return this.documentId;
   }
 
+  /**
+   * Set the document urn, which triggers the viewer to load the document
+   */
   public set DocumentId(value: string) {
     this.documentId = value;
     this.loadDocument(this.documentId);
+  }
+
+  public get extensionEvents(): Observable<ViewerEventArgs> | null {
+    if (this.basicExt) {
+      return this.basicExt.viewerEvents;
+    }
   }
 
   public selectItem(item: Autodesk.Viewing.ViewerItem|Autodesk.Viewing.BubbleNode) {
@@ -171,10 +185,10 @@ export class ViewerComponent implements OnDestroy {
       'https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=4.*.*',
     )
       .then((data) => {
-        console.log('script loaded ', data);
+        this.log('script loaded ', data);
         this.onViewerScriptsLoaded.emit(true);
       })
-      .catch(error => console.log(error));
+      .catch(error => this.error(error));
   }
 
   /**
@@ -257,7 +271,7 @@ export class ViewerComponent implements OnDestroy {
    * Failed to load document
    */
   private onDocumentLoadFailure(errorCode: Autodesk.Viewing.ErrorCodes) {
-    console.error('onDocumentLoadFailure() - errorCode:' + errorCode);
+    this.error('onDocumentLoadFailure() - errorCode:' + errorCode);
     this.onError.emit(errorCode);
   }
 
@@ -265,8 +279,8 @@ export class ViewerComponent implements OnDestroy {
    * View from the document was successfully loaded
    */
   private onItemLoadSuccess(viewer: Autodesk.Viewing.Viewer3D, item: Autodesk.Viewing.ViewerItem) {
-    console.log('onItemLoadSuccess()', viewer, item);
-    console.log('Viewers are equal: ' + (viewer === this.viewerApp.getCurrentViewer()));
+    this.log('onItemLoadSuccess()', viewer, item);
+    this.log('Viewers are equal: ' + (viewer === this.viewerApp.getCurrentViewer()));
 
     this.onItemLoaded.emit({
       item, currentViewer: viewer,
@@ -279,20 +293,28 @@ export class ViewerComponent implements OnDestroy {
    * Failed to load a view from the document
    */
   private onItemLoadFail(errorCode: Autodesk.Viewing.ErrorCodes) {
-    console.error('onItemLoadFail() - errorCode:' + errorCode);
+    this.error('onItemLoadFail() - errorCode:' + errorCode);
     this.onError.emit(errorCode);
   }
 
+  /**
+   * Register our BasicExtension with the Forge Viewer
+   */
   private registerBasicExtension(): string {
     BasicExtension.registerExtension(this.extensionLoaded.bind(this));
     return BasicExtension.extensionName;
   }
 
+  /**
+   * Subscript to BasicExtension events when the extension has been
+   * succesfully loaded by the viewer.
+   */
   private extensionLoaded(ext: BasicExtension) {
+    this.basicExt = ext;
     ext.viewerEvents
       .takeUntil(this.unsubscribe)
       .subscribe((item: ViewerEventArgs) => {
-        console.log(item);
+        this.log(item);
 
         if (item instanceof FitToViewEventArgs) {
           this.onFitToView.emit(item);
@@ -320,8 +342,13 @@ export class ViewerComponent implements OnDestroy {
 
   private unregisterBasicExtension() {
     BasicExtension.unregisterExtension();
+    this.basicExt = null;
   }
 
+  /**
+   * Add list of extensions to the viewer config that has been provided
+   * The allows the user to register their own extensions.
+   */
   private addBasicExtensionConfig(extName: string): Autodesk.Viewing.ViewerConfig {
     const config: Autodesk.Viewing.ViewerConfig = Object.assign(
       {},
@@ -337,5 +364,15 @@ export class ViewerComponent implements OnDestroy {
     }
 
     return config;
+  }
+
+  private log(message?: any, ...optionalParams: any[]) {
+    if (!this.viewerOptions.debugMessages) return;
+    console.log(message, optionalParams);
+  }
+
+  private error(message?: any, ...optionalParams: any[]) {
+    if (!this.viewerOptions.debugMessages) return;
+    console.error(message, optionalParams);
   }
 }
