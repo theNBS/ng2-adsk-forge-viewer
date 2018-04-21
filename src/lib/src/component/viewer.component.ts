@@ -46,7 +46,6 @@ export interface ViewerOptions {
   viewerConfig?: Autodesk.Viewing.ViewerConfig;
   headlessViewer?: boolean;
   showFirstViewable?: boolean;
-  debugMessages?: boolean;
 }
 
 
@@ -76,6 +75,9 @@ export class ViewerComponent implements OnDestroy {
   @Output() public onReset = new EventEmitter<ResetEventArgs>();
   @Output() public onSelectionChanged = new EventEmitter<SelectionChangedEventArgs>();
   @Output() public onShow = new EventEmitter<ShowEventArgs>();
+
+  // Debugging
+  @Input() public showDebugMessages: boolean = false;
 
   private _viewerOptions: ViewerOptions = null;
   private viewerInitialized = false;
@@ -367,12 +369,12 @@ export class ViewerComponent implements OnDestroy {
   }
 
   private log(message?: any, ...optionalParams: any[]) {
-    if (!this.viewerOptions.debugMessages) return;
+    if (!this.showDebugMessages) return;
     console.log(message, optionalParams);
   }
 
   private error(message?: any, ...optionalParams: any[]) {
-    if (!this.viewerOptions.debugMessages) return;
+    if (!this.showDebugMessages) return;
     console.error(message, optionalParams);
   }
 }

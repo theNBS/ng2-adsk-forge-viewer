@@ -30,8 +30,9 @@ Add `<adsk-forge-viewer></adsk-forge-viewer>` element to your component html
 component.html:
 ```html
 <adsk-forge-viewer [viewerOptions]="viewerOptions3d"
-                    (onViewerScriptsLoaded)="setViewerOptions()"
-                    (onViewingApplicationInitialized)="loadDocument($event)"
+                   (onViewerScriptsLoaded)="setViewerOptions()"
+                   (onViewingApplicationInitialized)="loadDocument($event)">
+</adsk-forge-viewer>
 ```
 
 ### Step 3
@@ -39,7 +40,7 @@ There is a specific flow of logic to initialize the viewer:
 
 1. The viewer is constructed and loads scripts/resources from Autodesk's servers
 2. The onViewerScriptsLoaded event emits to indicate all viewer resources have been loaded
-3. viewerOptions can now be set, which triggers the creation of the ViewingApplication (i.e. the Autodesk.Viewing.Initializer is called)
+3. viewerOptions input can now be set, which triggers the creation of the ViewingApplication (i.e. Autodesk.Viewing.Initializer is called)
     - A helper method `getDefaultViewerOptions` can be used to get the most basic viewer options
 4. The `onViewingApplicationInitialized` event is emitted and you can now load a document. The event arguments contain a reference to the viewer which can be used to set the documentId to load. E.g.:
   ```typescript
@@ -49,7 +50,7 @@ There is a specific flow of logic to initialize the viewer:
   ```
 
 ### Step 4
-The document has now been loaded - when complete the `onDocumentChanged` event is emitted. This event can be used to define the view to display (by default, the viewer will load the first 3D viewable it can find).
+When the document has been loaded the `onDocumentChanged` event is emitted. This event can be used to define the view to display (by default, the viewer will load the first 3D viewable it can find).
 
 An example of displaying a 2D viewable:
 
@@ -66,21 +67,72 @@ component.ts:
 public documentChanged(event: DocumentChangedEvent) {
     const viewerApp = event.viewingApplication;
     if (!viewerApp.bubble) return;
-    const viewables = viewerApp.bubble.search({ type: 'geometry', role: '2d' });
 
+    // Use viewerApp.bubble to get a list of 2D obecjts
+    const viewables = viewerApp.bubble.search({ type: 'geometry', role: '2d' });
     if (viewables && viewables.length > 0) {
       event.viewerComponent.selectItem(viewables[0].data);
     }
   }
 ```
 
-Getting the component working in your app
-
-Flow of initialising - ISD? to show what has to be setup before the viewer is ready
-
 ## FAQ
 
-Some common use cases - loading 3D, 2D, settings options etc
+### 1. What ViewerOptions can be used to initialise the Viewer Component?
+
+The ViewerOptions interface is as follows:
+
+```typescript
+interface ViewerOptions {
+  initializerOptions: Autodesk.Viewing.InitializerOptions;
+  viewerApplicationOptions?: Autodesk.Viewing.ViewingApplicationOptions;
+  viewerConfig?: Autodesk.Viewing.ViewerConfig;
+  headlessViewer?: boolean;
+  showFirstViewable?: boolean;
+  debugMessages?: boolean;
+}
+```
+
+`initializerOptions` allows you to provide arguments for the [Autodesk.Viewing.Initializer](https://developer.autodesk.com/en/docs/viewer/v2/reference/javascript/initializer/). One of the most important settings is how the Forge viewer is to obtain it's access token.
+
+You can provide an access key as a string, but I'd recommend using the function - the viewer will call the function you provide to obtain a new token when required - e.g. when the viewer first initialises or when the current token held by the viewer is shortly expiring.
+
+Your viewer options code would look something like this:
+
+```typescript
+this.viewerOptions3d = {
+  initializerOptions: {
+    env: 'AutodeskProduction',
+    getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => {
+      // Call back-end API endpoint to get a new token
+      // Pass new token and expire time to Viewer's callback method
+      onGetAccessToken(ACCESS_TOKEN, EXPIRE_TIME);
+    },
+  },
+};
+```
+
+The viewer component creates a Forge Viewer Application. The `viewerApplicationOptions` setting allows you to provide additional options to the viewering application. (https://developer.autodesk.com/en/docs/viewer/v2/reference/javascript/viewingapplication/).
+
+`viewerConfig` allows you to provide additional options to Viewer3D's registered with the viewing application. Such as whether to ues the light or dark theme, any extensions to register with the viewer etc.
+
+### 2. How do I configure a 'headless' viewer?
+
+By default, the viewer component will intialise a 'full' `ViewingApplication` with toolbar, navigation controls etc. If you want a 'headless viewer' without these additional bits of UI, set the `headlessViewer` of the ViewOptions to true:
+
+```typescript
+this.viewerOptions3d = {
+  initializerOptions: {
+    env: 'AutodeskProduction',
+    getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => {
+      // Call back-end API endpoint to get a new token
+      // Pass new token and expire time to Viewer's callback method
+      onGetAccessToken(ACCESS_TOKEN, EXPIRE_TIME);
+    },
+  },
+  headlessViewer: true,
+};
+```
 
 ## Extensions
 
