@@ -79,6 +79,10 @@ export class ViewerComponent implements OnDestroy {
   // Debugging
   @Input() public showDebugMessages: boolean = false;
 
+  public get basicExtension() {
+    return this.basicExt;
+  }
+
   private _viewerOptions: ViewerOptions = null;
   private viewerInitialized = false;
   private viewerApp: Autodesk.Viewing.ViewingApplication;

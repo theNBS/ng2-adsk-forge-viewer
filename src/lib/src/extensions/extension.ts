@@ -161,7 +161,6 @@ export class ViewerUnInitializedEventArgs extends ViewerEventArgs {
  * Base extension that all other extensions can inherit from
  */
 export abstract class Extension {
-  public static extLoadedCallback: (ext: Extension) => void = undefined;
   public static extensionName: string = '';
 
   protected viewer: Autodesk.Viewing.Viewer3D = undefined;
@@ -169,8 +168,7 @@ export abstract class Extension {
 
   protected eventArgsTypeMap: { [key: string]: Function } = {};
 
-  protected static registerExtension(extension: Object, callback: (ext: Extension) => void) {
-    Extension.extLoadedCallback = callback;
+  protected static registerExtension(extension: Object) {
     Autodesk.Viewing.theExtensionManager.registerExtension(this.extensionName, extension);
   }
 

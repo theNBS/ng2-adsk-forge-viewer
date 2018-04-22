@@ -8,8 +8,8 @@ The wrapper was designed to meet the following requirements:
   - Ensure the viewer can be displayed and removed from the DOM via *ngIf 
 - A basic viewer extension to subscribe to common viewer events - such as Seletion changed, object tree loaded etc. and expose these events on the component
 - Provide TypeScript typings for most of the Forge Viewer API to make the component nice to work with.
-  - All events have strongly typed arguments too.
-  - Three.js typings are included too so that where the forge API returns a three js object (such as camera) that is fully typed too.
+  - All events have strongly typed arguments.
+  - Three.js typings are included so that, where the forge API returns a three js object (such as camera), it is fully typed.
   > NOTE that I do NOT work for Autodesk and have developed these typings based on the Forge viewer documentation. Some typings might NOT be correct.
 - A component that can be dropped in to display a document thumbnail.
 
@@ -136,6 +136,46 @@ this.viewerOptions3d = {
 
 ## Extensions
 
-Basic extension and how it's events can be tapped in to
+### BasicExtension
 
-Some common use cases that the component supports
+The viewer component comes with a `BasicExtension` that it registers against all viewers. The basic extension captures a handful of events including:
+
+- Autodesk.Viewing.FIT_TO_VIEW_EVENT,
+- Autodesk.Viewing.FULLSCREEN_MODE_EVENT,
+- Autodesk.Viewing.GEOMETRY_LOADED_EVENT,
+- Autodesk.Viewing.HIDE_EVENT,
+- Autodesk.Viewing.ISOLATE_EVENT,
+- Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT,
+- Autodesk.Viewing.OBJECT_TREE_UNAVAILABLE_EVENT,
+- Autodesk.Viewing.RESET_EVENT,
+- Autodesk.Viewing.SELECTION_CHANGED_EVENT,
+- Autodesk.Viewing.SHOW_EVENT,
+
+The viewer emits these events and should support most use cases. It's possible to obtain a reference to the BasicExtension via the viewer's `basicExtension` getter. 
+
+### Creating your own extension
+
+The `BasicExtension` is derived from an `Extension` that wraps up all the logic to register and unregister extensions with the Forge Viewer. It also contains logic to cast Forge Viewer event arguments to strongly typed TypeScript classes.
+
+Your extension should derive from `Extension` and have a few basic properties and methods.
+
+```typescript
+export class MyExtension extends Extension {
+  // Extension must have a name
+  public static extensionName: string = 'MyExtension';
+
+  public load() {
+    // Called when Forge Viewer loads your extension
+  }
+
+  public unload() {
+    // Called when Forge Viewer unloads your extension
+  }
+}
+```
+
+Most of the methods in the abstract `Extension` class are protected. So they can be overriden in derived classes if required. For example, the BasicExtension overrides the `registerExtension` method to take a callback to let the viewer component knows when the Extension has been registered.
+
+## Building the component
+
+For instructions on how to develop the component (build, debug, test etc.), see (README-dev.md).

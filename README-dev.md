@@ -1,23 +1,8 @@
 # Angular QuickStart Lib
 
-This is a simple library quickstart for Angular libraries, implementing the
-[Angular Package Format v4.0](https://docs.google.com/document/d/1CZC2rcpxffTDfRDs6p1cfbmKNLA6x5O-NtkJglDaBVs/edit#heading=h.k0mh3o8u5hx).
-
-Currently only unscoped, primary entry-point libraries are supported.
-
-Features:
-- a simple example library
-- unit tests for the library
-- a demo application that consumes the library in JIT mode and runs in watch mode
-- an integration app that consumes the library in JIT and AOT mode and runs e2e tests
-
-## Difference of this fork
-
-**The `master` branch of this fork is up to date with Angular 5, TypeScript 2.4 and RxJS 5.5.**
+This library was based on a simple library quickstart for Angular libraries that targets Angular 5.
 
 Be aware that a library compiled with Angular 5 won't be compatible with Angular 4.
-So if you need to support Angular 4 (and you should, as it's in Long Term Support),
-you need to compile two different versions of your lib. The `ng4` branch allows you to do that.
 
 ## Tasks
 
@@ -35,8 +20,7 @@ If you need to debug the integration app, please check `./integration/README.md`
 
 ## The QuickStart Library seed
 
-This example repository has an implemention of the described package format but is by no means
-the only way you should publish a library.
+This example repository has an implemention of the described package format but is by no means the only way you should publish a library.
 
 Any setup that builds the necessary package format works just as well for a consumer.
 You are encouraged to customize this process as you see fit.
@@ -48,51 +32,9 @@ Make sure you have at least Node 6.9 and NPM 3.0 installed.
 Then ...
 
 1. Create a project folder (you can call it `quickstart-lib` and rename it later).
-1. [Clone](#clone "Clone it from github") or [download](#download "download it from github") the **QuickStart Library seed** into your project folder.
-1. Install npm packages.
-1. Run `npm start` to launch the sample application.
-
-
-### Clone
-
-Perform the _clone-to-launch_ steps with these terminal commands.
-
-```
-git clone https://github.com/filipesilva/angular-quickstart-lib.git
-cd angular-quickstart-lib
-npm install
-npm start
-```
-
-
-### Download
-[Download the QuickStart Library seed](https://github.com/filipesilva/angular-quickstart-lib/archive/master.zip)
-and unzip it into your project folder. Then perform the remaining steps with these terminal commands.
-
-```
-cd angular-quickstart-lib
-npm install
-npm start
-```
-
-
-## Initialize your repository
-
-If you cloned the package from github, it has a `.git` folder where the official repository's history lives.
-
-You don't want that git history though - you'll want to make your own. 
-
-Delete this folder and initialize this one as a new repository:
-
-```
-rm -rf .git # Linux or OS/X (bash)
-rd .git /S/Q # Windows
-git init
-```
-
-**Warning**: Do this only in the beginning to avoid accidentally deleting your own git setup!
-
-
+2. [Clone](#clone "Clone it from github") or [download](#download "download it from github") the **QuickStart Library seed** into your project folder.
+3. Install npm packages.
+4. Run `npm start` to launch the sample application.
 
 ## What's in the QuickStart Library seed?
 
@@ -127,8 +69,7 @@ They include configuration files and external dependencies.
 Files inside `src/lib/` "belong" to your library, while `src/demo/` contains a demo application
 that loads your library.
 
-Libraries do not run by themselves, so it's very useful to have this "demo" app while developing 
-to see how your library would look like to consumers.
+Libraries do not run by themselves, so it's very useful to have this "demo" app while developing  to see how your library would look like to consumers.
 
 When you run `npm start`, the demo application is served.
 
@@ -303,16 +244,12 @@ file for [Travis CI](https://docs.travis-ci.com/user/getting-started/))!
 
 ## Appendix: Supporting AOT
 
-AOT plays an important role in optimizing Angular applications. 
-It's therefore important that third party libraries be published in a format compatible with AOT
-compilation.
-Otherwise it will not be possible to include the library in an AOT compiled application.
+AOT plays an important role in optimizing Angular applications. It's therefore important that third party libraries be published in a format compatible with AOT compilation. Otherwise it will not be possible to include the library in an AOT compiled application.
 
 Only code written in TypeScript can be AOT compiled.
  
 Before publishing the library must first be compiled using the AOT compiler (`ngc`). 
-`ngc` extends the `tsc` compiler by adding extensions to support AOT compilation in addition to
-regular TypeScript compilation.   
+`ngc` extends the `tsc` compiler by adding extensions to support AOT compilation in addition to regular TypeScript compilation.   
 
 AOT compilation outputs three files that must be included in order to be compatible with AOT.
 
@@ -339,22 +276,7 @@ These external files must be included with the library.
 `ngc` generates a series of files with an `.ngfactory` suffix as well.
 These files represent the AOT compiled source, but should not be included with the published library.
 
-Instead the `ngc` compiler in the consuming application will generate `.ngfactory` files based
-on the JavaScript, Typings and meta data shipped with the library. 
-
-### Why not publish TypeScript?
-
-Why not ship TypeScript source instead? 
-After all the library will be part of another TypeScript compilation step when the library is
-imported by the consuming application.
-
-Generally it's discouraged to ship TypeScript with third party libraries. 
-It would require the consumer to replicate the complete build environment of the library. 
-Not only typings, but potentially a specific version of `ngc` as well.
-
-Publishing plain JavaScript with typings and meta data allows the consuming application to 
-remain agnostic of the library's build environment.
-
+Instead the `ngc` compiler in the consuming application will generate `.ngfactory` files based on the JavaScript, Typings and meta data shipped with the library. 
 
 ## Appendix: Supporting JIT
 
@@ -390,10 +312,8 @@ The difference is that you don't want to install a new version of these, but ins
 the one already available. 
 
 A good example of a peer dependency is `@angular/core` and all other main Angular libraries.
-If you listed these in `dependencies`, a new one - with a different version! - could be installed
-for your library to use.
-This isn't what you wanted though. You want your library to use *the exact same* `@angular/core`
-that the app is using.
+If you listed these in `dependencies`, a new one - with a different version! - could be installed for your library to use.
+This isn't what you wanted though. You want your library to use *the exact same* `@angular/core` that the app is using.
 
 You'll usually used `@angular/*` libraries listed in both `devDependencies` and 
 `peerDependencies`.
@@ -401,8 +321,7 @@ This is normal and expected, because when you're developing your library also ne
 them installed.
 
 Another thing to remember is to keep your dependencies from changing too much unexpectedly.
-Different versions of libraries can have different features, and if you inadvertently are too
-lenient with allowed versions your library might stop working because a dependency changed.
+Different versions of libraries can have different features, and if you inadvertently are too lenient with allowed versions your library might stop working because a dependency changed.
 
 You can choose what versions you allow by using [ranges](https://docs.npmjs.com/misc/semver).
 
@@ -412,5 +331,4 @@ while your `peerDependencies` have a range (`"@angular/core": ">=4.0.0 <5.0.0 ||
 Any extra dependency or peer dependency that you add to `package.json` should also be added
 to the `globals` and `external` array in the `rollupBaseConfig` variable in `./build.js`.
 
-This ensures your library doesn't package extra libraries inside of it and instead uses the ones
-available in the consuming app.
+This ensures your library doesn't package extra libraries inside of it and instead uses the ones available in the consuming app.

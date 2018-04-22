@@ -7,6 +7,9 @@ import { Extension, ViewerEventArgs } from './extension';
 
 export class BasicExtension extends Extension {
   public static extensionName: string = 'BasicExtension';
+  public static debugMessages: boolean = false;
+
+  private static callback: (ext: BasicExtension) => void;
 
   public viewerEvents: Observable<ViewerEventArgs>;
   protected eventStreams: Observable<ViewerEventArgs>[] = [];
@@ -24,12 +27,9 @@ export class BasicExtension extends Extension {
     Autodesk.Viewing.SHOW_EVENT,
   ];
 
-  public static registerExtension(callback: (ext: Extension) => void) {
-    super.registerExtension(BasicExtension, callback);
-  }
-
-  public static unregisterExtension() {
-    super.unregisterExtension();
+  public static registerExtension(callback: (ext: BasicExtension) => void) {
+    BasicExtension.callback = callback;
+    super.registerExtension(BasicExtension);
   }
 
   public load() {
@@ -40,15 +40,15 @@ export class BasicExtension extends Extension {
 
     this.viewerEvents = merge(...this.eventStreams);
 
-    console.log(BasicExtension.extensionName, 'loaded!');
-    Extension.extLoadedCallback(this);
+    if (BasicExtension.debugMessages) console.log(BasicExtension.extensionName, 'loaded!');
+    if (BasicExtension.callback) BasicExtension.callback(this);
     return true;
   }
 
   public unload() {
     this.eventStreams = [];
 
-    console.log(BasicExtension.extensionName, 'unloaded!');
+    if (BasicExtension.debugMessages) console.log(BasicExtension.extensionName, 'unloaded!');
     return true;
   }
 }
