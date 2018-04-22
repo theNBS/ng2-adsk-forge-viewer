@@ -9,7 +9,7 @@ export class BasicExtension extends Extension {
   public static extensionName: string = 'BasicExtension';
   public static debugMessages: boolean = false;
 
-  private static callback: (ext: BasicExtension) => void;
+  private static callback: (ext: BasicExtension) => void = null;
 
   public viewerEvents: Observable<ViewerEventArgs>;
   protected eventStreams: Observable<ViewerEventArgs>[] = [];

@@ -72,7 +72,7 @@ return Promise.resolve()
         '@angular/core',
         '@angular/common',
         '@angular/common/http',
-        '@angular/platform-browser'
+        '@angular/platform-browser',
         'rxjs/Observable',
         // our app is within the app folder'rxjs/observable/fromEvent',
         'rxjs/observable/merge',
