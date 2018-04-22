@@ -1,12 +1,12 @@
-import { NgModule }      from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { LibModule } from 'quickstart-lib';
+import { ViewerModule } from 'ng2-adsk-forge-viewer';
 
-import { AppComponent }  from './app.component';
+import { AppComponent } from './app.component';
 
 @NgModule({
-  imports:      [BrowserModule, LibModule],
+  imports: [BrowserModule, ViewerModule],
   declarations: [AppComponent],
-  bootstrap:    [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule { }

@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
-import { LibService } from 'quickstart-lib';
+import { ScriptService } from 'ng2-adsk-forge-viewer';
 
 @Component({
   selector: 'integration-app',
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  meaning: number;
-  constructor(libService: LibService) {
-    this.meaning = libService.getMeaning();
+  private scriptService: ScriptService;
+
+  constructor(scriptService: ScriptService) {
+    this.scriptService.load();
   }
 }

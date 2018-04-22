@@ -1,6 +1,6 @@
 import { browser, element, by } from 'protractor';
 
-describe('QuickStart Lib E2E Tests', function () {
+describe('QuickStart Lib E2E Tests', () => {
 
   beforeEach(() => browser.get(''));
 
@@ -10,12 +10,19 @@ describe('QuickStart Lib E2E Tests', function () {
     });
   });
 
-  it('should display lib', () => {
-    expect(element(by.css('h2')).getText()).toEqual('Hello Angular Library');
+  it('should display view 1 by default', () => {
+    const elm = element(by.id('3D'));
+    expect(elm.isElementPresent).toEqual(true);
   });
 
-  it('should display meaning', () => {
-    expect(element(by.css('h3')).getText()).toEqual('Meaning is: 42');
+  it('View 2 should be hidden', () => {
+    const elm = element(by.id('2D'));
+    expect(elm.isElementPresent).toEqual(false);
+  });
+
+  it('View 3 should be hidden', () => {
+    const elm = element(by.id('Thumbnail'));
+    expect(elm.isElementPresent).toEqual(false);
   });
 
 });

@@ -69,7 +69,7 @@ declare namespace Autodesk.Viewing {
   }
 
   interface ItemSelectedObserver {
-    onItemSelected(viewer: Viewer3D);
+    onItemSelected(viewer: Viewer3D): void;
   }
 
   interface SelectionVisibility {
@@ -228,7 +228,7 @@ declare namespace Autodesk.Viewing {
     name(): string;
     search(propsToMatch: BubbleNodeSearchProps): BubbleNode[];
     searchByTag(tagsToMatch: Object): BubbleNode[];
-    setTag(tag: string, value: any);
+    setTag(tag: string, value: any): void;
     traverse(cb: Function): boolean;
     urn(searchParent: boolean): string;
   }
@@ -253,8 +253,8 @@ declare namespace Autodesk.Viewing {
     getViewableItems(document: Document): void;
     getViewablePath(item: Object, outLoadOptions: Object): string;
     getViewGeometry(item: Object): Object;
-    load(documentId: string, onSuccessCallback: Function, onErrorCallback: Function, accessControlProperties: Object);
-    requestThumbnailWithSecurity(data: string, onComplete: (err: Error, response: any) => void);
+    load(documentId: string, onSuccessCallback: Function, onErrorCallback: Function, accessControlProperties: Object): void;
+    requestThumbnailWithSecurity(data: string, onComplete: (err: Error, response: any) => void): void;
   }
 
   class ExtensionManager {
@@ -294,12 +294,12 @@ declare namespace Autodesk.Viewing {
     getBulkProperties(dbIds: number[],
                       options: PropertyOptions,
                       onSuccessCallback: Function,
-                      onErrorCallback: Function);
+                      onErrorCallback: Function): any;
     getData(): any;
     getDefaultCamera(): THREE.Camera;
     getDisplayUnit(): string;
     getDocumentNode(): Object;
-    getExternalIdMapping(onSuccessCallback: Function, onErrorCallback: Function);
+    getExternalIdMapping(onSuccessCallback: Function, onErrorCallback: Function): any;
     getFastLoadList(): any;
     getFragmentMap(): any; // DbidFragmentMap|InstanceTree;
     getInstanceTree(): any; // InstanceTree;
@@ -337,7 +337,7 @@ declare namespace Autodesk.Viewing {
   abstract class ScreenModeDelegate {
     constructor(viewer: Viewer3D);
 
-    doScreenModeChange(oldMode: ScreenMode, newMode: ScreenMode);
+    doScreenModeChange(oldMode: ScreenMode, newMode: ScreenMode): void;
     fullscreenEventListener(): void;
     getEscapeMode(): ScreenMode | undefined;
     getMode(): ScreenMode;
@@ -423,7 +423,7 @@ declare namespace Autodesk.Viewing {
     localize(): void;
     modelHasTopology(): boolean;
     playAnimation(callback?: Function): void;
-    registerContextMenuCallback(id: string, callback: (menu: any, status: any) => void);
+    registerContextMenuCallback(id: string, callback: (menu: any, status: any) => void): void;
     resize(): void;
     restoreState(viewerState: Object, filter?: Object, immediate?: boolean): boolean;
     search(text: string, onSuccessCallback: Function, onErrorCallback: Function, attributeNames?: string[]): void;
@@ -453,7 +453,7 @@ declare namespace Autodesk.Viewing {
     setLayerVisible(nodes: any[], visible: boolean, isolate?: boolean): void;
     setLightPreset(index: number): void;
     setModelUnits(model: Model): void;
-    setNavigationLock(value: boolean);
+    setNavigationLock(value: boolean): void;
     setNavigationLockSettings(settings: { [key: string]: boolean }): void;
     setOptimizeNavigation(value: boolean): void;
     setOrbitPastWorldPoles(value: boolean): void;
@@ -587,13 +587,11 @@ declare namespace Autodesk.Viewing {
       target: Function | MenuItem[];
     }
 
-    enum ControlEvents {
-      COLLAPSED_CHANGED = 'Control.VisibilityChanged',
-      VISIBILITY_CHANGED = 'Control.CollapsedChanged',
-      CONTROL_ADDED = 'ControlGroup.ControlAdded',
-      CONTROL_REMOVED = 'ControlGroup.ControlRemoved',
-      SIZE_CHANGED = 'ControlGroup.SizeChanged',
-    }
+    const COLLAPSED_CHANGED = 'Control.VisibilityChanged';
+    const VISIBILITY_CHANGED = 'Control.CollapsedChanged';
+    const CONTROL_ADDED = 'ControlGroup.ControlAdded';
+    const CONTROL_REMOVED = 'ControlGroup.ControlRemoved';
+    const SIZE_CHANGED = 'ControlGroup.SizeChanged';
 
     class DockingPanel {
       constructor(parentContainer: HTMLElement, id: string, title: string, options?: DockingPanelOptions);
@@ -730,10 +728,10 @@ declare namespace Autodesk.Viewing {
       setVisible(visible: boolean): boolean;
 
       // Events
-      addEventListener(type: ControlEvents, listener?: EventListenerOrEventListenerObject,
+      addEventListener(type: string, listener?: EventListenerOrEventListenerObject,
                        options?: boolean | AddEventListenerOptions): void;
       dispatchEvent(evt: Event): boolean;
-      removeEventListener(type: ControlEvents, listener?: EventListenerOrEventListenerObject,
+      removeEventListener(type: string, listener?: EventListenerOrEventListenerObject,
                           options?: boolean | EventListenerOptions): void;
     }
 
@@ -755,7 +753,7 @@ declare namespace Autodesk.Viewing {
   namespace Private {
     const env: string;
 
-    function formatValueWithUnits(value: number, units: string, type: number, precision: number);
+    function formatValueWithUnits(value: number, units: string, type: number, precision: number): string;
     function convertUnits(fromUnits: string, toUnits: string, calibrationFactor: number,
                           d: number, type: string): number;
     function calculatePrecision(value: string|number): number;
@@ -774,7 +772,7 @@ declare namespace Autodesk.Viewing {
       hasTag(name: string, tag: string): boolean;
       load(defaultValues: Object): void;
       remove(name: string, removeFromWebStorage?: boolean): boolean;
-      removeListeners(name: string);
+      removeListeners(name: string): void;
       reset(tag?: string, include?: boolean): void;
       set(name: string, value: any, notify?: boolean): boolean;
       tag(tag: string, names?: string[]|string): void;
