@@ -2,7 +2,10 @@ import { browser, element, by } from 'protractor';
 
 describe('QuickStart Lib E2E Tests', () => {
 
-  beforeEach(() => browser.get(''));
+  beforeEach(() => {
+    browser.waitForAngularEnabled(true);
+    browser.get('/');
+  });
 
   afterEach(() => {
     browser.manage().logs().get('browser').then((browserLog: any[]) => {
@@ -10,19 +13,14 @@ describe('QuickStart Lib E2E Tests', () => {
     });
   });
 
-  it('should display view 1 by default', () => {
-    const elm = element(by.id('3D'));
-    expect(elm.isElementPresent).toEqual(true);
+  it('Should have a viewer component', () => {
+    const elm = element(by.id('viewer-component'));
+    expect(elm.isPresent()).toEqual(true);
   });
 
-  it('View 2 should be hidden', () => {
-    const elm = element(by.id('2D'));
-    expect(elm.isElementPresent).toEqual(false);
-  });
-
-  it('View 3 should be hidden', () => {
-    const elm = element(by.id('Thumbnail'));
-    expect(elm.isElementPresent).toEqual(false);
+  it('Should have a Forge Viewer container', () => {
+    const elm = element(by.id('ng2-adsk-forge-viewer-container'));
+    expect(elm.isPresent()).toEqual(true);
   });
 
 });

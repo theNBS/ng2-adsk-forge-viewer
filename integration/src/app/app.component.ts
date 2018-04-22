@@ -6,9 +6,7 @@ import { ScriptService } from 'ng2-adsk-forge-viewer';
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  private scriptService: ScriptService;
-
-  constructor(scriptService: ScriptService) {
+  constructor(private scriptService: ScriptService) {
     this.scriptService.load();
   }
 }
