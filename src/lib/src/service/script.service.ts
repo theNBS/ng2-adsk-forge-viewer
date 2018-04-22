@@ -21,7 +21,7 @@ export class ScriptService {
     // Nothing to do
   }
 
-  load(...urls: string[]): Promise<ScriptInfo[]> {
+  public load(...urls: string[]): Promise<ScriptInfo[]> {
     const promises: Promise<ScriptInfo>[] = [];
 
     urls.forEach((src) => {
@@ -36,7 +36,7 @@ export class ScriptService {
     return Promise.all(promises);
   }
 
-  loadScript(name: string): Promise<ScriptInfo> {
+  public loadScript(name: string): Promise<ScriptInfo> {
     return new Promise((resolve, reject) => {
       // resolve if already loaded
       if (this.scripts[name] && this.scripts[name].loaded) {
