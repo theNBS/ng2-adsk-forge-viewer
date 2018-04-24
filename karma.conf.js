@@ -66,7 +66,15 @@ module.exports = function (config) {
 
       // Paths for debugging with source maps in dev tools
       { pattern: libBase + '**/*.ts', included: false, watched: false },
-      { pattern: libBase + '**/*.js.map', included: false, watched: false }
+      { pattern: libBase + '**/*.js.map', included: false, watched: false },
+
+      { pattern: libBase + '**/*.d.ts', included: true, watched: false },
+
+      // Required so that the Autodesk module is registered and unit tests pass
+      // NOTE: To adhere to Autodesk's license, The Autodesk Forge Viewer
+      // JavaScript **MUST** be delivered from an Autodesk hosted URL.
+      'https://developer.api.autodesk.com/modelderivative/v2/viewers/three.min.js?v=4.*.*',
+      'https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=4.*.*',
     ],
 
     // Proxied base paths for loading assets
@@ -85,6 +93,6 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     autoWatch: true,
     browsers: ['Chrome'],
-    singleRun: false
+    singleRun: false,
   })
 }
