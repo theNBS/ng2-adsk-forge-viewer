@@ -47,6 +47,7 @@ export class BasicExtension extends Extension {
 
   public unload() {
     this.eventStreams = [];
+    this.viewerEvents = undefined;
 
     if (BasicExtension.debugMessages) console.log(BasicExtension.extensionName, 'unloaded!');
     return true;

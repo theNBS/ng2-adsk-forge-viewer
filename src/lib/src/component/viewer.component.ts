@@ -131,7 +131,7 @@ export class ViewerComponent implements OnDestroy {
   /**
    * Helper method to get some default viewer options
    */
-  getDefaultViewerOptions(
+  public getDefaultViewerOptions(
     getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => void,
   ): ViewerOptions {
     return {
