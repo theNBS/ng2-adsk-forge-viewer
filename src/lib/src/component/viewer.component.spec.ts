@@ -123,6 +123,14 @@ describe('ViewerComponent', () => {
       expect(actual).toBe(mockDocId);
     });
 
+    it('gets basicExtension', () => {
+      const ext = new BasicExtension({} as any);
+      component['basicExt'] = ext;
+
+      const actual = component.basicExtension;
+      expect(actual).toBe(ext);
+    });
+
     it('gets extensionEvents', () => {
       const ext = new BasicExtension({} as any);
       const obs = Observable.of({}) as any;

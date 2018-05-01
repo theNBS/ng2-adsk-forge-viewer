@@ -79,10 +79,6 @@ export class ViewerComponent implements OnDestroy {
   // Debugging
   @Input() public showDebugMessages: boolean = false;
 
-  public get basicExtension() {
-    return this.basicExt;
-  }
-
   private _viewerOptions: ViewerOptions = null;
   private viewerInitialized = false;
   private viewerApp: Autodesk.Viewing.ViewingApplication;
@@ -169,6 +165,10 @@ export class ViewerComponent implements OnDestroy {
   public set DocumentId(value: string) {
     this.documentId = value;
     this.loadDocument(this.documentId);
+  }
+
+  public get basicExtension() {
+    return this.basicExt;
   }
 
   public get extensionEvents(): Observable<ViewerEventArgs> | null {
