@@ -1,3 +1,4 @@
+// tslint:disable:no-string-literal
 import {
   AggregationSelectionChangedEventArgs,
   AnimationReadyEventArgs,
@@ -37,7 +38,18 @@ import {
   ViewerResizeEventArgs,
   ViewerStateRestoredEventArgs,
   ViewerUnInitializedEventArgs,
+  Extension,
 } from './extension';
+
+class MockExtension extends Extension {
+  constructor() {
+    super({} as any);
+  }
+
+  public load() { return; }
+  public unload() { return; }
+  public registerEventTypes() { super.registerEventTypes(); }
+}
 
 describe('event args', () => {
   it('AggregationSelectionChangedEventArgs has correct type', () => {
@@ -304,5 +316,65 @@ describe('event args', () => {
     const expected = Autodesk.Viewing.VIEWER_UNINITIALIZED;
 
     expect(actual.type).toBe(expected);
+  });
+});
+
+describe('Extension', () => {
+  const mockExtensionName = 'testExtension';
+
+  beforeEach(() => {
+    Extension['extensionName'] = mockExtensionName;
+  });
+
+  afterEach(() => {
+    Extension['extensionName'] = '';
+  });
+
+  it('Registers extension', () => {
+    const spy = spyOn(Autodesk.Viewing.theExtensionManager, 'registerExtension').and.stub();
+    const mockExtension: Object = { extensionName: mockExtensionName };
+
+    Extension.registerExtension(mockExtension);
+
+    expect(spy).toHaveBeenCalledWith(mockExtensionName, mockExtension);
+  });
+
+  it('Unregisters extension', () => {
+    const spy = spyOn(Autodesk.Viewing.theExtensionManager, 'unregisterExtension').and.stub();
+
+    Extension.unregisterExtension();
+
+    expect(spy).toHaveBeenCalledWith(mockExtensionName);
+  });
+
+  it('Constructor registers event types', () => {
+    spyOn(MockExtension.prototype, 'registerEventTypes').and.callThrough();
+
+    const actual = new MockExtension();
+    const keys = Object.keys(actual['eventArgsTypeMap']);
+
+    expect(keys.length).toBe(32);
+    expect(keys[0]).toBe(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT);
+    expect(keys[31]).toBe(Autodesk.Viewing.VIEWER_UNINITIALIZED);
+  });
+
+  describe('castArgs', () => {
+    it('casts object', () => {
+      const testData = {
+        dbIdArray: [1, 2, 3],
+        fragIdsArray: [4, 5, 6],
+        nodeArray: [7, 8, 9],
+        type: Autodesk.Viewing.SELECTION_CHANGED_EVENT,
+      };
+
+      const mock = new MockExtension();
+      const actual = mock['castArgs'](testData);
+
+      expect(actual instanceof SelectionChangedEventArgs).toBeTruthy();
+      expect(actual.dbIdArray).toEqual(testData.dbIdArray);
+      expect(actual.fragIdsArray).toEqual(testData.fragIdsArray);
+      expect(actual.nodeArray).toEqual(testData.nodeArray);
+    });
+
   });
 });
