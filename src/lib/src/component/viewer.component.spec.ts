@@ -19,7 +19,7 @@ import {
   ViewerEventArgs,
 } from '../extensions/extension';
 import { ScriptService } from '../service/script.service';
-import { ViewerComponent, ViewerOptions } from './viewer.component';
+import { ViewerComponent, ViewerOptions, ViewingApplicationInitializedEvent } from './viewer.component';
 
 const mockScriptS = {
   load: () => Promise.resolve([]),
@@ -149,6 +149,118 @@ describe('ViewerComponent', () => {
       const actual = component.DocumentId;
       expect(actual).toBe(mockDocId);
       expect(spy).toHaveBeenCalledWith(mockDocId);
+    });
+  });
+
+  describe('selectItem', () => {
+    let mockViewer: any;
+    let mockApp: any;
+
+    beforeEach(() => {
+      mockViewer = {
+        tearDown: () => { return; },
+        uninitialize: () => { return; },
+      };
+
+      mockApp = {
+        getCurrentViewer: () => {
+          return mockViewer;
+        },
+        selectItem: () => { return; },
+      };
+
+      component['viewerApp'] = mockApp as any;
+    });
+
+    it('calls correct methods', () => {
+      const spy = spyOn(mockApp, 'selectItem').and.stub();
+      const testViewerItem = {
+        guid: '123',
+        hasThumbnail: false,
+        name: 'test',
+        parent: null,
+        progress: 'complete',
+        role: '3d',
+        size: 1,
+        status: 'status',
+        success: 'yes',
+        type: 'view',
+        viewableID: '456',
+      } as Autodesk.Viewing.ViewerItem;
+
+      component.selectItem(testViewerItem);
+
+      expect(spy.calls.mostRecent().args[0]).toBe(testViewerItem);
+    });
+  });
+
+  describe('initialiseApplication', () => {
+    let mockViewer: any;
+    let mockApp: any;
+
+    beforeEach(() => {
+      mockViewer = {
+        tearDown: () => { return; },
+        uninitialize: () => { return; },
+        registerViewer: () => { return; },
+      };
+
+      mockApp = {
+        getCurrentViewer: () => {
+          return mockViewer;
+        },
+        registerViewer: () => { return; },
+      };
+
+      component['viewerApp'] = mockApp as any;
+    });
+
+    it('Calls full initialise', () => {
+      const spy = spyOn(Autodesk.Viewing, 'Initializer').and.stub();
+      const initializerOptions = { env: 'Production' };
+
+      component.viewerOptions = { initializerOptions } as any;
+      component['initialiseApplication']();
+
+      expect(spy.calls.mostRecent().args[0]).toBe(initializerOptions);
+    });
+
+    it('Skips full initialise', (done) => {
+      const spy = spyOn(component, 'initialized' as any).and.stub();
+      const initializerOptions = { env: 'Production' };
+
+      Autodesk.Viewing.Private['env' as any] = 'Production';
+      component.viewerOptions = { initializerOptions } as any;
+      component['initialiseApplication']();
+
+      setTimeout(() => {
+        expect(spy).toHaveBeenCalled();
+        done();
+      });
+    });
+
+    it('initialized calls correct methods', (done) => {
+      const viewingAppSpy = spyOn(Autodesk.Viewing, 'ViewingApplication').and.returnValue(mockApp);
+      const registerBasicExtensionSpy = spyOn(component, 'registerBasicExtension' as any).and.returnValue('mockExt');
+      const addBasicExtensionConfigSpy = spyOn(component, 'addBasicExtensionConfig' as any).and.stub();
+      const registerViewerSpy = spyOn(mockApp, 'registerViewer' as any).and.stub();
+
+      const viewerApplicationOptions = { disableBrowserContextMenu: true };
+      component.viewerOptions = { viewerApplicationOptions } as any;
+
+      component['initialized']();
+
+      expect(viewingAppSpy).toHaveBeenCalledWith('ng2-adsk-forge-viewer-container', viewerApplicationOptions);
+      expect(registerBasicExtensionSpy).toHaveBeenCalled();
+      expect(addBasicExtensionConfigSpy).toHaveBeenCalledWith('mockExt');
+      expect(registerViewerSpy).toHaveBeenCalled();
+      expect(component['viewerInitialized' as any]).toBe(true);
+
+      component.onViewingApplicationInitialized.subscribe((val: ViewingApplicationInitializedEvent) => {
+        expect(val.viewingApplication).toBe(mockApp);
+        expect(val.viewerComponent).toBe(component);
+        done();
+      });
     });
   });
 
