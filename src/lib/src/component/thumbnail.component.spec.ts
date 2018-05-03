@@ -9,18 +9,13 @@ describe('ThumbnailComponent', () => {
   let component: ThumbnailComponent;
   let fixture: ComponentFixture<ThumbnailComponent>;
 
-  let mockSanitizer: any;
-  
   beforeEach(async(() => {
-    mockSanitizer = mock(DomSanitizer);
-
     return TestBed.configureTestingModule({
       declarations: [
         ThumbnailComponent,
       ],
       providers: [
         { provide: HttpClient, useValue: instance(mock(HttpClient)) },
-        { provide: DomSanitizer, useValue: instance(mockSanitizer) },
       ],
     })
     .compileComponents();
