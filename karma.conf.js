@@ -42,6 +42,15 @@ module.exports = function (config) {
       'node_modules/zone.js/dist/async-test.js',
       'node_modules/zone.js/dist/fake-async-test.js',
 
+      // tslib
+      'node_modules/tslib/tslib.js',
+
+      // ts-mockito
+      { pattern: 'node_modules/ts-mockito/**/*.js', included: false, watched: false },
+
+      // lodash
+      { pattern: 'node_modules/lodash/**/*.js', included: false, watched: false },
+
       // RxJs
       { pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false },
       { pattern: 'node_modules/rxjs/**/*.js.map', included: false, watched: false },

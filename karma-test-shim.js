@@ -80,7 +80,9 @@ System.config({
     '@angular/forms/testing': 'npm:@angular/forms/bundles/forms-testing.umd.js',
     'rxjs': 'npm:rxjs',
     'src': 'src',
-    'tslib': 'npm:tslib/tslib.js'
+    'tslib': 'npm:tslib/tslib.js',
+    'ts-mockito': 'npm:ts-mockito/lib/ts-mockito.js',
+    'lodash': 'npm:lodash/lodash.js'
   }
 });
 
