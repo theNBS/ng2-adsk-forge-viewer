@@ -1,8 +1,9 @@
 // tslint:disable:no-string-literal
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import 'rxjs/add/observable/of';
+
+import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/observable/of';
 
 import { BasicExtension } from '../extensions/basic-extension';
 import {
@@ -19,7 +20,13 @@ import {
   ViewerEventArgs,
 } from '../extensions/extension';
 import { ScriptService } from '../service/script.service';
-import { ViewerComponent, ViewerOptions, ViewingApplicationInitializedEvent } from './viewer.component';
+import {
+  DocumentChangedEvent,
+  ViewerComponent,
+  ViewerOptions,
+  ViewingApplicationInitializedEvent,
+  ItemLoadedEvent,
+} from './viewer.component';
 
 const mockScriptS = {
   load: () => Promise.resolve([]),
@@ -282,6 +289,154 @@ describe('ViewerComponent', () => {
     });
   });
 
+  describe('loadDocument', () => {
+    let mockViewer: any;
+    let mockApp: any;
+
+    let loadDocumentSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      mockViewer = {
+        tearDown: () => { return; },
+        uninitialize: () => { return; },
+        registerViewer: () => { return; },
+      };
+
+      mockApp = {
+        getCurrentViewer: () => {
+          return mockViewer;
+        },
+        registerViewer: () => { return; },
+        loadDocument: () => { return; },
+      };
+
+      component['viewerApp'] = mockApp as any;
+
+      loadDocumentSpy = spyOn(mockApp, 'loadDocument').and.stub();
+    });
+
+    it('skips load if documentId not set', () => {
+      component['loadDocument'](null);
+      expect(loadDocumentSpy).not.toHaveBeenCalled();
+    });
+
+    it('Calls load on Forge viewer', () => {
+      const testDocumentId = 'urn:test document id';
+
+      component['loadDocument'](testDocumentId);
+      expect(loadDocumentSpy.calls.mostRecent().args[0]).toEqual(testDocumentId);
+    });
+  });
+
+  describe('events', () => {
+    let mockViewer: any;
+    let mockApp: any;
+
+    let searchSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      mockViewer = {
+        tearDown: () => { return; },
+        uninitialize: () => { return; },
+        registerViewer: () => { return; },
+      };
+
+      mockApp = {
+        getCurrentViewer: () => {
+          return mockViewer;
+        },
+        registerViewer: () => { return; },
+        loadDocument: () => { return; },
+        selectItem: () => { return; },
+        bubble: {
+          search: () => { return [{}]; },
+        },
+      };
+
+      component['viewerApp'] = mockApp as any;
+
+      searchSpy = spyOn(mockApp.bubble, 'search');
+    });
+
+    describe('onDocumentLoadSuccess', () => {
+      it('exits if no bubble', () => {
+        mockApp.bubble = null;
+        searchSpy.and.stub();
+
+        component['onDocumentLoadSuccess']({} as any);
+
+        expect(searchSpy).not.toHaveBeenCalled();
+      });
+
+      it('emits event, can\'t select viewable', fakeAsync(() => {
+        const testDoc = {} as any;
+        const spy = searchSpy.and.returnValue(null);
+
+        component['_viewerOptions'] = { showFirstViewable: true } as any;
+        component['onDocumentLoadSuccess']({} as any);
+
+        component.onDocumentChanged.subscribe((args: DocumentChangedEvent) => {
+          expect(args.document).toBe(testDoc);
+          expect(args.viewingApplication).toBe(mockApp);
+          expect(args.viewerComponent).toBe(component);
+          expect(spy).not.toHaveBeenCalled();
+        });
+      }));
+
+      it('emits event and selected first viewable', fakeAsync(() => {
+        const testDoc = {} as any;
+        searchSpy.and.callThrough();
+
+        component['_viewerOptions'] = { showFirstViewable: true } as any;
+        component['onDocumentLoadSuccess']({} as any);
+
+        component.onDocumentChanged.subscribe((args: DocumentChangedEvent) => {
+          expect(args.document).toBe(testDoc);
+          expect(args.viewingApplication).toBe(mockApp);
+          expect(args.viewerComponent).toBe(component);
+          expect(searchSpy).toHaveBeenCalled();
+        });
+      }));
+    });
+
+    it('onDocumentLoadFailure', (done) => {
+      const testErrorCode = 0;
+
+      component.onError.subscribe((errorCode: number) => {
+        expect(errorCode).toBe(testErrorCode);
+        done();
+      });
+
+      component['onDocumentLoadFailure'](testErrorCode);
+    });
+
+    it('onItemLoadSuccess', (done) => {
+      const testItem = {} as any;
+
+      component.onItemLoaded.subscribe((args: ItemLoadedEvent) => {
+        expect(args.item).toBe(testItem);
+        expect(args.currentViewer).toBe(mockViewer);
+        expect(args.viewingApplication).toBe(mockApp);
+        expect(args.viewerComponent).toBe(component);
+
+        done();
+      });
+
+      component['onItemLoadSuccess'](mockViewer, testItem);
+    });
+
+    it('onItemLoadFail', (done) => {
+      const testErrorCode = 0;
+
+      component.onError.subscribe((errorCode: number) => {
+        expect(errorCode).toBe(testErrorCode);
+        done();
+      });
+
+      component['onItemLoadFail'](testErrorCode);
+    });
+  });
+
   describe('document urn', () => {
     it('should append urn prefix', () => {
       const testData = '12345678';
@@ -311,6 +466,15 @@ describe('ViewerComponent', () => {
       mockExt = {
         viewerEvents: mockSubject.asObservable(),
       };
+    });
+
+    it('registerBasicExtension', () => {
+      const spy = spyOn(BasicExtension, 'registerExtension').and.stub();
+
+      const actual = component['registerBasicExtension']();
+      const expected = BasicExtension.extensionName;
+
+      expect(actual).toBe(expected);
     });
 
     it('emits FitToViewEventArgs event', (done) => {

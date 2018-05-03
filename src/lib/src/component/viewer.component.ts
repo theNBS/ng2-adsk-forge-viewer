@@ -286,10 +286,10 @@ export class ViewerComponent implements OnDestroy {
    */
   private onItemLoadSuccess(viewer: Autodesk.Viewing.Viewer3D, item: Autodesk.Viewing.ViewerItem) {
     this.log('onItemLoadSuccess()', viewer, item);
-    this.log('Viewers are equal: ' + (viewer === this.viewerApp.getCurrentViewer()));
 
     this.onItemLoaded.emit({
-      item, currentViewer: viewer,
+      item,
+      currentViewer: viewer,
       viewingApplication: this.viewerApp,
       viewerComponent: this,
     });
