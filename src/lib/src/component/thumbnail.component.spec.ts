@@ -1,6 +1,5 @@
 // tslint:disable:no-string-literal
 import { HttpClient } from '@angular/common/http';
-import { SimpleChange } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { Observable } from 'rxjs/Observable';
 import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
@@ -151,16 +150,13 @@ describe('ThumbnailComponent', () => {
 
     it('blank src', () => {
       component['thumbnailOptions'] = { defaultImageSrc: 'default' } as any;
-
       component['setImageSrc']('');
-      const expected = '';
 
       expect(bypassSecurityTrustUrlSpy).toHaveBeenCalledWith('default');
     });
 
     it('src', () => {
       component['setImageSrc']('data:image/png;base64,AAAAAAAAAAA=');
-      const expected = '';
 
       expect(bypassSecurityTrustUrlSpy).toHaveBeenCalledWith('data:image/png;base64,AAAAAAAAAAA=');
     });

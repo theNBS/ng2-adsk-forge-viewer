@@ -43,7 +43,7 @@ describe('BasicExtension', () => {
         // Only pass when the callback is called
         done();
       };
-      const spy = jasmine.createSpy('callbackSpy', mockCallback);
+      jasmine.createSpy('callbackSpy', mockCallback);
 
       BasicExtension['callback'] = mockCallback;
       const actual = mockExtension.load();

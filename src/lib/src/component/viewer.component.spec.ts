@@ -1,7 +1,7 @@
 // tslint:disable:no-string-literal
 import 'rxjs/add/observable/of';
 
-import { async, ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
@@ -469,7 +469,7 @@ describe('ViewerComponent', () => {
     });
 
     it('registerBasicExtension', () => {
-      const spy = spyOn(BasicExtension, 'registerExtension').and.stub();
+      spyOn(BasicExtension, 'registerExtension').and.stub();
 
       const actual = component['registerBasicExtension']();
       const expected = BasicExtension.extensionName;

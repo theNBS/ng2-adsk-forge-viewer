@@ -1,6 +1,4 @@
 // tslint:disable:no-string-literal
-import { TestBed, inject } from '@angular/core/testing';
-
 import { ScriptService, ScriptInfo } from './script.service';
 
 describe('ScriptService', () => {

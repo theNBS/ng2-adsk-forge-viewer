@@ -7,7 +7,7 @@ import {
   ThumbnailOptions,
 } from 'ng2-adsk-forge-viewer';
 
-import { ACCESS_TOKEN, DOCUMENT_URN, THUMBNAIL_URN } from './config';
+import { ACCESS_TOKEN, DOCUMENT_URN } from './config';
 
 @Component({
   selector: 'demo-app',
