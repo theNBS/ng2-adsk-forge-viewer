@@ -164,9 +164,7 @@ To properly test a library, you need to have an integration tests.
 An integration test is to libraries what an end-to-end test is to applications.
 It tests how an app would install and use your library.
 
-The **QuickStart Library seed** includes a directory called `integration` containing a standalone
-app that consumes your built library in both AOT and JIT modes, with end-to-end tests to verify
-it works.
+The **QuickStart Library seed** includes a directory called `integration` containing a standalone app that consumes your built library in both AOT and JIT modes, with end-to-end tests to verify it works.
 
 To run the integration tests, do `npm run integration` which does the following:
 - Build your library.
@@ -178,8 +176,7 @@ To run the integration tests, do `npm run integration` which does the following:
 
 Running integration tests gives you greater confidence that your library is properly built.
 
-In addition to integration tests, you can also run unit tests in watch mode via `npm run test`,
-or single-run via `npm run test:once`.
+In addition to integration tests, you can also run unit tests in watch mode via `npm run test`, or single-run via `npm run test:once`.
 
 You can also test your library by installing it in another local repository you have. 
 To do so, first build your lib via `npm run build`.
