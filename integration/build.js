@@ -32,7 +32,7 @@ const rollupConfig = {
 
 return Promise.resolve()
   // Compile using ngc.
-  .then(() => ngc({ project: `./tsconfig.aot.json` }))
+  .then(() => ngc([ '--project', `${__dirname}/tsconfig.aot.json` ]))
   // Create dist dir.
   .then(() => _recursiveMkDir(distDir))
   // Copy files.
