@@ -19,7 +19,7 @@ before_install:
 
 before_script:
 - npm install rxjs -g
-- npm cache clean
+- npm cache verify
 - yarn test:once
 
 script: yarn coverage
