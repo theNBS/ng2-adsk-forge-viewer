@@ -18,8 +18,8 @@ before_install:
   - sh -e /etc/init.d/xvfb start
 
 before_script:
-- yarn install -g angular-cli
-- yarn install -g karma
+- yarn global add angular-cli
+- yarn global add karma
 - yarn test:once
 
 script: yarn coverage
