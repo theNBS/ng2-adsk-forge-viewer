@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable';
-import { fromEvent } from 'rxjs/Observable/fromEvent';
-import { merge } from 'rxjs/Observable/merge';
+import { fromEvent } from 'rxjs/observable/fromEvent';
+import { merge } from 'rxjs/observable/merge';
 import 'rxjs/add/operator/map';
 
 import { Extension, ViewerEventArgs } from './extension';
