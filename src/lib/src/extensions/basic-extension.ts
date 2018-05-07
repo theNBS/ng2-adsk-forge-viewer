@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs/Observable';
-import { fromEvent } from 'rxjs/observable/fromEvent';
-import { merge } from 'rxjs/observable/merge';
+import 'rxjs/add/observable/fromEvent';
+import 'rxjs/add/observable/merge';
 import 'rxjs/add/operator/map';
 
 import { Extension, ViewerEventArgs } from './extension';
@@ -34,11 +34,11 @@ export class BasicExtension extends Extension {
 
   public load() {
     this.events.forEach((eventName) => {
-      const obs = fromEvent(this.viewer, eventName).map(args => this.castArgs(args));
+      const obs = Observable.fromEvent(this.viewer, eventName).map(args => this.castArgs(args));
       this.eventStreams.push(obs);
     });
 
-    this.viewerEvents = merge(...this.eventStreams);
+    this.viewerEvents = Observable.merge(...this.eventStreams);
 
     if (BasicExtension.debugMessages) console.log(BasicExtension.extensionName, 'loaded!');
     if (BasicExtension.callback) BasicExtension.callback(this);
