@@ -1,5 +1,7 @@
 # Angular Autodesk Forge Viewer
 
+[![Build Status](https://travis-ci.com/theNBS/ng2-adsk-forge-viewer.svg?branch=master)](https://travis-ci.com/theNBS/ng2-adsk-forge-viewer)
+
 Angular wrapper for the [Autodesk Forge Viewer](https://developer.autodesk.com).
 
 The wrapper was designed to meet the following requirements:
