@@ -18,11 +18,12 @@ The wrapper was designed to meet the following requirements:
 ## Dependencies
 
 The library targets Angular 5.
-A demonstration of using the library can be found on StackBlitz - https://stackblitz.com/edit/angular-forge-viewer.
 
 ## Using the viewer component
 
-Follow these steps to get the viewer working in your app
+Follow these steps to get the viewer working in your app.
+
+A full demonstration of how to use the the library can be found on StackBlitz - https://stackblitz.com/edit/angular-forge-viewer.
 
 ### Step 1
 Add the ng2-adsk-forge-viewer NPM package to your app - npm install `ng2-adsk-forge-viewer --save` or `yarn add ng2-adsk-forge-viewer`
