@@ -18,6 +18,7 @@ The wrapper was designed to meet the following requirements:
 ## Dependencies
 
 The library targets Angular 5.
+A demonstration of using the library can be found on StackBlitz - https://stackblitz.com/edit/angular-forge-viewer.
 
 ## Using the viewer component
 
