@@ -1,6 +1,6 @@
 {
   "name": "ng2-adsk-forge-viewer",
-  "version": "0.0.24",
+  "version": "0.0.25",
   "description": "Angular wrapper for Autodesk Forge Viewer",
   "main": "./bundles/ng2-adsk-forge-viewer.umd.js",
   "module": "./ng2-adsk-forge-viewer.es5.js",
@@ -8,7 +8,15 @@
   "typings": "./ng2-adsk-forge-viewer.d.ts",
   "author": "NBS",
   "license": "MIT",
-  "repository": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theNBS/ng2-adsk-forge-viewer.git"
+  },
+  "keywords": [
+    "autodesk",
+    "forge",
+    "angular"
+  ],
   "engines": {
     "node": ">= 6.9.0",
     "npm": ">= 3.0.0"
