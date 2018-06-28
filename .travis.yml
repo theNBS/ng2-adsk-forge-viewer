@@ -21,5 +21,6 @@ before_script:
 - npm install rxjs -g
 - npm cache verify
 - npm run lint
+- npm run test:once
 
 script: npm run coverage
