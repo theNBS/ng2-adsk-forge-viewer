@@ -34,6 +34,84 @@ declare namespace Autodesk.Viewing {
     RENDERING,
   }
 
+  enum KeyCode {
+    BACKSPACE = 8,
+    TAB = 9,
+    ENTER = 13,
+    SHIFT = 16,
+    CONTROL = 17,
+    ALT = 18,
+    ESCAPE = 27,
+    SPACE = 32,
+    PAGEUP = 33,
+    PAGEDOWN = 34,
+    END = 35,
+    HOME = 36,
+    LEFT = 37,
+    UP = 38,
+    RIGHT = 39,
+    DOWN = 40,
+    INSERT = 45,
+    DELETE = 46,
+    ZERO = 48,
+    SEMICOLONMOZ = 59,
+    EQUALSMOZ = 61,
+    a = 65,
+    b = 66,
+    c = 67,
+    d = 68,
+    e = 69,
+    f = 70,
+    g = 71,
+    h = 72,
+    i = 73,
+    j = 74,
+    k = 75,
+    l = 76,
+    m = 77,
+    n = 78,
+    o = 79,
+    p = 80,
+    q = 81,
+    r = 82,
+    s = 83,
+    t = 84,
+    u = 85,
+    v = 86,
+    w = 87,
+    x = 88,
+    y = 89,
+    z = 90,
+    LCOMMAND = 91,
+    RCOMMAND = 93,
+    PLUS = 107,
+    PLUSMOZ = 171,
+    DASHMOZ = 109,
+    F1 = 112,
+    F2 = 113,
+    F3 = 114,
+    F4 = 115,
+    F5 = 116,
+    F6 = 117,
+    F7 = 118,
+    F8 = 119,
+    F9 = 120,
+    F10 = 121,
+    F11 = 122,
+    F12 = 123,
+    DASHMOZNEW = 173,
+    SEMICOLON = 186,
+    EQUALS = 187,
+    COMMA = 188,
+    DASH = 189,
+    PERIOD = 190,
+    SLASH = 191,
+    LBRACKET = 219,
+    RBRACKET = 221,
+    SINGLEQUOTE = 222,
+    COMMANDMOZ = 224,
+  }
+
   interface InitializerOptions {
     env?: 'Development'|'Staging'|'Production'|'AutodeskDevelopment'|'AutodeskStaging'|'AutodeskProduction'|string;
     accessToken?: string;
@@ -390,6 +468,7 @@ declare namespace Autodesk.Viewing {
     getFOV(): number;
     getHiddenModels(): any[]; // Array<RenderModel>;
     getHiddenNodes(): any[];   // Array of nodes
+    getHotkeyManager(): any;
     getIsolatedNodes(): any[]; // Array of nodes
     getLayerStates(): any[];
     getLoadedExtensions(): any[];
@@ -445,6 +524,7 @@ declare namespace Autodesk.Viewing {
     setFocalLength(mm: number): void;
     setFOV(degrees: number): void;
     setGhosting(value: boolean): void;
+    setGrayscale(value: boolean): void;
     setGroundReflection(value: boolean): void;
     setGroundReflectionAlpha(alpha: number): void;
     setGroundReflectionColor(color: THREE.Color): void;
