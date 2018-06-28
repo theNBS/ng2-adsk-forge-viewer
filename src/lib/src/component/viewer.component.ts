@@ -187,8 +187,7 @@ export class ViewerComponent implements OnDestroy {
    */
   private loadScripts() {
     this.script.load(
-      'https://developer.api.autodesk.com/modelderivative/v2/viewers/three.min.js?v=4.*.*',
-      'https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=4.*.*',
+      'https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=5.*.*',
     )
       .then((data) => {
         this.log('script loaded ', data);
