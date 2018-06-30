@@ -42,16 +42,17 @@ component.html:
 ### Step 3
 There is a specific flow of logic to initialize the viewer:
 
-1. The viewer is constructed and loads scripts/resources from Autodesk's servers
+1. Set viewerOptions
+2. The viewer is constructed, loads scripts/resources from Autodesk's servers
 2. The onViewerScriptsLoaded event emits to indicate all viewer resources have been loaded
-3. viewerOptions input can now be set, which triggers the creation of the ViewingApplication (i.e. Autodesk.Viewing.Initializer is called)
-    - A helper method `getDefaultViewerOptions` can be used to get the most basic viewer options
+3. A onViewingApplicationInitialized callback is called indicating the ViewingApplication is ready (i.e. Autodesk.Viewing.Initializer has been called) and a document can be loaded
 4. The `onViewingApplicationInitialized` event is emitted and you can now load a document. The event arguments contain a reference to the viewer which can be used to set the documentId to load. E.g.:
   ```typescript
   public loadDocument(event: ViewingApplicationInitializedEvent) {
     event.viewerComponent.DocumentId = 'DOCUMENT_URN_GOES_HERE';
   }
   ```
+  - A helper method `getDefaultViewerOptions` can be used to get the most basic viewer options
 
 ### Step 4
 When the document has been loaded the `onDocumentChanged` event is emitted. This event can be used to define the view to display (by default, the viewer will load the first 3D viewable it can find).
@@ -61,8 +62,6 @@ An example of displaying a 2D viewable:
 component.html:
 ```html
 <adsk-forge-viewer [viewerOptions]="viewerOptions2d"
-                    (onViewerScriptsLoaded)="setViewerOptions()"
-                    (onViewingApplicationInitialized)="loadDocument($event)"
                     (onDocumentChanged)="documentChanged($event)"></adsk-forge-viewer>
 ```
 
@@ -94,6 +93,7 @@ interface ViewerOptions {
   headlessViewer?: boolean;
   showFirstViewable?: boolean;
   debugMessages?: boolean;
+  onViewingApplicationInitialized: (args: ViewingApplicationInitializedEvent) => void;
 }
 ```
 
@@ -112,6 +112,10 @@ this.viewerOptions3d = {
       // Pass new token and expire time to Viewer's callback method
       onGetAccessToken(ACCESS_TOKEN, EXPIRE_TIME);
     },
+  },
+  onViewingApplicationInitialized: (args: ViewingApplicationInitializedEvent) => {
+    // Load document in the viewer
+    args.viewerComponent.DocumentId = 'DOCUMENT_URN_HERE';
   },
 };
 ```
@@ -135,6 +139,10 @@ this.viewerOptions3d = {
     },
   },
   headlessViewer: true,
+  onViewingApplicationInitialized: (args: ViewingApplicationInitializedEvent) => {
+    // Load document in the viewer
+    args.viewerComponent.DocumentId = 'DOCUMENT_URN_HERE';
+  },
 };
 ```
 

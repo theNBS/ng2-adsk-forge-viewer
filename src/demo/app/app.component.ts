@@ -32,9 +32,7 @@ export class AppComponent implements OnInit {
       height: 400,
       // defaultImageSrc: '',
     };
-  }
 
-  public setViewerOptions() {
     this.viewerOptions3d = {
       initializerOptions: {
         env: 'AutodeskProduction',
@@ -43,6 +41,7 @@ export class AppComponent implements OnInit {
           onGetAccessToken(ACCESS_TOKEN, expireTimeSeconds);
         },
       },
+      onViewingApplicationInitialized: this.loadDocument,
       // showFirstViewable: false,
       // headlessViewer: true,
     };
@@ -50,8 +49,8 @@ export class AppComponent implements OnInit {
     this.viewerOptions2d = Object.assign({}, this.viewerOptions3d, { showFirstViewable: false });
   }
 
-  public loadDocument(event: ViewingApplicationInitializedEvent) {
-    event.viewerComponent.DocumentId = DOCUMENT_URN;
+  public loadDocument(args: ViewingApplicationInitializedEvent) {
+    args.viewerComponent.DocumentId = DOCUMENT_URN;
   }
 
   public documentChanged(event: DocumentChangedEvent) {

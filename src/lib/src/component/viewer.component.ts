@@ -46,6 +46,7 @@ export interface ViewerOptions {
   viewerConfig?: Autodesk.Viewing.ViewerConfig;
   headlessViewer?: boolean;
   showFirstViewable?: boolean;
+  onViewingApplicationInitialized: (args: ViewingApplicationInitializedEvent) => void;
 }
 
 
@@ -58,8 +59,6 @@ export interface ViewerOptions {
 export class ViewerComponent implements OnDestroy {
   readonly containerId = 'ng2-adsk-forge-viewer-container';
 
-  @Output() public onViewerScriptsLoaded = new EventEmitter<boolean>();
-  @Output() public onViewingApplicationInitialized = new EventEmitter<ViewingApplicationInitializedEvent>();
   @Output() public onDocumentChanged = new EventEmitter<DocumentChangedEvent>();
   @Output() public onItemLoaded = new EventEmitter<ItemLoadedEvent>();
   @Output() public onError = new EventEmitter<Autodesk.Viewing.ErrorCodes>();
@@ -93,14 +92,12 @@ export class ViewerComponent implements OnDestroy {
     return (documentId.startsWith('urn:')) ? documentId : `urn:${documentId}`;
   }
 
-  constructor(private script: ScriptService) {
-    this.loadScripts();
-  }
+  constructor(private script: ScriptService) { }
 
   @Input() public set viewerOptions(options: ViewerOptions) {
     if (!this.viewerInitialized && options) {
       this._viewerOptions = options;
-      this.initialiseApplication();
+      void this.initialiseApplication();
     }
   }
 
@@ -128,6 +125,7 @@ export class ViewerComponent implements OnDestroy {
    * Helper method to get some default viewer options
    */
   public getDefaultViewerOptions(
+    onViewingApplicationInitialized: (args: ViewingApplicationInitializedEvent) => void,
     getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => void,
   ): ViewerOptions {
     return {
@@ -135,6 +133,7 @@ export class ViewerComponent implements OnDestroy {
         env: 'AutodeskProduction',
         getAccessToken,
       },
+      onViewingApplicationInitialized,
     };
   }
 
@@ -185,13 +184,12 @@ export class ViewerComponent implements OnDestroy {
    * We don't bundle Autodesk's scripts with the component, and we don't really want users to have
    * to add the scripts to their index.html pages. So we'll load them when required.
    */
-  private loadScripts() {
-    this.script.load(
+  private loadScripts(): Promise<void> {
+    return this.script.load(
       'https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=5.*.*',
     )
       .then((data) => {
         this.log('script loaded ', data);
-        this.onViewerScriptsLoaded.emit(true);
       })
       .catch(error => this.error(error));
   }
@@ -199,7 +197,10 @@ export class ViewerComponent implements OnDestroy {
   /**
    * Initialises a ViewingApplication
    */
-  private initialiseApplication() {
+  private async initialiseApplication() {
+    // Load scripts first
+    await this.loadScripts();
+
     // Check if the viewer has already been initialised - this isn't the nicest, but we've set the env in our
     // options above so we at least know that it was us who did this!
     if (!Autodesk.Viewing.Private.env) {
@@ -232,7 +233,7 @@ export class ViewerComponent implements OnDestroy {
 
     // Viewer is ready - scripts are loaded and we've create a new viewing application
     this.viewerInitialized = true;
-    this.onViewingApplicationInitialized.emit({ viewingApplication: this.viewerApp, viewerComponent: this });
+    this.viewerOptions.onViewingApplicationInitialized({ viewingApplication: this.viewerApp, viewerComponent: this });
   }
 
   /**
