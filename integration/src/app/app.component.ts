@@ -6,7 +6,10 @@ import { ScriptService } from 'ng2-adsk-forge-viewer';
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  constructor(private scriptService: ScriptService) {
+  constructor(
+    // tslint:disable-next-line
+    private scriptService: ScriptService,
+  ) {
     void this.scriptService.load();
   }
 }

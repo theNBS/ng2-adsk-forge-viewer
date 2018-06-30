@@ -1,7 +1,7 @@
 // tslint:disable:no-string-literal
 import 'rxjs/add/observable/of';
 
-import { async, ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
@@ -36,7 +36,7 @@ describe('ViewerComponent', () => {
   let component: ViewerComponent;
   let fixture: ComponentFixture<ViewerComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(() => {
     return TestBed.configureTestingModule({
       declarations: [
         ViewerComponent,
@@ -46,7 +46,7 @@ describe('ViewerComponent', () => {
       ],
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ViewerComponent);
@@ -222,23 +222,24 @@ describe('ViewerComponent', () => {
       component['viewerApp'] = mockApp as any;
     });
 
-    it('Calls full initialise', () => {
+    it('Calls full initialise', async (done) => {
       const spy = spyOn(Autodesk.Viewing, 'Initializer').and.stub();
       const initializerOptions = { env: 'Production' };
 
       component.viewerOptions = { initializerOptions } as any;
-      component['initialiseApplication']();
+      await component['initialiseApplication']();
 
       expect(spy.calls.mostRecent().args[0]).toBe(initializerOptions);
+      done();
     });
 
-    it('Skips full initialise', (done) => {
+    it('Skips full initialise', async (done) => {
       const spy = spyOn(component, 'initialized' as any).and.stub();
       const initializerOptions = { env: 'Production' };
 
       Autodesk.Viewing.Private['env' as any] = 'Production';
       component.viewerOptions = { initializerOptions } as any;
-      component['initialiseApplication']();
+      await component['initialiseApplication']();
 
       setTimeout(() => {
         expect(spy).toHaveBeenCalled();
@@ -246,28 +247,33 @@ describe('ViewerComponent', () => {
       });
     });
 
-    it('initialized calls correct methods', (done) => {
+    it('initialized calls correct methods', async (done) => {
       const viewingAppSpy = spyOn(Autodesk.Viewing, 'ViewingApplication').and.returnValue(mockApp);
       const registerBasicExtensionSpy = spyOn(component, 'registerBasicExtension' as any).and.returnValue('mockExt');
       const addBasicExtensionConfigSpy = spyOn(component, 'addBasicExtensionConfig' as any).and.stub();
       const registerViewerSpy = spyOn(mockApp, 'registerViewer' as any).and.stub();
 
-      const viewerApplicationOptions = { disableBrowserContextMenu: true };
-      component.viewerOptions = { viewerApplicationOptions } as any;
+      const mockAppInitialised = (args: ViewingApplicationInitializedEvent) => {
+        expect(args.viewingApplication).toBe(mockApp);
+        expect(args.viewerComponent).toBe(component);
+        done();
+      };
 
-      component['initialized']();
+      const viewerApplicationOptions = {
+        disableBrowserContextMenu: true,
+      };
+      component.viewerOptions = {
+        viewerApplicationOptions,
+        onViewingApplicationInitialized: mockAppInitialised,
+      } as any;
+
+      await component['initialized']();
 
       expect(viewingAppSpy).toHaveBeenCalledWith('ng2-adsk-forge-viewer-container', viewerApplicationOptions);
       expect(registerBasicExtensionSpy).toHaveBeenCalled();
       expect(addBasicExtensionConfigSpy).toHaveBeenCalledWith('mockExt');
       expect(registerViewerSpy).toHaveBeenCalled();
       expect(component['viewerInitialized' as any]).toBe(true);
-
-      component.onViewingApplicationInitialized.subscribe((val: ViewingApplicationInitializedEvent) => {
-        expect(val.viewingApplication).toBe(mockApp);
-        expect(val.viewerComponent).toBe(component);
-        done();
-      });
     });
   });
 
@@ -276,13 +282,15 @@ describe('ViewerComponent', () => {
       const mockCallback = (onGetAccessToken: (token: string, expire: number) => void) => {
         return '';
       };
+      const mockAppInitialised = (args: ViewingApplicationInitializedEvent) => { return; };
 
-      const actual = component.getDefaultViewerOptions(mockCallback);
+      const actual = component.getDefaultViewerOptions(mockAppInitialised, mockCallback);
       const expected = {
         initializerOptions: {
           env: 'AutodeskProduction',
           getAccessToken: mockCallback,
         },
+        onViewingApplicationInitialized: mockAppInitialised,
       };
 
       expect(actual).toEqual(expected);

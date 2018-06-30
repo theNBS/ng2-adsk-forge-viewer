@@ -6,15 +6,11 @@
 
 <div id="3D" *ngIf="view === 1">
     <adsk-forge-viewer [viewerOptions]="viewerOptions3d"
-                    (onViewerScriptsLoaded)="setViewerOptions()"
-                    (onViewingApplicationInitialized)="loadDocument($event)"
                     (onSelectionChanged)="selectionChanged($event)"></adsk-forge-viewer>
 </div>
 
 <div id="2D" *ngIf="view === 2">
     <adsk-forge-viewer [viewerOptions]="viewerOptions2d"
-                    (onViewerScriptsLoaded)="setViewerOptions()"
-                    (onViewingApplicationInitialized)="loadDocument($event)"
                     (onDocumentChanged)="documentChanged($event)"
                     (onSelectionChanged)="selectionChanged($event)"></adsk-forge-viewer>
 </div>
