@@ -33,9 +33,7 @@ Add `<adsk-forge-viewer></adsk-forge-viewer>` element to your component html
 
 component.html:
 ```html
-<adsk-forge-viewer [viewerOptions]="viewerOptions3d"
-                   (onViewerScriptsLoaded)="setViewerOptions()"
-                   (onViewingApplicationInitialized)="loadDocument($event)">
+<adsk-forge-viewer [viewerOptions]="viewerOptions3d">
 </adsk-forge-viewer>
 ```
 
