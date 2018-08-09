@@ -334,7 +334,7 @@ describe('Extension', () => {
     const spy = spyOn(Autodesk.Viewing.theExtensionManager, 'registerExtension').and.stub();
     const mockExtension: Object = { extensionName: mockExtensionName };
 
-    Extension.registerExtension(mockExtension);
+    Extension.registerExtension(mockExtensionName, mockExtension);
 
     expect(spy).toHaveBeenCalledWith(mockExtensionName, mockExtension);
   });
@@ -342,7 +342,7 @@ describe('Extension', () => {
   it('Unregisters extension', () => {
     const spy = spyOn(Autodesk.Viewing.theExtensionManager, 'unregisterExtension').and.stub();
 
-    Extension.unregisterExtension();
+    Extension.unregisterExtension(mockExtensionName);
 
     expect(spy).toHaveBeenCalledWith(mockExtensionName);
   });

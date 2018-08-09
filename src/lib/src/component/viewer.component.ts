@@ -46,6 +46,7 @@ export interface ViewerOptions {
   viewerConfig?: Autodesk.Viewing.ViewerConfig;
   headlessViewer?: boolean;
   showFirstViewable?: boolean;
+  onViewerScriptsLoaded?: () => void;
   onViewingApplicationInitialized: (args: ViewingApplicationInitializedEvent) => void;
 }
 
@@ -200,6 +201,7 @@ export class ViewerComponent implements OnDestroy {
   private async initialiseApplication() {
     // Load scripts first
     await this.loadScripts();
+    if (this.viewerOptions.onViewerScriptsLoaded) this.viewerOptions.onViewerScriptsLoaded();
 
     // Check if the viewer has already been initialised - this isn't the nicest, but we've set the env in our
     // options above so we at least know that it was us who did this!
@@ -307,7 +309,7 @@ export class ViewerComponent implements OnDestroy {
    * Register our BasicExtension with the Forge Viewer
    */
   private registerBasicExtension(): string {
-    BasicExtension.registerExtension(this.extensionLoaded.bind(this));
+    BasicExtension.registerExtension(BasicExtension.extensionName, this.extensionLoaded.bind(this));
     return BasicExtension.extensionName;
   }
 
@@ -347,7 +349,7 @@ export class ViewerComponent implements OnDestroy {
   }
 
   private unregisterBasicExtension() {
-    BasicExtension.unregisterExtension();
+    BasicExtension.unregisterExtension(BasicExtension.extensionName);
     this.basicExt = null;
   }
 

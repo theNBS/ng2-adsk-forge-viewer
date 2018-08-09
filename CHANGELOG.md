@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.2></a>
+## 0.1.2 (2018-08-09)
+
+- Added a callback when sciprt have been loaded - so that extnesions can be registered before the
+  viewer app is initialised
+- Added a test extension to exercise loading additional extensions
+
 <a name="0.1.1></a>
 ## 0.1.1 (2018-06-30)
 

@@ -30,7 +30,7 @@ describe('BasicExtension', () => {
       const spy = spyOn(Extension, 'registerExtension').and.stub();
       const mockCallback = (ext: BasicExtension) => { return; };
 
-      BasicExtension['registerExtension'](mockCallback);
+      BasicExtension['registerExtension']('', mockCallback);
 
       expect(spy).toHaveBeenCalled();
       expect(BasicExtension['callback']).toBe(mockCallback);

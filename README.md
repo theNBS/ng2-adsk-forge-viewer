@@ -42,7 +42,7 @@ There is a specific flow of logic to initialize the viewer:
 
 1. Set viewerOptions
 2. The viewer is constructed, loads scripts/resources from Autodesk's servers
-2. The onViewerScriptsLoaded event emits to indicate all viewer resources have been loaded
+2. The onViewerScriptsLoaded callback (optional) is called to indicate all viewer resources have been loaded
 3. A onViewingApplicationInitialized callback is called indicating the ViewingApplication is ready (i.e. Autodesk.Viewing.Initializer has been called) and a document can be loaded
 4. The `onViewingApplicationInitialized` event is emitted and you can now load a document. The event arguments contain a reference to the viewer which can be used to set the documentId to load. E.g.:
   ```typescript
@@ -91,6 +91,7 @@ interface ViewerOptions {
   headlessViewer?: boolean;
   showFirstViewable?: boolean;
   debugMessages?: boolean;
+  onViewerScriptsLoaded?: () => void;
   onViewingApplicationInitialized: (args: ViewingApplicationInitializedEvent) => void;
 }
 ```
@@ -184,7 +185,29 @@ export class MyExtension extends Extension {
 }
 ```
 
-Most of the methods in the abstract `Extension` class are protected. So they can be overriden in derived classes if required. For example, the BasicExtension overrides the `registerExtension` method to take a callback to let the viewer component knows when the Extension has been registered.
+Example viewer options to register and load the above extension:
+
+```typescript
+this.viewerOptions3d = {
+  initializerOptions: {
+    env: 'AutodeskProduction',
+    getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => {
+      // Call back-end API endpoint to get a new token
+      // Pass new token and expire time to Viewer's callback method
+      onGetAccessToken(ACCESS_TOKEN, EXPIRE_TIME);
+    },
+  },
+  onViewerScriptsLoaded: () => {
+    Extension.registerExtension(MyExtension.extensionName, MyExtension);
+  },
+  onViewingApplicationInitialized: (args: ViewingApplicationInitializedEvent) => {
+    // Load document in the viewer
+    args.viewerComponent.DocumentId = 'DOCUMENT_URN_HERE';
+  },
+};
+```
+
+Most of the methods in the abstract `Extension` class are protected. So they can be overriden in derived classes if required. For example, the BasicExtension overrides the `registerExtension` method to take a callback to let the viewer component know when the Extension has been registered.
 
 ## Building the component
 
