@@ -5,8 +5,10 @@ import {
   DocumentChangedEvent,
   SelectionChangedEventArgs,
   ThumbnailOptions,
+  Extension,
 } from 'ng2-adsk-forge-viewer';
 
+import { TestExtension } from './test-extension';
 import { ACCESS_TOKEN, DOCUMENT_URN } from './config';
 
 @Component({
@@ -41,12 +43,20 @@ export class AppComponent implements OnInit {
           onGetAccessToken(ACCESS_TOKEN, expireTimeSeconds);
         },
       },
+      viewerConfig: {
+        extensions: [TestExtension.extensionName],
+      },
+      onViewerScriptsLoaded: this.scriptsLoaded,
       onViewingApplicationInitialized: this.loadDocument,
       // showFirstViewable: false,
       // headlessViewer: true,
     };
 
     this.viewerOptions2d = Object.assign({}, this.viewerOptions3d, { showFirstViewable: false });
+  }
+
+  public scriptsLoaded() {
+    Extension.registerExtension(TestExtension.extensionName, TestExtension);
   }
 
   public loadDocument(args: ViewingApplicationInitializedEvent) {

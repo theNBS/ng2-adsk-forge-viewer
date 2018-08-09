@@ -27,9 +27,9 @@ export class BasicExtension extends Extension {
     Autodesk.Viewing.SHOW_EVENT,
   ];
 
-  public static registerExtension(callback: (ext: BasicExtension) => void) {
+  public static registerExtension(extensionName: string, callback: (ext: BasicExtension) => void) {
     BasicExtension.callback = callback;
-    super.registerExtension(BasicExtension);
+    super.registerExtension(BasicExtension.extensionName, BasicExtension);
   }
 
   public load() {

@@ -168,12 +168,12 @@ export abstract class Extension {
 
   protected eventArgsTypeMap: { [key: string]: Function } = {};
 
-  public static registerExtension(extension: Object) {
-    Autodesk.Viewing.theExtensionManager.registerExtension(this.extensionName, extension);
+  public static registerExtension(extensionName: string, extension: Object) {
+    Autodesk.Viewing.theExtensionManager.registerExtension(extensionName, extension);
   }
 
-  public static unregisterExtension() {
-    Autodesk.Viewing.theExtensionManager.unregisterExtension(this.extensionName);
+  public static unregisterExtension(extensionName: string) {
+    Autodesk.Viewing.theExtensionManager.unregisterExtension(extensionName);
   }
 
   constructor(viewer: Autodesk.Viewing.Viewer3D,
