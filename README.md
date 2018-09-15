@@ -17,7 +17,7 @@ The wrapper was designed to meet the following requirements:
 
 ## Dependencies
 
-The library targets Angular 5.
+The library targets Angular 5 (and also works with Angular 6).
 
 ## Using the viewer component
 

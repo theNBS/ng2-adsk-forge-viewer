@@ -6,7 +6,6 @@ All notable changes to this project will be documented in this file. See [standa
 ## 0.1.3 (2018-09-15)
 
 - Upgrade to Viewer version 6.0
-- Upgrade to Angular 6
 
 <a name="0.1.2></a>
 ## 0.1.2 (2018-08-09)
