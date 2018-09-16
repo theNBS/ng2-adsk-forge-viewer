@@ -466,6 +466,7 @@ declare namespace Autodesk.Viewing {
     getFirstPersonToolPopup(): boolean;
     getFocalLength(): number;
     getFOV(): number;
+    getVisibleModels(): Model[];
     getHiddenModels(): any[]; // Array<RenderModel>;
     getHiddenNodes(): any[];   // Array of nodes
     getHotkeyManager(): any;
@@ -478,7 +479,6 @@ declare namespace Autodesk.Viewing {
     getObjectTree(onSuccessCallback?: Function, onErrorCallback?: Function): void;
     getProperties(dbid: number, onSuccessCallback?: Function, onErrorCallback?: Function): void;
     getScreenShot(w?: number, h?: number, cb?: Function): any; // DOMString
-    getScreenShotBuffer(w?: number, h?: number, cb?: Function): any;
     getSelection(): number[];
     getSelectionCount(): number;
     getSelectionVisibility(): SelectionVisibility;
