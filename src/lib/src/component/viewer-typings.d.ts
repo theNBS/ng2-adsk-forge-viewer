@@ -112,6 +112,10 @@ declare namespace Autodesk.Viewing {
     COMMANDMOZ = 224,
   }
 
+  interface ViewerEvent extends EventListenerOrEventListenerObject {
+    [key: string]: any;
+  };
+
   interface InitializerOptions {
     env?: 'Development'|'Staging'|'Production'|'AutodeskDevelopment'|'AutodeskStaging'|'AutodeskProduction'|string;
     accessToken?: string;
@@ -250,6 +254,7 @@ declare namespace Autodesk.Viewing {
   const SHOW_EVENT = 'show';
   const TEXTURES_LOADED_EVENT = 'texturesLoaded';
   const TOOL_CHANGE_EVENT = 'toolChanged';
+  const TOOLBAR_CREATED_EVENT = 'toolbarCreated';
   const VIEWER_INITIALIZED = 'viewerInitialized';
   const VIEWER_RESIZE_EVENT = 'viewerResize';
   const VIEWER_STATE_RESTORED_EVENT = 'viewerStateRestored';
@@ -499,6 +504,7 @@ declare namespace Autodesk.Viewing {
     leaveLiveReview(): void;
     load(svfURN: string, sharedPropertyDbPath?: string, onSuccessCallback?: Function,
          onErrorCallback?: Function, loadOptions?: Object): void; // loadOptions Object?
+    loadDocumentNode(lmvDocument: Document, bubbleNode: BubbleNode, options?: Object)
     loadModel(url: string, options?: LoadModelOptions, onSuccessCallback?: Function, onErrorCallback?: Function): void;
     localize(): void;
     modelHasTopology(): boolean;
@@ -565,6 +571,7 @@ declare namespace Autodesk.Viewing {
     tearDown(): void;
     toggleSelect(dbid: number, selectionType: SelectionMode): void;
     toggleVisibility(node: number): void;
+    get toolbar(): Toolbar;
     trackADPSettingsOptions(): void;
     transferModel(): void;
     uninitialize(): void;
@@ -572,10 +579,12 @@ declare namespace Autodesk.Viewing {
     worldToClient(point: THREE.Vector3): THREE.Vector3;
 
     // Events
-    addEventListener(type: string, listener?: EventListenerOrEventListenerObject,
+    addEventListener(type: string,
+                     listener?: ViewerEvent,
                      options?: boolean | AddEventListenerOptions): void;
     dispatchEvent(evt: Event): boolean;
-    removeEventListener(type: string, listener?: EventListenerOrEventListenerObject,
+    removeEventListener(type: string,
+                        listener?: ViewerEvent,
                         options?: boolean | EventListenerOptions): void;
   }
 
@@ -795,6 +804,11 @@ declare namespace Autodesk.Viewing {
     class Control implements EventTarget {
       constructor(id?: string, options?: ControlOptions);
 
+      Event = {
+        VISIBILITY_CHANGED: 'Control.VisibilityChanged',
+        COLLAPSED_CHANGED: 'Control.CollapsedChanged',
+      };
+
       addClass(cssClass: string): void;
       getDimensions(): Object;
       getId(): string;
@@ -809,10 +823,12 @@ declare namespace Autodesk.Viewing {
       setVisible(visible: boolean): boolean;
 
       // Events
-      addEventListener(type: string, listener?: EventListenerOrEventListenerObject,
+      addEventListener(type: string,
+                       listener?: ViewerEvent,
                        options?: boolean | AddEventListenerOptions): void;
       dispatchEvent(evt: Event): boolean;
-      removeEventListener(type: string, listener?: EventListenerOrEventListenerObject,
+      removeEventListener(type: string,
+                          listener?: ViewerEvent,
                           options?: boolean | EventListenerOptions): void;
     }
 
@@ -827,7 +843,51 @@ declare namespace Autodesk.Viewing {
     }
 
     class ToolBar extends ControlGroup {
-     // Nothing here
+      constructor(id: string, options?: Object);
+    }
+
+    class RadioButtonGroup extends ControlGroup {
+      constructor(id: string, options?: Object);
+
+      Event = {
+        ACTIVE_BUTTON_CHANGED: 'RadioButtonGroup.ActiveButtonChanged',
+      };
+
+      addControl(control: Control, options: Object);
+      getActiveButton(): Button;
+      removeControl(control: string | Control): boolean;
+    }
+
+    class Button extends Control {
+      constructor(id: string, options?: Object);
+
+      State = {
+        ACTIVE: 0,
+        INACTIVE: 1,
+        DISABLED: 2
+      };
+
+      Event = {
+        VISIBILITY_CHANGED: 'Control.VisibilityChanged',
+        COLLAPSED_CHANGED: 'Control.CollapsedChanged',
+        STATE_CHANGED: 'Button.StateChanged',
+        CLICK: 'click',
+      };
+
+      getState(): State;
+      onClick: (event: Event) => void;
+      onMouseOut: (event: Event) => void;
+      onMouseOver: (event: Event) => void;
+      setIcon(iconClass: string): void;
+      setState(state: State): boolean;
+    }
+
+    class ComboButton extends Button {
+      constructor(id: string, options?: Object);
+
+      addControl(): void;
+      restoreDefault(): void;
+      saveAsDefault(): void;
     }
   }
 

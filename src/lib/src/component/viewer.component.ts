@@ -111,8 +111,10 @@ export class ViewerComponent implements OnDestroy {
 
     if (this.viewerApp) {
       const viewer = this.viewerApp.getCurrentViewer();
-      viewer.tearDown();
-      viewer.uninitialize();
+      if (viewer) {
+        viewer.tearDown();
+        viewer.uninitialize();
+      }
     }
 
     this.viewerApp = null;
