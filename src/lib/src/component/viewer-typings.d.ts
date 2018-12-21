@@ -504,7 +504,7 @@ declare namespace Autodesk.Viewing {
     leaveLiveReview(): void;
     load(svfURN: string, sharedPropertyDbPath?: string, onSuccessCallback?: Function,
          onErrorCallback?: Function, loadOptions?: Object): void; // loadOptions Object?
-    loadDocumentNode(lmvDocument: Document, bubbleNode: BubbleNode, options?: Object)
+    loadDocumentNode(lmvDocument: Document, bubbleNode: BubbleNode, options?: Object): void;
     loadModel(url: string, options?: LoadModelOptions, onSuccessCallback?: Function, onErrorCallback?: Function): void;
     localize(): void;
     modelHasTopology(): boolean;
@@ -855,7 +855,7 @@ declare namespace Autodesk.Viewing {
 
       Event: ControlEventArgs;
 
-      addControl(control: Control, options: Object);
+      addControl(control: Control, options: Object): boolean;
       getActiveButton(): Button;
       removeControl(control: string | Control): boolean;
     }

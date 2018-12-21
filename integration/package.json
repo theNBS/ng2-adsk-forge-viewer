@@ -41,10 +41,10 @@
   "devDependencies": {
     "@types/jasmine": "2.5.36",
     "concurrently": "^3.4.0",
-    "jasmine-core": "^2.5.2",
     "glob": "^7.1.1",
+    "jasmine-core": "^2.5.2",
     "lite-server": "^2.2.2",
-    "protractor": "~5.1.0",
+    "protractor": "^5.4.1",
     "rimraf": "^2.5.4",
     "rollup": "^0.42.0",
     "rollup-plugin-commonjs": "^8.0.2",
