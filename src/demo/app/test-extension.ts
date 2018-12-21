@@ -1,7 +1,7 @@
 import { Extension } from 'ng2-adsk-forge-viewer';
 
 // tslint:disable-next-line:prefer-const
-let THREE: any;
+declare const THREE: any;
 
 export class TestExtension extends Extension {
   // Extension must have a name
