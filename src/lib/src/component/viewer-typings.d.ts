@@ -112,9 +112,9 @@ declare namespace Autodesk.Viewing {
     COMMANDMOZ = 224,
   }
 
-  interface ViewerEvent extends EventListenerOrEventListenerObject {
+  interface ViewerEvent {
     [key: string]: any;
-  };
+  }
 
   interface InitializerOptions {
     env?: 'Development'|'Staging'|'Production'|'AutodeskDevelopment'|'AutodeskStaging'|'AutodeskProduction'|string;
@@ -571,7 +571,7 @@ declare namespace Autodesk.Viewing {
     tearDown(): void;
     toggleSelect(dbid: number, selectionType: SelectionMode): void;
     toggleVisibility(node: number): void;
-    get toolbar(): Toolbar;
+    toolbar: Autodesk.Viewing.UI.ToolBar;
     trackADPSettingsOptions(): void;
     transferModel(): void;
     uninitialize(): void;
@@ -801,14 +801,18 @@ declare namespace Autodesk.Viewing {
       show(event: Event): void;
     }
 
+    class ControlEventArgs {
+      VISIBILITY_CHANGED: 'Control.VisibilityChanged';
+      COLLAPSED_CHANGED: 'Control.CollapsedChanged';
+      ACTIVE_BUTTON_CHANGED: 'RadioButtonGroup.ActiveButtonChanged';
+      STATE_CHANGED: 'Button.StateChanged';
+      CLICK: 'click';
+    }
+
     class Control implements EventTarget {
       constructor(id?: string, options?: ControlOptions);
 
-      Event = {
-        VISIBILITY_CHANGED: 'Control.VisibilityChanged',
-        COLLAPSED_CHANGED: 'Control.CollapsedChanged',
-      };
-
+      Event: ControlEventArgs;
       addClass(cssClass: string): void;
       getDimensions(): Object;
       getId(): string;
@@ -849,37 +853,31 @@ declare namespace Autodesk.Viewing {
     class RadioButtonGroup extends ControlGroup {
       constructor(id: string, options?: Object);
 
-      Event = {
-        ACTIVE_BUTTON_CHANGED: 'RadioButtonGroup.ActiveButtonChanged',
-      };
+      Event: ControlEventArgs;
 
       addControl(control: Control, options: Object);
       getActiveButton(): Button;
       removeControl(control: string | Control): boolean;
     }
 
+    enum ControlStates {
+      ACTIVE = 0,
+      INACTIVE = 1,
+      DISABLED = 2
+    }
+
     class Button extends Control {
       constructor(id: string, options?: Object);
 
-      State = {
-        ACTIVE: 0,
-        INACTIVE: 1,
-        DISABLED: 2
-      };
+      State: ControlStates;
+      Event: ControlEventArgs;
 
-      Event = {
-        VISIBILITY_CHANGED: 'Control.VisibilityChanged',
-        COLLAPSED_CHANGED: 'Control.CollapsedChanged',
-        STATE_CHANGED: 'Button.StateChanged',
-        CLICK: 'click',
-      };
-
-      getState(): State;
+      getState(): ControlStates;
       onClick: (event: Event) => void;
       onMouseOut: (event: Event) => void;
       onMouseOver: (event: Event) => void;
       setIcon(iconClass: string): void;
-      setState(state: State): boolean;
+      setState(state: ControlStates): boolean;
     }
 
     class ComboButton extends Button {
