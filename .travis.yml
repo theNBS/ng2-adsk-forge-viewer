@@ -22,5 +22,6 @@ before_script:
 - npm cache verify
 - npm run lint
 - npm run build
+- npm run test:once
 
 script: npm run coverage
