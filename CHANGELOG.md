@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.6></a>
+## 0.1.6 (2018-12-21)
+
+- Correct return type of some typings (could lead to error TS7010 re. lacking a return type)
+
 <a name="0.1.5></a>
 ## 0.1.5 (2018-12-21)
 
