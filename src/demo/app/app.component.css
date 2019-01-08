@@ -10,3 +10,6 @@
 ::ng-deep .my-view-back-button {
   background: blue;
 }
+::ng-deep .my-view-panel-button {
+  background: green;
+}
