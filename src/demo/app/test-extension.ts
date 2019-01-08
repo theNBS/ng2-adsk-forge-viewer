@@ -80,7 +80,7 @@ export class TestExtension extends Extension {
   }
 
   private displayDockingPanel() {
-    const panel = createSimplePanel(
+    createSimplePanel(
       this.viewer.container,
       '',
       'Test',
