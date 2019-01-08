@@ -1,4 +1,5 @@
 import { Extension } from 'ng2-adsk-forge-viewer';
+import { createSimplePanel } from './test-docking-panel';
 
 // tslint:disable-next-line:prefer-const
 declare const THREE: any;
@@ -63,11 +64,31 @@ export class TestExtension extends Extension {
     button2.addClass('my-view-back-button');
     button2.setToolTip('View Back');
 
+    // Button 3
+    const button3 = new Autodesk.Viewing.UI.Button('my-view-panel-button');
+    button3.onClick = e => this.displayDockingPanel();
+    button3.addClass('my-view-panel-button');
+    button3.setToolTip('Docking panel');
+
     // SubToolbar
     this.subToolbar = new Autodesk.Viewing.UI.ControlGroup('my-custom-view-toolbar');
     this.subToolbar.addControl(button1);
     this.subToolbar.addControl(button2);
+    this.subToolbar.addControl(button3);
 
     this.viewer.toolbar.addControl(this.subToolbar);
+  }
+
+  private displayDockingPanel() {
+    const panel = createSimplePanel(
+      this.viewer.container,
+      '',
+      'Test',
+      document.createElement('div'),
+      0,
+      0,
+    );
+    // panel.initialize();
+    // panel.setVisible(true);
   }
 }

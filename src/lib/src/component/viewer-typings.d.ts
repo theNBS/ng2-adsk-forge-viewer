@@ -451,6 +451,7 @@ declare namespace Autodesk.Viewing {
     clearSelection(): void;
     clearThemingColors(model?: any): void; // RenderModel?
     clientToWorld(clientX: number, clientY: number, ignoreTransparent?: boolean): Object | null;
+    container: HTMLElement;
     createViewCube(): void;
     deactivateExtension(extensionID: string): boolean;
     displayViewCube(display: boolean): void;
@@ -686,6 +687,12 @@ declare namespace Autodesk.Viewing {
     class DockingPanel {
       constructor(parentContainer: HTMLElement, id: string, title: string, options?: DockingPanelOptions);
 
+      closer: HTMLElement;
+      container: HTMLElement;
+      content: Node;
+      title: HTMLElement;
+      titleLabel: string;
+
       addEventListener(target: Object, eventId: string, callback: Function): void;
       addVisibilityListener(callback: Function): void;
       createCloseButton(): HTMLElement;
@@ -837,6 +844,8 @@ declare namespace Autodesk.Viewing {
     }
 
     class ControlGroup extends Control {
+      container: HTMLElement;
+
       addControl(control: Control, options?: AddControlOptions): boolean;
       getControl(controlId: string): Control;
       getControlId(index: number): string;
