@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.7></a>
+## 0.1.7 (2019-01-08)
+
+- Added missing typings to support DockingPanel
+
 <a name="0.1.6></a>
 ## 0.1.6 (2018-12-21)
 
