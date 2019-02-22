@@ -40,7 +40,7 @@ return Promise.resolve()
   .then(() => Promise.resolve()
     .then(() => _relativeCopy('**/*.d.ts', es2015OutputFolder, distFolder))
     .then(() => _relativeCopy('**/*.metadata.json', es2015OutputFolder, distFolder))
-    .then(() => _relativeCopy('viewer-typings.d.ts', path.join(tempLibFolder, '/src/component'), path.join(distFolder, '/src/component')))
+    //.then(() => _relativeCopy('viewer-typings.d.ts', path.join(tempLibFolder, '/src/component'), path.join(distFolder, '/src/component')))
     .then(() => console.log('Typings and metadata copy succeeded.'))
   )
   // Bundle lib.
