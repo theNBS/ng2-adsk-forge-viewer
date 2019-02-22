@@ -9,15 +9,12 @@ The wrapper was designed to meet the following requirements:
 - A viewer component that can be dropped in to an angular anywhere; the component would take care of loading required Scripts and CSS from Autodesk's servers, rather than requiring these to be declared in the index.html.
   - Ensure the viewer can be displayed and removed from the DOM via *ngIf 
 - A basic viewer extension to subscribe to common viewer events - such as Seletion changed, object tree loaded etc. and expose these events on the component
-- Provide TypeScript typings for most of the Forge Viewer API to make the component nice to work with.
-  - All events have strongly typed arguments.
-  - Three.js typings are included so that, where the forge API returns a three js object (such as camera), it is fully typed.
-  > NOTE that I do NOT work for Autodesk and have developed these typings based on the Forge viewer documentation. Some typings might NOT be correct.
+- TypeScript typings - which are now provided via Autodesk's official forge-viewer typings.
 - A component that can be dropped in to display a document thumbnail.
 
 ## Dependencies
 
-The library targets Angular 5 (and also works with Angular 6).
+The library targets Angular 5 (and also works with Angular 6 and 7).
 
 ## Using the viewer component
 
@@ -143,6 +140,33 @@ this.viewerOptions3d = {
     args.viewerComponent.DocumentId = 'DOCUMENT_URN_HERE';
   },
 };
+```
+
+### 3. My model doesn't load
+
+Some users have reported that the default viewable is not rendered and have had to resort to using the onDocumentChanged changed event to load a model in the viewer.
+
+An implementation might look like the following:
+
+app.component.html
+
+```html
+<adsk-forge-viewer [viewerOptions]="viewerOptions2d"
+                    (onDocumentChanged)="documentChanged($event)"></adsk-forge-viewer>
+```
+
+app.component.ts
+
+```typescript
+public documentChanged(event: DocumentChangedEvent) {
+  const viewerApp = event.viewingApplication;
+  if (!viewerApp.bubble) return;
+  const viewables = viewerApp.bubble.search({ type: 'geometry', role: '3d' });
+
+  if (viewables && viewables.length > 0) {
+    event.viewerComponent.selectItem(viewables[0].data);
+  }
+}
 ```
 
 ## Extensions
