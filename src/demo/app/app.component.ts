@@ -45,6 +45,7 @@ export class AppComponent implements OnInit {
       },
       viewerConfig: {
         extensions: [TestExtension.extensionName],
+        theme: 'bim-theme',
       },
       onViewerScriptsLoaded: this.scriptsLoaded,
       onViewingApplicationInitialized: this.loadDocument,

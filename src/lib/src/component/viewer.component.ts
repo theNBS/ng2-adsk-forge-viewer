@@ -1,5 +1,5 @@
 /// <reference types="three" />
-/// <reference path="viewer-typings.d.ts" />
+/// <reference types="forge-viewer" />
 
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy,
   Output } from '@angular/core';

@@ -227,7 +227,7 @@ function _stampReferencePath(distFolder) {
     contents = contents.substring(contents.indexOf('\n') + 1);
     // Replace with correct reference paths
     contents = '/// <reference types="three" />\n'
-      + '/// <reference path="viewer-typings.d.ts" />\n'
+      + '/// <reference types="forge-viewer" />\n'
       + contents;
 
     // Write file

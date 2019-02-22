@@ -16,8 +16,9 @@ export class TestExtension extends Extension {
     console.log('TestExtension loaded!');
 
     this.viewer.addEventListener(Autodesk.Viewing.SELECTION_CHANGED_EVENT, (e: Autodesk.Viewing.ViewerEvent) => {
-      if (e.dbIdArray.length) {
-        const dbId = e.dbIdArray[0];
+      const dbIdArray = (e as any).dbIdArray;
+      if (dbIdArray.length) {
+        const dbId = dbIdArray[0];
         this.viewer.setThemingColor(dbId, new THREE.Vector4(0, 1, 1, 1));
       }
     });
@@ -81,7 +82,7 @@ export class TestExtension extends Extension {
 
   private displayDockingPanel() {
     createSimplePanel(
-      this.viewer.container,
+      this.viewer.container as HTMLElement,
       '',
       'Test',
       document.createElement('div'),
