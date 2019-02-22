@@ -1,5 +1,3 @@
-let panel: SimplePanel;
-
 export function createSimplePanel(
     panelContainer: HTMLElement,
     panelId: string,
@@ -8,6 +6,8 @@ export function createSimplePanel(
     panelX: number,
     panelY: number,
   ) {
+  let panel: SimplePanel;
+
   // Wrapping in function as Autodesk namespace might not be defined
   // Is there a better way?
   class SimplePanel extends Autodesk.Viewing.UI.DockingPanel {

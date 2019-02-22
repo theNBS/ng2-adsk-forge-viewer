@@ -82,7 +82,7 @@ export class TestExtension extends Extension {
 
   private displayDockingPanel() {
     createSimplePanel(
-      this.viewer.container,
+      this.viewer.container as HTMLElement,
       '',
       'Test',
       document.createElement('div'),
