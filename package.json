@@ -1,6 +1,6 @@
 {
   "name": "ng2-adsk-forge-viewer",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Angular wrapper for Autodesk Forge Viewer",
   "main": "./bundles/ng2-adsk-forge-viewer.umd.js",
   "module": "./ng2-adsk-forge-viewer.es5.js",
@@ -45,8 +45,8 @@
     "release": "standard-version"
   },
   "dependencies": {
-    "@types/three": "^0.91.0",
-    "@types/forge-viewer": "^6.3.1"
+    "@types/three": "^0.103.2",
+    "@types/forge-viewer": "^6.4.1"
   },
   "peerDependencies": {
     "@angular/core": ">=5.0.0 <8.0.0"
@@ -65,7 +65,7 @@
     "core-js": "^2.4.1",
     "glob": "^7.1.1",
     "jasmine-core": "^2.7.0",
-    "karma": "^3.1.4",
+    "karma": "^4.1.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-cli": "^1.0.1",
     "karma-coverage": "^1.1.2",
@@ -84,9 +84,9 @@
     "rxjs": "^5.5.2",
     "standard-version": "^4.0.0",
     "systemjs": "^0.19.40",
-    "ts-mockito": "^2.3.0",
-    "tslint": "^5.9.1",
-    "tslint-config-nbs": "^5.4.3",
+    "ts-mockito": "^2.3.1",
+    "tslint": "^5.16.0",
+    "tslint-config-nbs": "^5.4.7",
     "typescript": "~2.4.2",
     "zone.js": "^0.8.4"
   }
