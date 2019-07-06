@@ -1,0 +1,15 @@
+::ng-deep #ng2-adsk-forge-viewer-container {
+  position: relative;
+  width: 100%;
+  height: 95vh;
+}
+
+::ng-deep .my-view-front-button {
+  background: red;
+}
+::ng-deep .my-view-back-button {
+  background: blue;
+}
+::ng-deep .my-view-panel-button {
+  background: green;
+}

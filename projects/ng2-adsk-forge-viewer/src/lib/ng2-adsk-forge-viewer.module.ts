@@ -12,4 +12,4 @@ import { ScriptService } from './service/script.service';
   exports: [ViewerComponent, ThumbnailComponent],
   providers: [ScriptService],
 })
-export class Ng2AdskForgeViewerModule { }
+export class ViewerModule { }

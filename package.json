@@ -4,8 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "test": "ng test --code-coverage --browsers ChromeNoSandboxHeadless --watch=false",
+    "build:app": "ng build",
+    "build:lib": "ng build ng2-adsk-forge-viewer",
+    "test:lib": "ng test ng2-adsk-forge-viewer --code-coverage --browsers ChromeNoSandboxHeadless --watch=false",
     "lint": "ng lint"
   },
   "private": true,
