@@ -22,4 +22,4 @@ before_script:
 - npm run lint
 - npm run build
 
-script: npm run coverage
+script: npm run test
