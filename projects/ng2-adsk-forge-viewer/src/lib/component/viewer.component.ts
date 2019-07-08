@@ -18,36 +18,35 @@ import {
   ObjectTreeUnavailableEventArgs, ResetEventArgs,
   SelectionChangedEventArgs,
   ShowEventArgs,
-  ViewerEventArgs,
+  ViewerEventArgs, ViewerInitializedEventArgs,
 } from '../extensions/extension';
 import { BasicExtension } from '../extensions/basic-extension';
 
 export interface DocumentChangedEvent {
   document: Autodesk.Viewing.Document;
-  viewingApplication: Autodesk.Viewing.ViewingApplication;
   viewerComponent: ViewerComponent;
+  viewer: Autodesk.Viewing.Viewer3D;
 }
 
 export interface ItemLoadedEvent {
   item: Autodesk.Viewing.ViewerItem;
-  viewingApplication: Autodesk.Viewing.ViewingApplication;
-  currentViewer: Autodesk.Viewing.Viewer3D;
+  viewer: Autodesk.Viewing.Viewer3D;
   viewerComponent: ViewerComponent;
 }
 
-export interface ViewingApplicationInitializedEvent {
-  viewingApplication: Autodesk.Viewing.ViewingApplication;
+export interface ViewerInitializedEvent {
   viewerComponent: ViewerComponent;
+  viewer: Autodesk.Viewing.Viewer3D;
 }
 
 export interface ViewerOptions {
   initializerOptions: Autodesk.Viewing.InitializerOptions;
-  viewerApplicationOptions?: Autodesk.Viewing.ViewingApplicationOptions;
   viewerConfig?: Autodesk.Viewing.ViewerConfig;
   headlessViewer?: boolean;
   showFirstViewable?: boolean;
+  enableMemoryManagement?: boolean;
   onViewerScriptsLoaded?: () => void;
-  onViewingApplicationInitialized: (args: ViewingApplicationInitializedEvent) => void;
+  onViewerInitialized: (args: ViewerInitializedEvent) => void;
 }
 
 
@@ -81,10 +80,14 @@ export class ViewerComponent implements OnDestroy {
 
   private _viewerOptions: ViewerOptions = null;
   private viewerInitialized = false;
-  private viewerApp: Autodesk.Viewing.ViewingApplication;
+  private viewer: Autodesk.Viewing.Viewer3D;
   private documentId: string;
   private unsubscribe: Subject<boolean> = new Subject();
   private basicExt: BasicExtension;
+
+  private get Container(): HTMLElement {
+    return document.getElementById(this.containerId);
+  }
 
   /**
    * Helper to allow callers to specify documentId with or without the required urn: prefix
@@ -98,7 +101,7 @@ export class ViewerComponent implements OnDestroy {
   @Input() public set viewerOptions(options: ViewerOptions) {
     if (!this.viewerInitialized && options) {
       this._viewerOptions = options;
-      void this.initialiseApplication();
+      void this.initialiseViewer();
     }
   }
 
@@ -109,15 +112,12 @@ export class ViewerComponent implements OnDestroy {
   ngOnDestroy() {
     this.unregisterBasicExtension();
 
-    if (this.viewerApp) {
-      const viewer = this.viewerApp.getCurrentViewer();
-      if (viewer) {
-        viewer.tearDown();
-        viewer.uninitialize();
-      }
+    if (this.viewer) {
+      this.viewer.tearDown();
+      this.viewer.uninitialize();
     }
 
-    this.viewerApp = null;
+    this.viewer = null;
     this.viewerInitialized = false;
 
     this.unsubscribe.next();
@@ -128,30 +128,24 @@ export class ViewerComponent implements OnDestroy {
    * Helper method to get some default viewer options
    */
   public getDefaultViewerOptions(
-    onViewingApplicationInitialized: (args: ViewingApplicationInitializedEvent) => void,
+    onViewerInitialized: (args: ViewerInitializedEvent) => void,
     getAccessToken: (onGetAccessToken: (token: string, expire: number) => void) => void,
   ): ViewerOptions {
     return {
       initializerOptions: {
         env: 'AutodeskProduction',
         getAccessToken,
+        api: 'derivativeV2',
       },
-      onViewingApplicationInitialized,
+      onViewerInitialized,
     };
-  }
-
-  /**
-   * Get a reference to the current viewing application
-   */
-  public get ViewerApplication(): Autodesk.Viewing.ViewingApplication {
-    return this.viewerApp;
   }
 
   /**
    * Get a reference to the current 3D viewer
    */
   public get Viewer3D(): Autodesk.Viewing.Viewer3D {
-    return this.viewerApp.getCurrentViewer();
+    return this.viewer;
   }
 
   /**
@@ -166,7 +160,7 @@ export class ViewerComponent implements OnDestroy {
    */
   public set DocumentId(value: string) {
     this.documentId = value;
-    this.loadDocument(this.documentId);
+    this.loadModel(this.documentId);
   }
 
   public get basicExtension() {
@@ -179,8 +173,10 @@ export class ViewerComponent implements OnDestroy {
     }
   }
 
-  public selectItem(item: Autodesk.Viewing.ViewerItem|Autodesk.Viewing.BubbleNode) {
-    this.viewerApp.selectItem(item, this.onItemLoadSuccess.bind(this), this.onItemLoadFail.bind(this));
+  public loadDocumentNode(document: Autodesk.Viewing.Document,
+                          bubbleNode: Autodesk.Viewing.BubbleNode,
+                          options?: object) {
+    this.viewer.loadDocumentNode(document, bubbleNode, options);
   }
 
   /**
@@ -189,7 +185,7 @@ export class ViewerComponent implements OnDestroy {
    */
   private loadScripts(): Promise<void> {
     return this.script.load(
-      'https://developer.api.autodesk.com/modelderivative/v2/viewers/viewer3D.min.js?v=6.*.*',
+      'https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js',
     )
       .then((data) => {
         this.log('script loaded ', data);
@@ -200,7 +196,7 @@ export class ViewerComponent implements OnDestroy {
   /**
    * Initialises a ViewingApplication
    */
-  private async initialiseApplication() {
+  private async initialiseViewer() {
     // Load scripts first
     await this.loadScripts();
     if (this.viewerOptions.onViewerScriptsLoaded) this.viewerOptions.onViewerScriptsLoaded();
@@ -221,59 +217,62 @@ export class ViewerComponent implements OnDestroy {
   }
 
   private initialized() {
-    this.viewerApp = new Autodesk.Viewing.ViewingApplication(this.containerId,
-                                                             this.viewerOptions.viewerApplicationOptions);
-
     // Register an extension to help us raise events
     const extName = this.registerBasicExtension();
     const config = this.addBasicExtensionConfig(extName);
 
-    // Register a viewer with the application (passign through any additional config)
-    this.viewerApp.registerViewer(
-      this.viewerApp.k3D,
-      (this.viewerOptions.headlessViewer) ? Autodesk.Viewing.Viewer3D : Autodesk.Viewing.Private.GuiViewer3D,
-      config,
-    );
+    // Support large models
+    if (this.viewerOptions.enableMemoryManagement) {
+      config.loaderExtensions = { svf: 'Autodesk.MemoryLimited' };
+    }
+
+    // Create a new viewer
+    if (this.viewerOptions.headlessViewer) {
+      this.viewer = new Autodesk.Viewing.Viewer3D(this.Container, config);
+    } else {
+      this.viewer = new Autodesk.Viewing.GuiViewer3D(this.Container, config);
+    }
+
+    // Start the viewer
+    this.viewer.start();
 
     // Viewer is ready - scripts are loaded and we've create a new viewing application
     this.viewerInitialized = true;
-    this.viewerOptions.onViewingApplicationInitialized({ viewingApplication: this.viewerApp, viewerComponent: this });
+    this.viewerOptions.onViewerInitialized({ viewerComponent: this, viewer: this.viewer });
   }
 
   /**
    * Loads a model in to the viewer via it's urn
    */
-  private loadDocument(documentId: string) {
+  private loadModel(documentId: string) {
     if (!documentId) {
       return;
     }
 
     // Add urn: to the beginning of document id if needed
-    this.viewerApp.loadDocument(ViewerComponent.verifyUrn(documentId),
-                                this.onDocumentLoadSuccess.bind(this),
-                                this.onDocumentLoadFailure.bind(this));
+    Autodesk.Viewing.Document.load(ViewerComponent.verifyUrn(documentId),
+                                   this.onDocumentLoadSuccess.bind(this),
+                                   this.onDocumentLoadFailure.bind(this));
   }
 
   /**
    * Document successfully loaded
    */
   private onDocumentLoadSuccess(document: Autodesk.Viewing.Document) {
-    if (!this.viewerApp.bubble) return;
+    if (!document.getRoot()) return;
 
     // Emit an event so the caller can do something
     // TODO: config option to specify which viewable to display (how?)
-    this.onDocumentChanged.emit({ document, viewingApplication: this.viewerApp, viewerComponent: this });
+    this.onDocumentChanged.emit({ document, viewerComponent: this, viewer: this.viewer });
 
     if (this.viewerOptions.showFirstViewable === undefined || this.viewerOptions.showFirstViewable) {
-      // This will be the default behaviour -- show the first viewable
-      // We could still make use of Document.getSubItemsWithProperties()
-      // However, when using a ViewingApplication, we have access to the **bubble** attribute,
-      // which references the root node of a graph that wraps each object from the Manifest JSON.
-      const viewables = this.viewerApp.bubble.search(Autodesk.Viewing.BubbleNode.MODEL_NODE);
-
-      if (viewables && viewables.length > 0) {
-        this.viewerApp.selectItem(viewables[0].data, this.onItemLoadSuccess.bind(this), this.onItemLoadFail.bind(this));
+      let model: Autodesk.Viewing.BubbleNode = (document.getRoot() as any).getDefaultGeometry();
+      if (!model) {
+        const allModels = document.getRoot().search({ type: 'geometry' });
+        model = allModels[0];
       }
+
+      this.viewer.loadDocumentNode(document, model);
     }
   }
 
@@ -293,8 +292,7 @@ export class ViewerComponent implements OnDestroy {
 
     this.onItemLoaded.emit({
       item,
-      currentViewer: viewer,
-      viewingApplication: this.viewerApp,
+      viewer,
       viewerComponent: this,
     });
   }

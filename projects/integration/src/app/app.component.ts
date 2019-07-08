@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 import {
   ViewerOptions,
-  ViewingApplicationInitializedEvent,
+  ViewerInitializedEvent,
   DocumentChangedEvent,
   SelectionChangedEventArgs,
   ThumbnailOptions,
@@ -49,7 +49,7 @@ export class AppComponent {
         theme: 'bim-theme',
       },
       onViewerScriptsLoaded: this.scriptsLoaded,
-      onViewingApplicationInitialized: this.loadDocument,
+      onViewerInitialized: this.loadDocument,
       // showFirstViewable: false,
       // headlessViewer: true,
     };
@@ -61,17 +61,18 @@ export class AppComponent {
     Extension.registerExtension(TestExtension.extensionName, TestExtension);
   }
 
-  public loadDocument(args: ViewingApplicationInitializedEvent) {
+  public loadDocument(args: ViewerInitializedEvent) {
     args.viewerComponent.DocumentId = DOCUMENT_URN;
   }
 
   public documentChanged(event: DocumentChangedEvent) {
-    const viewerApp = event.viewingApplication;
-    if (!viewerApp.bubble) return;
-    const viewables = viewerApp.bubble.search({ type: 'geometry', role: '2d' });
+    const { document, viewer } = event;
 
+    if (!document.getRoot()) return;
+
+    const viewables = document.getRoot().search({ type: 'geometry', role: '2d' });
     if (viewables && viewables.length > 0) {
-      event.viewerComponent.selectItem(viewables[0].data);
+      event.viewerComponent.loadDocumentNode(document, viewables[0]);
     }
   }
 
