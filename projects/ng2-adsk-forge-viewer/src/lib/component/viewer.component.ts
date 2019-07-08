@@ -85,7 +85,7 @@ export class ViewerComponent implements OnDestroy {
   private unsubscribe: Subject<boolean> = new Subject();
   private basicExt: BasicExtension;
 
-  private get Container(): HTMLElement {
+  public get Container(): HTMLElement {
     return document.getElementById(this.containerId);
   }
 

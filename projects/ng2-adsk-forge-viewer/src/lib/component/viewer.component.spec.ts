@@ -1,5 +1,5 @@
 // tslint:disable:no-string-literal
-import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
 
 import { BasicExtension } from '../extensions/basic-extension';
@@ -22,7 +22,6 @@ import {
   ViewerComponent,
   ViewerOptions,
   ViewerInitializedEvent,
-  ItemLoadedEvent,
 } from './viewer.component';
 
 const mockScriptS = {
@@ -94,6 +93,8 @@ describe('ViewerComponent', () => {
         tearDown: () => { return; },
         uninitialize: () => { return; },
       };
+
+      component['viewer'] = mockViewer;
     });
 
     it('gets Viewer3D', () => {
@@ -103,7 +104,7 @@ describe('ViewerComponent', () => {
 
     it('gets DocumentId', () => {
       const mockDocId = '123';
-      spyOn(component, 'loadDocument' as any).and.stub();
+      spyOn(component, 'loadModel' as any).and.stub();
       component.DocumentId = mockDocId;
 
       const actual = component.DocumentId;
@@ -130,7 +131,7 @@ describe('ViewerComponent', () => {
 
     it('sets documentId', () => {
       const mockDocId = '456';
-      const spy = spyOn(component, 'loadDocument' as any).and.stub();
+      const spy = spyOn(component, 'loadModel' as any).and.stub();
       component.DocumentId = mockDocId;
 
       const actual = component.DocumentId;
@@ -141,26 +142,19 @@ describe('ViewerComponent', () => {
 
   describe('selectItem', () => {
     let mockViewer: any;
-    let mockApp: any;
 
     beforeEach(() => {
       mockViewer = {
         tearDown: () => { return; },
         uninitialize: () => { return; },
+        loadDocumentNode: () => { return; },
       };
 
-      mockApp = {
-        getCurrentViewer: () => {
-          return mockViewer;
-        },
-        selectItem: () => { return; },
-      };
-
-      component['viewerApp'] = mockApp as any;
+      component['viewer'] = mockViewer;
     });
 
     it('calls correct methods', () => {
-      const spy = spyOn(mockApp, 'selectItem').and.stub();
+      const spy = spyOn(component.Viewer3D, 'loadDocumentNode').and.stub();
       const testViewerItem = {
         parent: null,
         id: 123,
@@ -185,29 +179,20 @@ describe('ViewerComponent', () => {
 
       component.loadDocumentNode({} as any, testViewerItem);
 
-      expect(spy.calls.mostRecent().args[0]).toBe(testViewerItem);
+      expect(spy.calls.mostRecent().args[1]).toBe(testViewerItem);
     });
   });
 
   describe('initialiseApplication', () => {
     let mockViewer: any;
-    let mockApp: any;
 
     beforeEach(() => {
       mockViewer = {
         tearDown: () => { return; },
         uninitialize: () => { return; },
         registerViewer: () => { return; },
+        start: () => { return; },
       };
-
-      mockApp = {
-        getCurrentViewer: () => {
-          return mockViewer;
-        },
-        registerViewer: () => { return; },
-      };
-
-      component['viewerApp'] = mockApp as any;
     });
 
     it('Calls full initialise', async (done) => {
@@ -236,10 +221,9 @@ describe('ViewerComponent', () => {
     });
 
     it('initialized calls correct methods', async (done) => {
-      const viewingAppSpy = spyOn(Autodesk.Viewing, 'ViewingApplication').and.returnValue(mockApp);
+      const viewerSpy = spyOn(Autodesk.Viewing, 'GuiViewer3D' as any).and.returnValue(mockViewer);
       const registerBasicExtensionSpy = spyOn(component, 'registerBasicExtension' as any).and.returnValue('mockExt');
       const addBasicExtensionConfigSpy = spyOn(component, 'addBasicExtensionConfig' as any).and.stub();
-      const registerViewerSpy = spyOn(mockApp, 'registerViewer' as any).and.stub();
 
       const mockAppInitialised = (args: ViewerInitializedEvent) => {
         // We sometimes get the wrong app -- suspect leak in tests
@@ -249,19 +233,14 @@ describe('ViewerComponent', () => {
         done();
       };
 
-      const viewerApplicationOptions = {
-        disableBrowserContextMenu: true,
-      };
       component.viewerOptions = {
-        viewerApplicationOptions,
-        onViewingApplicationInitialized: mockAppInitialised,
+        onViewerInitialized: mockAppInitialised,
       } as any;
 
       component['initialized']();
-      expect(viewingAppSpy).toHaveBeenCalledWith('ng2-adsk-forge-viewer-container', viewerApplicationOptions);
+      expect(viewerSpy).toHaveBeenCalledWith(component.Container, undefined);
       expect(registerBasicExtensionSpy).toHaveBeenCalled();
       expect(addBasicExtensionConfigSpy).toHaveBeenCalledWith('mockExt');
-      expect(registerViewerSpy).toHaveBeenCalled();
       expect(component['viewerInitialized' as any]).toBe(true);
     });
   });
@@ -289,8 +268,6 @@ describe('ViewerComponent', () => {
 
   describe('loadDocument', () => {
     let mockViewer: any;
-    let mockApp: any;
-
     let loadDocumentSpy: jasmine.Spy;
 
     beforeEach(() => {
@@ -300,17 +277,7 @@ describe('ViewerComponent', () => {
         registerViewer: () => { return; },
       };
 
-      mockApp = {
-        getCurrentViewer: () => {
-          return mockViewer;
-        },
-        registerViewer: () => { return; },
-        loadDocument: () => { return; },
-      };
-
-      component['viewerApp'] = mockApp as any;
-
-      loadDocumentSpy = spyOn(mockApp, 'loadModel').and.stub();
+      loadDocumentSpy = spyOn(Autodesk.Viewing.Document, 'load').and.stub();
     });
 
     it('skips load if documentId not set', () => {
@@ -328,6 +295,8 @@ describe('ViewerComponent', () => {
 
   describe('events', () => {
     let mockViewer: any;
+    let mockDocument: any;
+    let defaultGeometry: any;
 
     let searchSpy: jasmine.Spy;
 
@@ -336,7 +305,23 @@ describe('ViewerComponent', () => {
         tearDown: () => { return; },
         uninitialize: () => { return; },
         registerViewer: () => { return; },
+        loadDocumentNode: () => { return; },
       };
+
+      defaultGeometry = {};
+      searchSpy = jasmine.createSpy();
+      searchSpy.and.returnValue({});
+
+      mockDocument = {
+        getRoot() {
+          return {
+            search: searchSpy,
+            getDefaultGeometry() { return defaultGeometry; },
+          };
+        },
+      };
+
+      component['viewer'] = mockViewer;
     });
 
     describe('onDocumentLoadSuccess', () => {
@@ -349,32 +334,32 @@ describe('ViewerComponent', () => {
       });
 
       it('emits event, can\'t select viewable', fakeAsync(() => {
-        const testDoc = {} as any;
         const spy = searchSpy.and.returnValue(null);
 
         component['_viewerOptions'] = { showFirstViewable: true } as any;
-        component['onDocumentLoadSuccess']({} as any);
 
         component.onDocumentChanged.subscribe((args: DocumentChangedEvent) => {
-          expect(args.document).toBe(testDoc);
+          expect(args.document).toBe(mockDocument);
           expect(args.viewer).toBe(mockViewer);
           expect(args.viewerComponent).toBe(component);
           expect(spy).not.toHaveBeenCalled();
         });
+
+        component['onDocumentLoadSuccess'](mockDocument);
       }));
 
       it('emits event and selected first viewable', fakeAsync(() => {
-        const testDoc = {} as any;
-        searchSpy.and.callThrough();
+        defaultGeometry = undefined;
 
         component['_viewerOptions'] = { showFirstViewable: true } as any;
-        component['onDocumentLoadSuccess']({} as any);
-
         component.onDocumentChanged.subscribe((args: DocumentChangedEvent) => {
-          expect(args.document).toBe(testDoc);
+          expect(args.document).toBe(mockDocument);
           expect(args.viewerComponent).toBe(component);
-          expect(searchSpy).toHaveBeenCalled();
         });
+
+        component['onDocumentLoadSuccess'](mockDocument);
+
+        expect(searchSpy).toHaveBeenCalled();
       }));
     });
 
@@ -387,31 +372,6 @@ describe('ViewerComponent', () => {
       });
 
       component['onDocumentLoadFailure'](testErrorCode);
-    });
-
-    it('onItemLoadSuccess', (done) => {
-      const testItem = {} as any;
-
-      component.onItemLoaded.subscribe((args: ItemLoadedEvent) => {
-        expect(args.item).toBe(testItem);
-        expect(args.viewer).toBe(mockViewer);
-        expect(args.viewerComponent).toBe(component);
-
-        done();
-      });
-
-      component['onItemLoadSuccess'](mockViewer, testItem);
-    });
-
-    it('onItemLoadFail', (done) => {
-      const testErrorCode = 0;
-
-      component.onError.subscribe((errorCode: number) => {
-        expect(errorCode).toBe(testErrorCode);
-        done();
-      });
-
-      component['onItemLoadFail'](testErrorCode);
     });
   });
 

@@ -51,8 +51,8 @@ module.exports = function (config) {
       // Required so that the Autodesk module is registered and unit tests pass
       // NOTE: To adhere to Autodesk's license, The Autodesk Forge Viewer
       // JavaScript **MUST** be delivered from an Autodesk hosted URL.
-      'https://developer.api.autodesk.com/modelderivative/v2/viewers/6.*/style.min.css',
-      'https://developer.api.autodesk.com/modelderivative/v2/viewers/6.*/viewer3D.min.js',
+      'https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css',
+      'https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js',
     ],
   });
 };

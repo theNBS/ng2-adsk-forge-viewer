@@ -353,9 +353,9 @@ describe('Extension', () => {
     const actual = new MockExtension();
     const keys = Object.keys(actual['eventArgsTypeMap']);
 
-    expect(keys.length).toBe(38);
+    expect(keys.length).toBe(37);
     expect(keys[0]).toBe(Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT);
-    expect(keys[37]).toBe(Autodesk.Viewing.VIEWER_UNINITIALIZED);
+    expect(keys[36]).toBe(Autodesk.Viewing.VIEWER_UNINITIALIZED);
   });
 
   describe('castArgs', () => {
