@@ -18,7 +18,7 @@ import {
   ObjectTreeUnavailableEventArgs, ResetEventArgs,
   SelectionChangedEventArgs,
   ShowEventArgs,
-  ViewerEventArgs, ViewerInitializedEventArgs,
+  ViewerEventArgs,
 } from '../extensions/extension';
 import { BasicExtension } from '../extensions/basic-extension';
 
@@ -194,7 +194,7 @@ export class ViewerComponent implements OnDestroy {
   }
 
   /**
-   * Initialises a ViewingApplication
+   * Initialises the viewer
    */
   private async initialiseViewer() {
     // Load scripts first
@@ -281,27 +281,6 @@ export class ViewerComponent implements OnDestroy {
    */
   private onDocumentLoadFailure(errorCode: Autodesk.Viewing.ErrorCodes) {
     this.error('onDocumentLoadFailure() - errorCode:' + errorCode);
-    this.onError.emit(errorCode);
-  }
-
-  /**
-   * View from the document was successfully loaded
-   */
-  private onItemLoadSuccess(viewer: Autodesk.Viewing.Viewer3D, item: Autodesk.Viewing.ViewerItem) {
-    this.log('onItemLoadSuccess()', viewer, item);
-
-    this.onItemLoaded.emit({
-      item,
-      viewer,
-      viewerComponent: this,
-    });
-  }
-
-  /**
-   * Failed to load a view from the document
-   */
-  private onItemLoadFail(errorCode: Autodesk.Viewing.ErrorCodes) {
-    this.error('onItemLoadFail() - errorCode:' + errorCode);
     this.onError.emit(errorCode);
   }
 

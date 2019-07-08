@@ -66,7 +66,7 @@ export class AppComponent {
   }
 
   public documentChanged(event: DocumentChangedEvent) {
-    const { document, viewer } = event;
+    const { document } = event;
 
     if (!document.getRoot()) return;
 
