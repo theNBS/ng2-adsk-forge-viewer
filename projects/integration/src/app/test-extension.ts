@@ -44,7 +44,10 @@ export class TestExtension extends Extension {
   }
 
   public unload() {
-    this.viewer.toolbar.removeControl(this.subToolbar);
+    if (this.subToolbar) {
+      this.viewer.toolbar.removeControl(this.subToolbar);
+      this.subToolbar = null;
+    }
 
     // Called when Forge Viewer unloads your extension
     console.log('TestExtension unloaded.');
@@ -55,13 +58,13 @@ export class TestExtension extends Extension {
   private createUI() {
     // Button 1
     const button1 = new Autodesk.Viewing.UI.Button('my-view-front-button');
-    button1.onClick = e => this.viewer.setViewCube('front');
+    button1.onClick = e => this.setViewCube('front');
     button1.addClass('my-view-front-button');
     button1.setToolTip('View front');
 
     // Button 2
     const button2 = new Autodesk.Viewing.UI.Button('my-view-back-button');
-    button2.onClick = e => this.viewer.setViewCube('back');
+    button2.onClick = e => this.setViewCube('back');
     button2.addClass('my-view-back-button');
     button2.setToolTip('View Back');
 
@@ -78,6 +81,11 @@ export class TestExtension extends Extension {
     this.subToolbar.addControl(button3);
 
     this.viewer.toolbar.addControl(this.subToolbar);
+  }
+
+  private setViewCube(orientation: 'front'|'back') {
+    const ext = (this.viewer.getExtension('Autodesk.ViewCubeUi') as any);
+    ext.setViewCube(orientation);
   }
 
   private displayDockingPanel() {
