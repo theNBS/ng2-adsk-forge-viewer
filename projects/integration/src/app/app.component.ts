@@ -43,6 +43,7 @@ export class AppComponent {
           const expireTimeSeconds = 60 * 30;
           onGetAccessToken(ACCESS_TOKEN, expireTimeSeconds);
         },
+        api: 'derivativeV2',
       },
       viewerConfig: {
         extensions: [TestExtension.extensionName],
