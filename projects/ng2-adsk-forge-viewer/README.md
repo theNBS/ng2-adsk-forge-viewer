@@ -1,6 +1,7 @@
 # Angular Autodesk Forge Viewer
 
 [![Build Status](https://travis-ci.com/theNBS/ng2-adsk-forge-viewer.svg?branch=master)](https://travis-ci.com/theNBS/ng2-adsk-forge-viewer)
+[![Viewer](https://img.shields.io/badge/Viewer-v7-green.svg)](https://forge.autodesk.com/)
 
 Angular wrapper for the [Autodesk Forge Viewer](https://developer.autodesk.com).
 
@@ -14,7 +15,7 @@ The wrapper was designed to meet the following requirements:
 
 ## Dependencies
 
-The library targets Angular 5 (and also works with Angular 6 and 7).
+The library targets Angular 8.
 
 ## Using the viewer component
 
@@ -40,17 +41,17 @@ There is a specific flow of logic to initialize the viewer:
 1. Set viewerOptions
 2. The viewer is constructed, loads scripts/resources from Autodesk's servers
 2. The onViewerScriptsLoaded callback (optional) is called to indicate all viewer resources have been loaded
-3. A onViewingApplicationInitialized callback is called indicating the ViewingApplication is ready (i.e. Autodesk.Viewing.Initializer has been called) and a document can be loaded
-4. The `onViewingApplicationInitialized` event is emitted and you can now load a document. The event arguments contain a reference to the viewer which can be used to set the documentId to load. E.g.:
+3. A onViewerInitialized callback is called indicating the Viewer is ready (i.e. Autodesk.Viewing.Initializer has been called) and a model can be loaded
+4. The `onViewerInitialized` event is emitted and you can now load a model. The event arguments contain a reference to the viewer which can be used to set the documentId to load. E.g.:
   ```typescript
-  public loadDocument(event: ViewingApplicationInitializedEvent) {
-    event.viewerComponent.DocumentId = 'DOCUMENT_URN_GOES_HERE';
+  public loadDocument(args: ViewerInitializedEvent) {
+    args.viewerComponent.DocumentId = DOCUMENT_URN_GOES_HERE;
   }
   ```
   - A helper method `getDefaultViewerOptions` can be used to get the most basic viewer options
 
 ### Step 4
-When the document has been loaded the `onDocumentChanged` event is emitted. This event can be used to define the view to display (by default, the viewer will load the first 3D viewable it can find).
+When the model has been loaded the `onDocumentChanged` event is emitted. This event can be used to define the view to display (by default, the viewer will load the first 3D viewable it can find).
 
 An example of displaying a 2D viewable:
 
@@ -63,15 +64,15 @@ component.html:
 component.ts:
 ```typescript
 public documentChanged(event: DocumentChangedEvent) {
-    const viewerApp = event.viewingApplication;
-    if (!viewerApp.bubble) return;
+  const { document } = event;
 
-    // Use viewerApp.bubble to get a list of 2D obecjts
-    const viewables = viewerApp.bubble.search({ type: 'geometry', role: '2d' });
-    if (viewables && viewables.length > 0) {
-      event.viewerComponent.selectItem(viewables[0].data);
-    }
+  if (!document.getRoot()) return;
+
+  const viewables = document.getRoot().search({ type: 'geometry', role: '2d' });
+  if (viewables && viewables.length > 0) {
+    event.viewerComponent.loadDocumentNode(document, viewables[0]);
   }
+}
 ```
 
 ## FAQ
@@ -83,13 +84,12 @@ The ViewerOptions interface is as follows:
 ```typescript
 interface ViewerOptions {
   initializerOptions: Autodesk.Viewing.InitializerOptions;
-  viewerApplicationOptions?: Autodesk.Viewing.ViewingApplicationOptions;
   viewerConfig?: Autodesk.Viewing.ViewerConfig;
   headlessViewer?: boolean;
   showFirstViewable?: boolean;
-  debugMessages?: boolean;
+  enableMemoryManagement?: boolean;
   onViewerScriptsLoaded?: () => void;
-  onViewingApplicationInitialized: (args: ViewingApplicationInitializedEvent) => void;
+  onViewerInitialized: (args: ViewerInitializedEvent) => void;
 }
 ```
 
@@ -108,15 +108,14 @@ this.viewerOptions3d = {
       // Pass new token and expire time to Viewer's callback method
       onGetAccessToken(ACCESS_TOKEN, EXPIRE_TIME);
     },
+    api: 'derivativeV2',
   },
-  onViewingApplicationInitialized: (args: ViewingApplicationInitializedEvent) => {
+  onViewerInitialized: (args: ViewerInitializedEvent) => {
     // Load document in the viewer
     args.viewerComponent.DocumentId = 'DOCUMENT_URN_HERE';
   },
 };
 ```
-
-The viewer component creates a Forge Viewer Application. The `viewerApplicationOptions` setting allows you to provide additional options to the viewering application. (https://developer.autodesk.com/en/docs/viewer/v2/reference/javascript/viewingapplication/).
 
 `viewerConfig` allows you to provide additional options to Viewer3D's registered with the viewing application. Such as whether to ues the light or dark theme, any extensions to register with the viewer etc.
 
@@ -133,9 +132,10 @@ this.viewerOptions3d = {
       // Pass new token and expire time to Viewer's callback method
       onGetAccessToken(ACCESS_TOKEN, EXPIRE_TIME);
     },
+    api: 'derivativeV2',
   },
   headlessViewer: true,
-  onViewingApplicationInitialized: (args: ViewingApplicationInitializedEvent) => {
+  onViewerInitialized: (args: ViewerInitializedEvent) => {
     // Load document in the viewer
     args.viewerComponent.DocumentId = 'DOCUMENT_URN_HERE';
   },
@@ -159,12 +159,13 @@ app.component.ts
 
 ```typescript
 public documentChanged(event: DocumentChangedEvent) {
-  const viewerApp = event.viewingApplication;
-  if (!viewerApp.bubble) return;
-  const viewables = viewerApp.bubble.search({ type: 'geometry', role: '3d' });
+  const { document } = event;
 
+  if (!document.getRoot()) return;
+
+  const viewables = document.getRoot().search({ type: 'geometry', role: '2d' });
   if (viewables && viewables.length > 0) {
-    event.viewerComponent.selectItem(viewables[0].data);
+    event.viewerComponent.loadDocumentNode(document, viewables[0]);
   }
 }
 ```
@@ -220,11 +221,12 @@ this.viewerOptions3d = {
       // Pass new token and expire time to Viewer's callback method
       onGetAccessToken(ACCESS_TOKEN, EXPIRE_TIME);
     },
+    api: 'derivativeV2',
   },
   onViewerScriptsLoaded: () => {
     Extension.registerExtension(MyExtension.extensionName, MyExtension);
   },
-  onViewingApplicationInitialized: (args: ViewingApplicationInitializedEvent) => {
+  onViewerInitialized: (args: ViewerInitializedEvent) => {
     // Load document in the viewer
     args.viewerComponent.DocumentId = 'DOCUMENT_URN_HERE';
   },
@@ -235,4 +237,4 @@ Most of the methods in the abstract `Extension` class are protected. So they can
 
 ## Building the component
 
-For instructions on how to develop the component (build, debug, test etc.), see (README-dev.md).
+For instructions on how to develop the component (build, debug, test etc.), see (README_dev.md).
