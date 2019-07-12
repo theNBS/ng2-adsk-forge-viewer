@@ -1,5 +1,5 @@
 // tslint:disable:no-string-literal
-import { ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
 
 import { BasicExtension } from '../extensions/basic-extension';
@@ -267,16 +267,9 @@ describe('ViewerComponent', () => {
   });
 
   describe('loadDocument', () => {
-    let mockViewer: any;
     let loadDocumentSpy: jasmine.Spy;
 
     beforeEach(() => {
-      mockViewer = {
-        tearDown: () => { return; },
-        uninitialize: () => { return; },
-        registerViewer: () => { return; },
-      };
-
       loadDocumentSpy = spyOn(Autodesk.Viewing.Document, 'load').and.stub();
     });
 
