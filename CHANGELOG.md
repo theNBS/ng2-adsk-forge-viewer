@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.1.0></a>
+## 1.1.1 (2019-07-12)
+
+- Updated README.md and added CHANGELOG.md and LICENSE
+
+<a name="1.1.0></a>
+## 1.1.0 (2019-07-09)
+
+- Updated library to support Viewer version 7
+
+<a name="1.0.1></a>
+## 1.0.1 (2019-07-09)
+
+- Updated library to Angular-cli/ng-packagr
+- Upgraded to Angular 8 and RxJS 6
+
 <a name="0.2.2></a>
 ## 0.2.2 (2019-05-11)
 

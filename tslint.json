@@ -2,9 +2,9 @@
   "extends": ["tslint-config-nbs"],
   "linterOptions": {
     "exclude": [
-        "node_modules/**/*",
-        "out-tsc/**/*",
-        "integration/node_modules/**/*"
+      "node_modules/**/*",
+      "out-tsc/**/*",
+      "integration/node_modules/**/*"
     ]
-}
+  }
 }
