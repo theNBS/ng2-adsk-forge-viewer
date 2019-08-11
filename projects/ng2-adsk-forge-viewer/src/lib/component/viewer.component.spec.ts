@@ -274,9 +274,10 @@ describe('ViewerComponent', () => {
       loadDocumentSpy = spyOn(Autodesk.Viewing.Document, 'load').and.stub();
     });
 
-    it('skips load if documentId not set', () => {
-      component['loadModel'](null);
+    it('skips load if documentId not set', async (done) => {
+      await component['loadModel'](null);
       expect(loadDocumentSpy).not.toHaveBeenCalled();
+      done();
     });
 
     it('Calls load on Forge viewer', () => {
