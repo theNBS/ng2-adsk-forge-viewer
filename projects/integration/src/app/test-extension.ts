@@ -24,9 +24,9 @@ export class TestExtension extends Extension {
     });
 
     // Initialise a toolbar
-    if (this.viewer.toolbar) {
+    if (this.subToolbar) {
       // Toolbar is already available, create the UI
-      this.createUI();
+      this.createUI((this.viewer as any).toolbar);
     } else {
       // Toolbar hasn't been created yet, wait until we get notification of its creation
       this.onToolbarCreatedBinded = this.onToolbarCreated.bind(this);
@@ -40,12 +40,12 @@ export class TestExtension extends Extension {
   public onToolbarCreated() {
     this.viewer.removeEventListener(Autodesk.Viewing.TOOLBAR_CREATED_EVENT, this.onToolbarCreatedBinded);
     this.onToolbarCreatedBinded = null;
-    this.createUI();
+    this.createUI((this.viewer as any).toolbar);
   }
 
   public unload() {
     if (this.subToolbar) {
-      this.viewer.toolbar.removeControl(this.subToolbar);
+      (this.viewer as any).toolbar.removeControl(this.subToolbar);
       this.subToolbar = null;
     }
 
@@ -55,7 +55,7 @@ export class TestExtension extends Extension {
     return true;
   }
 
-  private createUI() {
+  private createUI(toolbar: Autodesk.Viewing.UI.ToolBar) {
     // Button 1
     const button1 = new Autodesk.Viewing.UI.Button('my-view-front-button');
     button1.onClick = e => this.setViewCube('front');
@@ -80,7 +80,7 @@ export class TestExtension extends Extension {
     this.subToolbar.addControl(button2);
     this.subToolbar.addControl(button3);
 
-    this.viewer.toolbar.addControl(this.subToolbar);
+    toolbar.addControl(this.subToolbar);
   }
 
   private setViewCube(orientation: 'front'|'back') {

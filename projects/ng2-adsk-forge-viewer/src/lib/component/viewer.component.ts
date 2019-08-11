@@ -175,8 +175,8 @@ export class ViewerComponent implements OnDestroy {
 
   public loadDocumentNode(document: Autodesk.Viewing.Document,
                           bubbleNode: Autodesk.Viewing.BubbleNode,
-                          options?: object) {
-    this.viewer.loadDocumentNode(document, bubbleNode, options);
+                          options?: object): Promise<Autodesk.Viewing.Model> {
+    return this.viewer.loadDocumentNode(document, bubbleNode, options);
   }
 
   /**
@@ -234,7 +234,7 @@ export class ViewerComponent implements OnDestroy {
     }
 
     // Start the viewer
-    this.viewer.start();
+    this.viewer.start(undefined);
 
     // Viewer is ready - scripts are loaded and we've create a new viewing application
     this.viewerInitialized = true;
@@ -272,7 +272,7 @@ export class ViewerComponent implements OnDestroy {
         model = allModels[0];
       }
 
-      this.viewer.loadDocumentNode(document, model);
+      void this.viewer.loadDocumentNode(document, model, undefined);
     }
   }
 

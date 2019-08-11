@@ -153,7 +153,7 @@ describe('ViewerComponent', () => {
       component['viewer'] = mockViewer;
     });
 
-    it('calls correct methods', () => {
+    it('calls correct methods', async (done) => {
       const spy = spyOn(component.Viewer3D, 'loadDocumentNode').and.stub();
       const testViewerItem = {
         parent: null,
@@ -177,9 +177,10 @@ describe('ViewerComponent', () => {
         children: [],
       } as Autodesk.Viewing.BubbleNode;
 
-      component.loadDocumentNode({} as any, testViewerItem);
+      await component.loadDocumentNode({} as any, testViewerItem);
 
       expect(spy.calls.mostRecent().args[1]).toBe(testViewerItem);
+      done();
     });
   });
 
