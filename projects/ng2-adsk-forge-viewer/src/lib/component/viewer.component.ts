@@ -45,6 +45,7 @@ export interface ViewerOptions {
   headlessViewer?: boolean;
   showFirstViewable?: boolean;
   enableMemoryManagement?: boolean;
+  customisedModelLoading?: boolean;
   onViewerScriptsLoaded?: () => void;
   onViewerInitialized: (args: ViewerInitializedEvent) => void;
 }
@@ -81,7 +82,7 @@ export class ViewerComponent implements OnDestroy {
   private _viewerOptions: ViewerOptions = null;
   private viewerInitialized = false;
   private viewer: Autodesk.Viewing.Viewer3D;
-  private documentId: string;
+  private documentId: string | string[];
   private unsubscribe: Subject<boolean> = new Subject();
   private basicExt: BasicExtension;
 
@@ -151,8 +152,8 @@ export class ViewerComponent implements OnDestroy {
   /**
    * Get the document urn that has been loaded
    */
-  public get DocumentId() {
-    return this.documentId;
+  public get DocumentId(): string {
+    return (Array.isArray(this.documentId)) ? this.documentId[0] : this.documentId;
   }
 
   /**
@@ -160,7 +161,11 @@ export class ViewerComponent implements OnDestroy {
    */
   public set DocumentId(value: string) {
     this.documentId = value;
-    this.loadModel(this.documentId);
+    this.loadModel(
+      this.documentId,
+      this.onDocumentLoadSuccess.bind(this),
+      this.onDocumentLoadFailure.bind(this),
+    );
   }
 
   public get basicExtension() {
@@ -177,6 +182,17 @@ export class ViewerComponent implements OnDestroy {
                           bubbleNode: Autodesk.Viewing.BubbleNode,
                           options?: object): Promise<Autodesk.Viewing.Model> {
     return this.viewer.loadDocumentNode(document, bubbleNode, options);
+  }
+
+  /** Loads a model in to the viewer via it's urn */
+  public loadModel(
+    documentId: string,
+    successCallback: (document: Autodesk.Viewing.Document) => void,
+    failureCallback: (errorCode: Autodesk.Viewing.ErrorCodes) => void,
+  ) {
+    Autodesk.Viewing.Document.load(ViewerComponent.verifyUrn(documentId),
+                                   successCallback,
+                                   failureCallback);
   }
 
   /**
@@ -233,26 +249,14 @@ export class ViewerComponent implements OnDestroy {
       this.viewer = new Autodesk.Viewing.GuiViewer3D(this.Container, config);
     }
 
-    // Start the viewer
-    this.viewer.start(undefined);
+    if (!this.viewerOptions.customisedModelLoading) {
+      // Start the viewer
+      this.viewer.start(undefined);
+    }
 
     // Viewer is ready - scripts are loaded and we've create a new viewing application
     this.viewerInitialized = true;
     this.viewerOptions.onViewerInitialized({ viewerComponent: this, viewer: this.viewer });
-  }
-
-  /**
-   * Loads a model in to the viewer via it's urn
-   */
-  private loadModel(documentId: string) {
-    if (!documentId) {
-      return;
-    }
-
-    // Add urn: to the beginning of document id if needed
-    Autodesk.Viewing.Document.load(ViewerComponent.verifyUrn(documentId),
-                                   this.onDocumentLoadSuccess.bind(this),
-                                   this.onDocumentLoadFailure.bind(this));
   }
 
   /**
