@@ -1,6 +1,6 @@
 {
   "name": "ng2-adsk-forge-viewer",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -25,12 +25,12 @@
     "zone.js": "^0.10.1"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.802.1",
-    "@angular-devkit/build-ng-packagr": "^0.802.1",
-    "@angular/cli": "^8.2.0",
-    "@angular/compiler-cli": "^8.2.1",
-    "@angular/language-service": "^8.2.1",
-    "@types/node": "^10.14.15",
+    "@angular-devkit/build-angular": "^0.803.18",
+    "@angular-devkit/build-ng-packagr": "^0.803.18",
+    "@angular/cli": "^8.3.17",
+    "@angular/compiler-cli": "^8.2.13",
+    "@angular/language-service": "^8.2.13",
+    "@types/node": "^10.17.4",
     "@types/jasmine": "^3.4.0",
     "@types/jasminewd2": "^2.0.6",
     "codelyzer": "^5.0.0",
@@ -45,9 +45,9 @@
     "protractor": "^5.4.2",
     "ts-mockito": "^2.3.1",
     "ts-node": "^8.3.0",
-    "tsickle": "^0.35.0",
-    "tslint": "^5.18.0",
-    "tslint-config-nbs": "^5.4.7",
+    "tsickle": "^0.37.1",
+    "tslint": "^5.20.1",
+    "tslint-config-nbs": "^5.5.0",
     "typescript": "~3.4.5"
   }
 }

@@ -2,7 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-<a name="1.1.0></a>
+<a name="1.2.1></a>
+## 1.2.1 (2019-11-07)
+
+- Assign random id to viewer div
+
+<a name="1.2.0></a>
 ## 1.2.0 (2019-09-20)
 
 - Forge Viewer typings are not included with the component as a dependency
