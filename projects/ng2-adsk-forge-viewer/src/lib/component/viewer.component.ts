@@ -57,7 +57,7 @@ export interface ViewerOptions {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ViewerComponent implements OnDestroy {
-  readonly containerId = 'ng2-adsk-forge-viewer-container';
+  public containerId: string;
 
   @Output() public onDocumentChanged = new EventEmitter<DocumentChangedEvent>();
   @Output() public onItemLoaded = new EventEmitter<ItemLoadedEvent>();
@@ -96,7 +96,9 @@ export class ViewerComponent implements OnDestroy {
     return (documentId.startsWith('urn:')) ? documentId : `urn:${documentId}`;
   }
 
-  constructor(private script: ScriptService) { }
+  constructor(private script: ScriptService) {
+    this.containerId = this.getDivName();
+  }
 
   @Input() public set viewerOptions(options: ViewerOptions) {
     if (!this.viewerInitialized && options) {
@@ -361,5 +363,15 @@ export class ViewerComponent implements OnDestroy {
   private error(message?: any, ...optionalParams: any[]) {
     if (!this.showDebugMessages) return;
     console.error(message, optionalParams);
+  }
+
+  private getDivName() {
+    const S4 = () => {
+      // tslint:disable-next-line:no-bitwise
+      return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+    };
+
+    const guid = (S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4());
+    return `viewer_${guid}`;
   }
 }
