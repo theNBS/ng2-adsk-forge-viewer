@@ -230,6 +230,9 @@ describe('ViewerComponent', () => {
     });
 
     it('initialized calls correct methods', async (done) => {
+      // Don't fully initialise the viewer
+      spyOn(component, 'initialiseViewer' as any).and.stub();
+
       const viewerSpy = spyOn(Autodesk.Viewing, 'GuiViewer3D' as any).and.returnValue(mockViewer);
       const registerBasicExtensionSpy = spyOn(component, 'registerBasicExtension' as any).and.returnValue('mockExt');
       const addBasicExtensionConfigSpy = spyOn(component, 'addBasicExtensionConfig' as any).and.stub();
