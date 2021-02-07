@@ -10,10 +10,15 @@
       "prefix": "lib",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-ng-packagr:build",
+          "builder": "@angular-devkit/build-angular:ng-packagr",
           "options": {
             "tsConfig": "projects/ng2-adsk-forge-viewer/tsconfig.lib.json",
             "project": "projects/ng2-adsk-forge-viewer/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ng2-adsk-forge-viewer/tsconfig.lib.prod.json"
+            }
           }
         },
         "test": {

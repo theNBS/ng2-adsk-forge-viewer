@@ -165,6 +165,13 @@ export class ViewerComponent implements OnDestroy {
     this.loadModel(this.documentId);
   }
 
+  /**
+   * Get the id assigned to the viewer
+   */
+  public get ContainerId() {
+    return this.containerId;
+  }
+
   public get basicExtension() {
     return this.basicExt;
   }

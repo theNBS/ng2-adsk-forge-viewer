@@ -9,11 +9,11 @@ Run `ng generate component component-name --project ng2-adsk-forge-viewer` to ge
 
 ## Build
 
-Run `ng build ng2-adsk-forge-viewer` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `ng build ng2-adsk-forge-viewer` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
 
 ## Publishing
 
-After building your library with `ng build ng2-adsk-forge-viewer`, go to the dist folder `cd dist/ng2-adsk-forge-viewer` and run `npm publish`.
+After building your library with `ng build --prod ng2-adsk-forge-viewer`, go to the dist folder `cd dist/ng2-adsk-forge-viewer` and run `npm publish`.
 
 ## Running unit tests
 
