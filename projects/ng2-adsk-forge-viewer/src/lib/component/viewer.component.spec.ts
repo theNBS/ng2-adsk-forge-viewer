@@ -111,6 +111,14 @@ describe('ViewerComponent', () => {
       expect(actual).toBe(mockDocId);
     });
 
+    it('gets ContainerId', () => {
+      const mockContainerId = 'container1234';
+      spyOn(component, 'getDivName' as any).and.returnValue(mockContainerId);
+
+      const actual = component.ContainerId;
+      expect(actual.search(/^viewer_[0-9a-f-]{9}([0-9a-f-]{5}){3}[0-9a-f]{12}$/)).not.toBe(-1);
+    });
+
     it('gets basicExtension', () => {
       const ext = new BasicExtension({} as any);
       component['basicExt'] = ext;

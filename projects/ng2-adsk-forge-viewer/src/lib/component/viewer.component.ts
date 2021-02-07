@@ -85,10 +85,6 @@ export class ViewerComponent implements OnDestroy {
   private unsubscribe: Subject<boolean> = new Subject();
   private basicExt: BasicExtension;
 
-  public get Container(): HTMLElement {
-    return document.getElementById(this.containerId);
-  }
-
   /**
    * Helper to allow callers to specify documentId with or without the required urn: prefix
    */
@@ -163,6 +159,13 @@ export class ViewerComponent implements OnDestroy {
   public set DocumentId(value: string) {
     this.documentId = value;
     this.loadModel(this.documentId);
+  }
+
+  /**
+   * Get the container element
+   */
+  public get Container(): HTMLElement {
+    return document.getElementById(this.containerId);
   }
 
   /**
