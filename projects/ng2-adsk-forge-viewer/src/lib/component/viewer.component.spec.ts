@@ -111,6 +111,14 @@ describe('ViewerComponent', () => {
       expect(actual).toBe(mockDocId);
     });
 
+    it('gets ContainerId', () => {
+      const mockContainerId = 'container1234';
+      spyOn(component, 'getDivName' as any).and.returnValue(mockContainerId);
+
+      const actual = component.ContainerId;
+      expect(actual.search(/^viewer_[0-9a-f-]{9}([0-9a-f-]{5}){3}[0-9a-f]{12}$/)).not.toBe(-1);
+    });
+
     it('gets basicExtension', () => {
       const ext = new BasicExtension({} as any);
       component['basicExt'] = ext;
@@ -222,6 +230,9 @@ describe('ViewerComponent', () => {
     });
 
     it('initialized calls correct methods', async (done) => {
+      // Don't fully initialise the viewer
+      spyOn(component, 'initialiseViewer' as any).and.stub();
+
       const viewerSpy = spyOn(Autodesk.Viewing, 'GuiViewer3D' as any).and.returnValue(mockViewer);
       const registerBasicExtensionSpy = spyOn(component, 'registerBasicExtension' as any).and.returnValue('mockExt');
       const addBasicExtensionConfigSpy = spyOn(component, 'addBasicExtensionConfig' as any).and.stub();
