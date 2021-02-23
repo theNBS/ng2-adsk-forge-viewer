@@ -190,6 +190,14 @@ export abstract class Extension {
   /** Called by Autodesk extension manager when extension is unloaded */
   public abstract unload(): void;
 
+  public activate() {
+    return true;
+  }
+
+  public deactivate() {
+    return true;
+  }
+
   /** Register event args types that we will cast to 'proper' objects */
   protected registerEventTypes() {
     // tslint:disable:max-line-length
