@@ -2,10 +2,11 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-<a name="1.2.7></a>
-## 1.2.7 (2021-04-04)
+<a name="1.3.0></a>
+## 1.3.0 (2021-04-04)
 
 - Updated package dependencies
+- Added activate and deactivate methods to BasicExtension
 
 <a name="1.2.6></a>
 ## 1.2.6 (2021-02-07)
