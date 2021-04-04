@@ -50,4 +50,12 @@ export class BasicExtension extends Extension {
     if (BasicExtension.debugMessages) console.log(BasicExtension.extensionName, 'unloaded!');
     return true;
   }
+
+  public activate() {
+    return true;
+  }
+
+  public deactivate() {
+    return true;
+  }
 }
