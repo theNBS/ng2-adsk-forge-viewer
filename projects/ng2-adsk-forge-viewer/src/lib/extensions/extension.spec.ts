@@ -46,8 +46,10 @@ class MockExtension extends Extension {
     super({} as any);
   }
 
-  public load() { return; }
-  public unload() { return; }
+  public load() { return true; }
+  public unload() { return true; }
+  public activate() { return true; }
+  public deactivate() { return true; }
   public registerEventTypes() { super.registerEventTypes(); }
 }
 
