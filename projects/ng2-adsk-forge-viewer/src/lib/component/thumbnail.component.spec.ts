@@ -1,6 +1,6 @@
 // tslint:disable:no-string-literal
 import { HttpClient } from '@angular/common/http';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 
@@ -13,7 +13,7 @@ describe('ThumbnailComponent', () => {
   let mockOptions: ThumbnailOptions;
   let mockHttpClient: HttpClient;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     mockHttpClient = mock(HttpClient);
 
     mockOptions = {

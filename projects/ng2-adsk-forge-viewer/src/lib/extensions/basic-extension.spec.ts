@@ -1,4 +1,5 @@
 // tslint:disable:no-string-literal
+import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { BasicExtension } from './basic-extension';
 import { Extension } from './extension';
 
@@ -38,10 +39,10 @@ describe('BasicExtension', () => {
   });
 
   describe('load/unload', () => {
-    it('loads', (done) => {
+    it('loads', fakeAsync(() => {
       const mockCallback = (ext: BasicExtension) => {
         // Only pass when the callback is called
-        done();
+        expect(ext).toBeDefined();
       };
       jasmine.createSpy('callbackSpy', mockCallback);
 
@@ -51,7 +52,9 @@ describe('BasicExtension', () => {
       expect(mockExtension['eventStreams'].length).toEqual(10);
       expect(mockExtension['viewerEvents']).toBeDefined();
       expect(actual).toBe(true);
-    });
+
+      flushMicrotasks();
+    }));
 
     it('unloads', () => {
       const actual = mockExtension.unload();
