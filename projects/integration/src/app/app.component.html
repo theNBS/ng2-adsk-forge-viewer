@@ -20,15 +20,16 @@
   <adsk-forge-thumbnail [thumbnailOptions]="thumbnailOptions"></adsk-forge-thumbnail>
 </div>
 
-<div id="Thumbnail" *ngIf="view === 4">
-  <div style="width: 250px; height: 250px;">
+<div id="MultipleViewers" *ngIf="view === 4">
+  <div style="float:left; width: 49vw;">
     <h2>Viewer 1</h2>
     <adsk-forge-viewer [viewerOptions]="viewerOptions3d"
                       (onSelectionChanged)="selectionChanged($event)"></adsk-forge-viewer>
-  <div>
-  <div style="width: 250px; height: 250px;">
+  </div>
+  <div style="float:right; width: 49vw;">
     <h2>Viewer 2</h2>
     <adsk-forge-viewer [viewerOptions]="viewerOptions2d"
+                      (onDocumentChanged)="documentChanged($event)"
                       (onSelectionChanged)="selectionChanged($event)"></adsk-forge-viewer>
-  <div>
+  </div>
 </div>
