@@ -198,7 +198,7 @@ export class ViewerComponent implements OnDestroy {
    */
   private loadScripts(): Promise<void> {
     const version = this.viewerOptions.version || '7.*';
-    const url = `https://developer.api.autodesk.com/modelderivative/v2/viewers/${version}/viewer3D.min.js`
+    const url = `https://developer.api.autodesk.com/modelderivative/v2/viewers/${version}/viewer3D.min.js`;
     return this.script.load(
       url,
     )
