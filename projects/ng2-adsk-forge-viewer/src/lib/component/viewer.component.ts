@@ -47,6 +47,7 @@ export interface ViewerOptions {
   enableMemoryManagement?: boolean;
   onViewerScriptsLoaded?: () => void;
   onViewerInitialized: (args: ViewerInitializedEvent) => void;
+  version?: string | number;
 }
 
 
@@ -196,8 +197,10 @@ export class ViewerComponent implements OnDestroy {
    * to add the scripts to their index.html pages. So we'll load them when required.
    */
   private loadScripts(): Promise<void> {
+    const version = this.viewerOptions.version || '7.*';
+    const url = `https://developer.api.autodesk.com/modelderivative/v2/viewers/${version}/viewer3D.min.js`;
     return this.script.load(
-      'https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js',
+      url,
     )
       .then((data) => {
         this.log('script loaded ', data);
