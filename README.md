@@ -1,6 +1,6 @@
 # Angular Autodesk Forge Viewer
 
-[![Build Status](https://travis-ci.com/theNBS/ng2-adsk-forge-viewer.svg?branch=master)](https://travis-ci.com/theNBS/ng2-adsk-forge-viewer)
+[![Build Status](https://app.travis-ci.com/theNBS/ng2-adsk-forge-viewer.svg?branch=master)](https://app.travis-ci.com/github/theNBS/ng2-adsk-forge-viewer)
 [![Viewer](https://img.shields.io/badge/Viewer-v7-green.svg)](https://forge.autodesk.com/)
 
 Angular wrapper for the [Autodesk Forge Viewer](https://developer.autodesk.com).
@@ -15,7 +15,7 @@ The wrapper was designed to meet the following requirements:
 
 ## Dependencies
 
-The library targets Angular 8.
+The library targets Angular 8 and newer.
 
 ## Using the viewer component
 
