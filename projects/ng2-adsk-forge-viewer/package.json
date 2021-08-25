@@ -1,6 +1,6 @@
 {
   "name": "ng2-adsk-forge-viewer",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "Angular wrapper for Autodesk Forge Viewer",
   "author": "NBS",
   "license": "MIT",
@@ -18,9 +18,9 @@
     "npm": ">= 3.0.0"
   },
   "peerDependencies": {
-    "@angular/common": "^11.2.8",
-    "@angular/core": "^11.2.8",
-    "@types/forge-viewer": "^7.39.2",
+    "@angular/common": "^11.2.14",
+    "@angular/core": "^11.2.14",
+    "@types/forge-viewer": "^7.48.0",
     "rxjs": "^6.6.7"
   }
 }

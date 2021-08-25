@@ -250,8 +250,8 @@ export class ViewerComponent implements OnDestroy {
 
     // set a document url if environment set to Local
     let url: string;
-    if (this.viewerOptions.initializerOptions.env === 'Local') {
-      url = this.viewerOptions.initializerOptions.document;
+    if (this.viewerOptions.initializerOptions?.env === 'Local') {
+      url = this.viewerOptions.initializerOptions?.document;
     }
     // Start the viewer
     this.viewer.start(url);
