@@ -1,6 +1,6 @@
 {
   "name": "ng2-adsk-forge-viewer",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -11,27 +11,27 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "~11.2.8",
-    "@angular/common": "~11.2.8",
-    "@angular/compiler": "~11.2.8",
-    "@angular/core": "~11.2.8",
-    "@angular/forms": "~11.2.8",
-    "@angular/platform-browser": "~11.2.8",
-    "@angular/platform-browser-dynamic": "~11.2.8",
-    "@angular/router": "~11.2.8",
-    "@types/forge-viewer": "^7.39.2",
+    "@angular/animations": "~11.2.14",
+    "@angular/common": "~11.2.14",
+    "@angular/compiler": "~11.2.14",
+    "@angular/core": "~11.2.14",
+    "@angular/forms": "~11.2.14",
+    "@angular/platform-browser": "~11.2.14",
+    "@angular/platform-browser-dynamic": "~11.2.14",
+    "@angular/router": "~11.2.14",
+    "@types/forge-viewer": "^7.48.0",
     "rxjs": "~6.6.7",
-    "tslib": "^2.0.0",
+    "tslib": "^2.3.1",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.1102.7",
-    "@angular/cli": "~11.2.7",
-    "@angular/compiler-cli": "~11.2.8",
-    "@angular/language-service": "~11.2.8",
-    "@types/jasmine": "~3.6.9",
-    "@types/jasminewd2": "~2.0.8",
-    "@types/node": "^14.14.37",
+    "@angular-devkit/build-angular": "~0.1102.14",
+    "@angular/cli": "~11.2.14",
+    "@angular/compiler-cli": "~11.2.14",
+    "@angular/language-service": "~11.2.14",
+    "@types/jasmine": "~3.8.2",
+    "@types/jasminewd2": "~2.0.10",
+    "@types/node": "^14.17.11",
     "codelyzer": "^6.0.0",
     "jasmine-core": "~3.7.1",
     "jasmine-spec-reporter": "~6.0.0",
@@ -46,6 +46,6 @@
     "ts-node": "^8.10.2",
     "tslint": "~6.1.0",
     "tslint-config-nbs": "^6.0.0",
-    "typescript": "~4.1.5"
+    "typescript": "~4.1.6"
   }
 }
