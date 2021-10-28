@@ -55,6 +55,14 @@ export class TestExtension extends Extension {
     return true;
   }
 
+  public activate() {
+    return true;
+  }
+
+  public deactivate() {
+    return true;
+  }
+
   private createUI(toolbar: Autodesk.Viewing.UI.ToolBar) {
     // Button 1
     const button1 = new Autodesk.Viewing.UI.Button('my-view-front-button');

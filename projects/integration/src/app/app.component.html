@@ -2,7 +2,8 @@
   <button (click)="view = 1">3D</button>
   <button (click)="view = 2">2D</button>
   <button (click)="view = 3">Thumbnail</button>
-  <button (click)="view = 4">Multiple models</button>
+  <button (click)="view = 4">2 Viewers</button>
+  <button (click)="view = 5">Multiple models</button>
 </div>
 
 <div id="3D" *ngIf="view === 1">
@@ -20,7 +21,21 @@
   <adsk-forge-thumbnail [thumbnailOptions]="thumbnailOptions"></adsk-forge-thumbnail>
 </div>
 
-<div id="multiple" *ngIf="view === 4">
+<div id="MultipleViewers" *ngIf="view === 4">
+  <div style="float:left; width: 49vw;">
+    <h2>Viewer 1</h2>
+    <adsk-forge-viewer [viewerOptions]="viewerOptions3d"
+                      (onSelectionChanged)="selectionChanged($event)"></adsk-forge-viewer>
+  </div>
+  <div style="float:right; width: 49vw;">
+    <h2>Viewer 2</h2>
+    <adsk-forge-viewer [viewerOptions]="viewerOptions2d"
+                      (onDocumentChanged)="documentChanged($event)"
+                      (onSelectionChanged)="selectionChanged($event)"></adsk-forge-viewer>
+  </div>
+</div>
+
+<div id="multiple" *ngIf="view === 5">
   <adsk-forge-viewer [viewerOptions]="viewerOptions3d"
                      (onSelectionChanged)="selectionChanged($event)"></adsk-forge-viewer>
 </div>

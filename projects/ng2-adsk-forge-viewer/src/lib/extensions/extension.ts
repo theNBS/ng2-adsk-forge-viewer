@@ -186,9 +186,13 @@ export abstract class Extension {
   }
 
   /** Called by Autodesk extension manager when extension is loaded */
-  public abstract load(): void;
+  public abstract load(): boolean | Promise<boolean>;
   /** Called by Autodesk extension manager when extension is unloaded */
-  public abstract unload(): void;
+  public abstract unload(): boolean;
+  /** Called by Autodesk extension manager when extension is activated - return true */
+  public abstract activate(): boolean;
+  /** Called by Autodesk extension manager when extension is activated - return true */
+  public abstract deactivate(): boolean;
 
   /** Register event args types that we will cast to 'proper' objects */
   protected registerEventTypes() {

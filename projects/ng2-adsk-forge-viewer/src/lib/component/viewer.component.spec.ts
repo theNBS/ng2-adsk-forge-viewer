@@ -1,5 +1,5 @@
 // tslint:disable:no-string-literal
-import { ComponentFixture, TestBed, fakeAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed, fakeAsync, tick, flushMicrotasks } from '@angular/core/testing';
 import { of, Subject } from 'rxjs';
 
 import { BasicExtension } from '../extensions/basic-extension';
@@ -111,6 +111,14 @@ describe('ViewerComponent', () => {
       expect(actual).toBe(mockDocId);
     });
 
+    it('gets ContainerId', () => {
+      const mockContainerId = 'container1234';
+      spyOn(component, 'getDivName' as any).and.returnValue(mockContainerId);
+
+      const actual = component.ContainerId;
+      expect(actual.search(/^viewer_[0-9a-f-]{9}([0-9a-f-]{5}){3}[0-9a-f]{12}$/)).not.toBe(-1);
+    });
+
     it('gets basicExtension', () => {
       const ext = new BasicExtension({} as any);
       component['basicExt'] = ext;
@@ -153,7 +161,7 @@ describe('ViewerComponent', () => {
       component['viewer'] = mockViewer;
     });
 
-    it('calls correct methods', async (done) => {
+    it('calls correct methods', async () => {
       const spy = spyOn(component.Viewer3D, 'loadDocumentNode').and.stub();
       const testViewerItem = {
         parent: null,
@@ -180,7 +188,6 @@ describe('ViewerComponent', () => {
       await component.loadDocumentNode({} as any, testViewerItem);
 
       expect(spy.calls.mostRecent().args[1]).toBe(testViewerItem);
-      done();
     });
   });
 
@@ -196,7 +203,7 @@ describe('ViewerComponent', () => {
       };
     });
 
-    it('Calls full initialise', async (done) => {
+    it('Calls full initialise', async () => {
       const spy = spyOn(Autodesk.Viewing, 'Initializer').and.stub();
       const initializerOptions = { env: 'Production' };
 
@@ -204,10 +211,9 @@ describe('ViewerComponent', () => {
       await component['initialiseViewer']();
 
       expect(spy.calls.mostRecent().args[0]).toBe(initializerOptions);
-      done();
     });
 
-    it('Skips full initialise', async (done) => {
+    it('Skips full initialise', fakeAsync(async () => {
       const spy = spyOn(component, 'initialized' as any).and.stub();
       const initializerOptions = { env: 'Production' };
 
@@ -215,13 +221,15 @@ describe('ViewerComponent', () => {
       component.viewerOptions = { initializerOptions } as any;
       await component['initialiseViewer']();
 
-      setTimeout(() => {
-        expect(spy).toHaveBeenCalled();
-        done();
-      });
-    });
+      tick(1000);
 
-    it('initialized calls correct methods', async (done) => {
+      expect(spy).toHaveBeenCalled();
+    }));
+
+    it('initialized calls correct methods', fakeAsync(() => {
+      // Don't fully initialise the viewer
+      spyOn(component, 'initialiseViewer' as any).and.stub();
+
       const viewerSpy = spyOn(Autodesk.Viewing, 'GuiViewer3D' as any).and.returnValue(mockViewer);
       const registerBasicExtensionSpy = spyOn(component, 'registerBasicExtension' as any).and.returnValue('mockExt');
       const addBasicExtensionConfigSpy = spyOn(component, 'addBasicExtensionConfig' as any).and.stub();
@@ -231,7 +239,6 @@ describe('ViewerComponent', () => {
         // expect(args.viewingApplication).toBe(mockApp, 'Unexpected app');
         expect(args.viewer).toBeTruthy();
         expect(args.viewerComponent).toBe(component, 'Unexpected component');
-        done();
       };
 
       component.viewerOptions = {
@@ -239,11 +246,14 @@ describe('ViewerComponent', () => {
       } as any;
 
       component['initialized']();
+
+      flushMicrotasks();
+
       expect(viewerSpy).toHaveBeenCalledWith(component.Container, undefined);
       expect(registerBasicExtensionSpy).toHaveBeenCalled();
       expect(addBasicExtensionConfigSpy).toHaveBeenCalledWith('mockExt');
       expect(component['viewerInitialized' as any]).toBe(true);
-    });
+    }));
   });
 
   describe('getDefaultViewerOptions', () => {
@@ -274,10 +284,9 @@ describe('ViewerComponent', () => {
       loadDocumentSpy = spyOn(Autodesk.Viewing.Document, 'load').and.stub();
     });
 
-    it('skips load if documentId not set', async (done) => {
-      await component['loadModel'](null);
+    it('skips load if documentId not set', async () => {
+      component['loadModel'](null);
       expect(loadDocumentSpy).not.toHaveBeenCalled();
-      done();
     });
 
     it('Calls load on Forge viewer', () => {
@@ -358,16 +367,16 @@ describe('ViewerComponent', () => {
       }));
     });
 
-    it('onDocumentLoadFailure', (done) => {
+    it('onDocumentLoadFailure', fakeAsync(() => {
       const testErrorCode = 0;
 
       component.onError.subscribe((errorCode: number) => {
         expect(errorCode).toBe(testErrorCode);
-        done();
       });
 
       component['onDocumentLoadFailure'](testErrorCode);
-    });
+      flushMicrotasks();
+    }));
   });
 
   describe('document urn', () => {
@@ -410,115 +419,125 @@ describe('ViewerComponent', () => {
       expect(actual).toBe(expected);
     });
 
-    it('emits FitToViewEventArgs event', (done) => {
+    it('emits FitToViewEventArgs event', fakeAsync(() => {
       component.onFitToView.subscribe((args: ViewerEventArgs) => {
         expect(args instanceof FitToViewEventArgs).toBeTruthy();
         expect(args.type).toBe(Autodesk.Viewing.FIT_TO_VIEW_EVENT);
-        done();
       });
 
       component['extensionLoaded'](mockExt);
       mockSubject.next(new FitToViewEventArgs());
-    });
 
-    it('emits FullscreenEventArgs event', (done) => {
+      flushMicrotasks();
+    }));
+
+    it('emits FullscreenEventArgs event', fakeAsync(() => {
       component.onFullscreen.subscribe((args: ViewerEventArgs) => {
         expect(args instanceof FullscreenEventArgs).toBeTruthy();
         expect(args.type).toBe(Autodesk.Viewing.FULLSCREEN_MODE_EVENT);
-        done();
       });
 
       component['extensionLoaded'](mockExt);
       mockSubject.next(new FullscreenEventArgs());
-    });
 
-    it('emits GeometryLoadedEventArgs event', (done) => {
+      flushMicrotasks();
+    }));
+
+    it('emits GeometryLoadedEventArgs event', fakeAsync(() => {
       component.onGeometryLoaded.subscribe((args: ViewerEventArgs) => {
         expect(args instanceof GeometryLoadedEventArgs).toBeTruthy();
         expect(args.type).toBe(Autodesk.Viewing.GEOMETRY_LOADED_EVENT);
-        done();
       });
 
       component['extensionLoaded'](mockExt);
       mockSubject.next(new GeometryLoadedEventArgs());
-    });
 
-    it('emits HideEventArgs event', (done) => {
+      flushMicrotasks();
+    }));
+
+    it('emits HideEventArgs event', fakeAsync(() => {
       component.onHide.subscribe((args: ViewerEventArgs) => {
         expect(args instanceof HideEventArgs).toBeTruthy();
         expect(args.type).toBe(Autodesk.Viewing.HIDE_EVENT);
-        done();
       });
 
       component['extensionLoaded'](mockExt);
       mockSubject.next(new HideEventArgs());
-    });
 
-    it('emits IsolateEventArgs event', (done) => {
+      flushMicrotasks();
+    }));
+
+    it('emits IsolateEventArgs event', fakeAsync(() => {
       component.onIsolate.subscribe((args: ViewerEventArgs) => {
         expect(args instanceof IsolateEventArgs).toBeTruthy();
         expect(args.type).toBe(Autodesk.Viewing.ISOLATE_EVENT);
-        done();
       });
 
       component['extensionLoaded'](mockExt);
       mockSubject.next(new IsolateEventArgs());
-    });
 
-    it('emits ObjectTreeCreatedEventArgs event', (done) => {
+      flushMicrotasks();
+    }));
+
+    it('emits ObjectTreeCreatedEventArgs event', fakeAsync(() => {
       component.onObjectTreeCreated.subscribe((args: ViewerEventArgs) => {
         expect(args instanceof ObjectTreeCreatedEventArgs).toBeTruthy();
         expect(args.type).toBe(Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT);
-        done();
       });
 
       component['extensionLoaded'](mockExt);
       mockSubject.next(new ObjectTreeCreatedEventArgs());
-    });
 
-    it('emits ObjectTreeUnavailableEventArgs event', (done) => {
+      flushMicrotasks();
+    }));
+
+    it('emits ObjectTreeUnavailableEventArgs event', fakeAsync(() => {
       component.onObjectTreeUnavailable.subscribe((args: ViewerEventArgs) => {
         expect(args instanceof ObjectTreeUnavailableEventArgs).toBeTruthy();
         expect(args.type).toBe(Autodesk.Viewing.OBJECT_TREE_UNAVAILABLE_EVENT);
-        done();
       });
 
       component['extensionLoaded'](mockExt);
       mockSubject.next(new ObjectTreeUnavailableEventArgs());
-    });
 
-    it('emits ResetEventArgs event', (done) => {
+      flushMicrotasks();
+    }));
+
+    it('emits ResetEventArgs event', fakeAsync(() => {
       component.onReset.subscribe((args: ViewerEventArgs) => {
         expect(args instanceof ResetEventArgs).toBeTruthy();
         expect(args.type).toBe(Autodesk.Viewing.RESET_EVENT);
-        done();
       });
 
       component['extensionLoaded'](mockExt);
       mockSubject.next(new ResetEventArgs());
-    });
 
-    it('emits SelectionChangedEventArgs event', (done) => {
+      flushMicrotasks();
+    }));
+
+    it('emits SelectionChangedEventArgs event', fakeAsync(() => {
       component.onSelectionChanged.subscribe((args: ViewerEventArgs) => {
         expect(args instanceof SelectionChangedEventArgs).toBeTruthy();
         expect(args.type).toBe(Autodesk.Viewing.SELECTION_CHANGED_EVENT);
-        done();
       });
 
       component['extensionLoaded'](mockExt);
       mockSubject.next(new SelectionChangedEventArgs());
-    });
 
-    it('emits ShowEventArgs event', (done) => {
+      flushMicrotasks();
+    }));
+
+    it('emits ShowEventArgs event', fakeAsync(() => {
       component.onShow.subscribe((args: ViewerEventArgs) => {
         expect(args instanceof ShowEventArgs).toBeTruthy();
         expect(args.type).toBe(Autodesk.Viewing.SHOW_EVENT);
-        done();
       });
 
       component['extensionLoaded'](mockExt);
       mockSubject.next(new ShowEventArgs());
-    });
+
+      flushMicrotasks();
+    }));
   });
 
   describe('addBasicExtensionConfig', () => {

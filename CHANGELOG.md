@@ -2,7 +2,48 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-<a name="1.1.0></a>
+<a name="1.5.0></a>
+## 1.5.0 (2021-08-25)
+
+- PR #44 Enable loading local SVF files (with thanks to [Damian Harasymczuk](https://github.com/dmh126))
+
+<a name="1.4.0></a>
+## 1.4.0 (2021-04-20)
+
+- PR #35 Add version property to ViewerOptions (with thanks to [Damian Harasymczuk](https://github.com/dmh126))
+
+<a name="1.3.0></a>
+## 1.3.0 (2021-04-04)
+
+- Updated package dependencies
+- Added activate and deactivate methods to BasicExtension
+
+<a name="1.2.6></a>
+## 1.2.6 (2021-02-07)
+
+- Updated package dependencies
+
+<a name="1.2.5></a>
+## 1.2.5 (2020-05-23)
+
+- Updated package dependencies
+
+<a name="1.2.4></a>
+## 1.2.4 (2020-03-14)
+
+- Updated package dependencies
+
+<a name="1.2.3></a>
+## 1.2.3 (2019-12-09)
+
+- Updated package dependencies
+
+<a name="1.2.1></a>
+## 1.2.1 (2019-11-07)
+
+- Assign random id to viewer div
+
+<a name="1.2.0></a>
 ## 1.2.0 (2019-09-20)
 
 - Forge Viewer typings are not included with the component as a dependency

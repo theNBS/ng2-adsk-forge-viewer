@@ -48,6 +48,7 @@ export interface ViewerOptions {
   customisedModelLoading?: boolean;
   onViewerScriptsLoaded?: () => void;
   onViewerInitialized: (args: ViewerInitializedEvent) => void;
+  version?: string | number;
 }
 
 
@@ -58,7 +59,7 @@ export interface ViewerOptions {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ViewerComponent implements OnDestroy {
-  readonly containerId = 'ng2-adsk-forge-viewer-container';
+  public containerId: string;
 
   @Output() public onDocumentChanged = new EventEmitter<DocumentChangedEvent>();
   @Output() public onItemLoaded = new EventEmitter<ItemLoadedEvent>();
@@ -86,10 +87,6 @@ export class ViewerComponent implements OnDestroy {
   private unsubscribe: Subject<boolean> = new Subject();
   private basicExt: BasicExtension;
 
-  public get Container(): HTMLElement {
-    return document.getElementById(this.containerId);
-  }
-
   /**
    * Helper to allow callers to specify documentId with or without the required urn: prefix
    */
@@ -97,7 +94,9 @@ export class ViewerComponent implements OnDestroy {
     return (documentId.startsWith('urn:')) ? documentId : `urn:${documentId}`;
   }
 
-  constructor(private script: ScriptService) { }
+  constructor(private script: ScriptService) {
+    this.containerId = this.getDivName();
+  }
 
   @Input() public set viewerOptions(options: ViewerOptions) {
     if (!this.viewerInitialized && options) {
@@ -168,6 +167,20 @@ export class ViewerComponent implements OnDestroy {
     );
   }
 
+  /**
+   * Get the container element
+   */
+  public get Container(): HTMLElement {
+    return document.getElementById(this.containerId);
+  }
+
+  /**
+   * Get the id assigned to the viewer
+   */
+  public get ContainerId() {
+    return this.containerId;
+  }
+
   public get basicExtension() {
     return this.basicExt;
   }
@@ -200,8 +213,10 @@ export class ViewerComponent implements OnDestroy {
    * to add the scripts to their index.html pages. So we'll load them when required.
    */
   private loadScripts(): Promise<void> {
+    const version = this.viewerOptions.version || '7.*';
+    const url = `https://developer.api.autodesk.com/modelderivative/v2/viewers/${version}/viewer3D.min.js`;
     return this.script.load(
-      'https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js',
+      url,
     )
       .then((data) => {
         this.log('script loaded ', data);
@@ -249,9 +264,15 @@ export class ViewerComponent implements OnDestroy {
       this.viewer = new Autodesk.Viewing.GuiViewer3D(this.Container, config);
     }
 
+    // set a document url if environment set to Local
+    let url: string;
+    if (this.viewerOptions.initializerOptions?.env === 'Local') {
+      url = this.viewerOptions.initializerOptions?.document;
+    }
+
     if (!this.viewerOptions.customisedModelLoading) {
       // Start the viewer
-      this.viewer.start(undefined);
+      this.viewer.start(url);
     }
 
     // Viewer is ready - scripts are loaded and we've create a new viewing application
@@ -365,5 +386,15 @@ export class ViewerComponent implements OnDestroy {
   private error(message?: any, ...optionalParams: any[]) {
     if (!this.showDebugMessages) return;
     console.error(message, optionalParams);
+  }
+
+  private getDivName() {
+    const S4 = () => {
+      // tslint:disable-next-line:no-bitwise
+      return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+    };
+
+    const guid = (S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4());
+    return `viewer_${guid}`;
   }
 }
