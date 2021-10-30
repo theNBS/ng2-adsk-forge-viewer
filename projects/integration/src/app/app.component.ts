@@ -10,7 +10,7 @@ import {
 } from 'ng2-adsk-forge-viewer';
 
 import { TestExtension } from './test-extension';
-import { ACCESS_TOKEN, DOCUMENT_URN } from './config';
+import { ACCESS_TOKEN, DOCUMENT_URN, MULTIPLE_MODEL_URNS } from './config';
 
 @Component({
   selector: 'app-root',
@@ -18,6 +18,8 @@ import { ACCESS_TOKEN, DOCUMENT_URN } from './config';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
+  public viewerOptionsMultipleModels: ViewerOptions;
+  public viewerOptionsAggregateView: ViewerOptions;
   public viewerOptions3d: ViewerOptions;
   public viewerOptions2d: ViewerOptions;
   public thumbnailOptions: ThumbnailOptions;
@@ -52,7 +54,19 @@ export class AppComponent {
       onViewerScriptsLoaded: this.scriptsLoaded,
       onViewerInitialized: this.loadDocument,
       // showFirstViewable: false,
-      // headlessViewer: true,
+      // viewerType: 'Viewer3D' -- for headless viewer
+    };
+
+    this.viewerOptionsMultipleModels = {
+      ...this.viewerOptions3d,
+      onViewerScriptsLoaded: this.scriptsLoaded,
+      onViewerInitialized: this.loadMultipleDocument,
+      // showFirstViewable: false,
+    };
+
+    this.viewerOptionsAggregateView = {
+      ...this.viewerOptionsMultipleModels,
+      viewerType: 'AggregatedView',
     };
 
     this.viewerOptions2d = Object.assign({}, this.viewerOptions3d, { showFirstViewable: false });
@@ -65,6 +79,9 @@ export class AppComponent {
   public loadDocument(args: ViewerInitializedEvent) {
     args.viewerComponent.DocumentId = DOCUMENT_URN;
   }
+  public loadMultipleDocument(args: ViewerInitializedEvent) {
+    args.viewerComponent.DocumentId = MULTIPLE_MODEL_URNS;
+  }
 
   public documentChanged(event: DocumentChangedEvent) {
     const { document } = event;
@@ -73,7 +90,7 @@ export class AppComponent {
 
     const viewables = document.getRoot().search({ type: 'geometry', role: '2d' });
     if (viewables && viewables.length > 0) {
-      event.viewerComponent.loadDocumentNode(document, viewables[0]);
+      void event.viewerComponent.loadDocumentNode(document, viewables[0]);
     }
   }
 

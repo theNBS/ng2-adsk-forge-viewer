@@ -3,6 +3,6 @@ export const ACCESS_TOKEN = 'TOKEN_HERE';
 export const DOCUMENT_URN = 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6bmJzdmlld2VyL0E0ODdCREQwNTM1NjcxNzYxMTE2RTIyMzk0QTYxOEIwLnJ2dA';
 
 export const MULTIPLE_MODEL_URNS = [
-  'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6dG9vbGtpdC9BMTY4MThBMDMxNTYyM0M5MEY2QUVGQkNENjdDRDRFQi5ydnQ',
-  'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6bmJzdmlld2VyL0I2QkM3NDVCRTUxRTkwMkUzQTY2NkE0NEFERDNCRERDLnJ2dA',
+  { urn: 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6bmJzdmlld2VyL0E0ODdCREQwNTM1NjcxNzYxMTE2RTIyMzk0QTYxOEIwLnJ2dA', xform: { x: 100, y: 0, z: 100 } },
+  { urn: 'dXJuOmFkc2sub2JqZWN0czpvcy5vYmplY3Q6bmJzdmlld2VyLzQwMTM0NUQ1MDBDMjM4NTdERDMzRjQ4RjNCRDQ0RDE4LnJ2dA', xform: { x: -100, y: 0, z: 100 } },
 ];

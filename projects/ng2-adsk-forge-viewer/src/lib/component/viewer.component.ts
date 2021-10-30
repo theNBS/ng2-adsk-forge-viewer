@@ -22,6 +22,15 @@ import {
 } from '../extensions/extension';
 import { BasicExtension } from '../extensions/basic-extension';
 
+/** Viewer types - headless, with gui and aggregated view */
+export type ViewerType = 'Viewer3D' | 'GuiViewer3D' | 'AggregatedView';
+/** Minimum attributes for a Vector in THREE */
+export interface Vector3 {
+  x: number;
+  y: number;
+  z: number;
+}
+
 export interface DocumentChangedEvent {
   document: Autodesk.Viewing.Document;
   viewerComponent: ViewerComponent;
@@ -42,13 +51,18 @@ export interface ViewerInitializedEvent {
 export interface ViewerOptions {
   initializerOptions: Autodesk.Viewing.InitializerOptions;
   viewerConfig?: Autodesk.Viewing.ViewerConfig;
-  headlessViewer?: boolean;
+  viewerType?: ViewerType;
   showFirstViewable?: boolean;
   enableMemoryManagement?: boolean;
-  customisedModelLoading?: boolean;
   onViewerScriptsLoaded?: () => void;
   onViewerInitialized: (args: ViewerInitializedEvent) => void;
   version?: string | number;
+}
+
+export interface DocumentID {
+  urn: string;
+  xform?: Vector3;
+  offset?: Vector3;
 }
 
 
@@ -83,7 +97,9 @@ export class ViewerComponent implements OnDestroy {
   private _viewerOptions: ViewerOptions = null;
   private viewerInitialized = false;
   private viewer: Autodesk.Viewing.Viewer3D;
-  private documentId: string | string[];
+  private aggregatedView: Autodesk.Viewing.AggregatedView;
+  private documentId: string | DocumentID[];
+  private documents: Autodesk.Viewing.Document[];
   private unsubscribe: Subject<boolean> = new Subject();
   private basicExt: BasicExtension;
 
@@ -119,6 +135,7 @@ export class ViewerComponent implements OnDestroy {
 
     this.viewer = null;
     this.viewerInitialized = false;
+    this.documents = [];
 
     this.unsubscribe.next();
     this.unsubscribe.complete();
@@ -151,20 +168,31 @@ export class ViewerComponent implements OnDestroy {
   /**
    * Get the document urn that has been loaded
    */
-  public get DocumentId(): string {
-    return (Array.isArray(this.documentId)) ? this.documentId[0] : this.documentId;
+  public get DocumentId(): string | DocumentID[] {
+    return this.documentId;
+  }
+
+  /**
+   * Return aggregated view if there is one
+   */
+  public get AggregatedView(): Autodesk.Viewing.AggregatedView {
+    return this.aggregatedView;
+  }
+
+  public get Documents(): Autodesk.Viewing.Document[] {
+    return this.documents;
   }
 
   /**
    * Set the document urn, which triggers the viewer to load the document
    */
-  public set DocumentId(value: string) {
+  public set DocumentId(value: string | DocumentID[]) {
     this.documentId = value;
-    this.loadModel(
-      this.documentId,
-      this.onDocumentLoadSuccess.bind(this),
-      this.onDocumentLoadFailure.bind(this),
-    );
+    if (Array.isArray(value)) {
+      this.loadMultipleModels(value);
+    } else {
+      this.loadModel(this.documentId as string);
+    }
   }
 
   /**
@@ -195,17 +223,6 @@ export class ViewerComponent implements OnDestroy {
                           bubbleNode: Autodesk.Viewing.BubbleNode,
                           options?: object): Promise<Autodesk.Viewing.Model> {
     return this.viewer.loadDocumentNode(document, bubbleNode, options);
-  }
-
-  /** Loads a model in to the viewer via it's urn */
-  public loadModel(
-    documentId: string,
-    successCallback: (document: Autodesk.Viewing.Document) => void,
-    failureCallback: (errorCode: Autodesk.Viewing.ErrorCodes) => void,
-  ) {
-    Autodesk.Viewing.Document.load(ViewerComponent.verifyUrn(documentId),
-                                   successCallback,
-                                   failureCallback);
   }
 
   /**
@@ -257,8 +274,23 @@ export class ViewerComponent implements OnDestroy {
       config.loaderExtensions = { svf: 'Autodesk.MemoryLimited' };
     }
 
+    // Handle aggregated viewer
+    if (this.viewerOptions.viewerType === 'AggregatedView') {
+      const view = new Autodesk.Viewing.AggregatedView();
+      void view.init(this.Container, { viewerConfig: config })
+        .then(() => {
+          this.aggregatedView = view;
+          this.viewer = view.viewer;
+
+          // Viewer is ready - scripts are loaded and we've create a new viewing application
+          this.viewerInitialized = true;
+          this.viewerOptions.onViewerInitialized({ viewerComponent: this, viewer: this.viewer });
+        });
+      return;
+    }
+
     // Create a new viewer
-    if (this.viewerOptions.headlessViewer) {
+    if (this.viewerOptions.viewerType === 'Viewer3D') {
       this.viewer = new Autodesk.Viewing.Viewer3D(this.Container, config);
     } else {
       this.viewer = new Autodesk.Viewing.GuiViewer3D(this.Container, config);
@@ -269,11 +301,8 @@ export class ViewerComponent implements OnDestroy {
     if (this.viewerOptions.initializerOptions?.env === 'Local') {
       url = this.viewerOptions.initializerOptions?.document;
     }
-
-    if (!this.viewerOptions.customisedModelLoading) {
-      // Start the viewer
-      this.viewer.start(url);
-    }
+    // Start the viewer
+    this.viewer.start(url);
 
     // Viewer is ready - scripts are loaded and we've create a new viewing application
     this.viewerInitialized = true;
@@ -281,10 +310,89 @@ export class ViewerComponent implements OnDestroy {
   }
 
   /**
+   * Load multiple models in to the viewer via urns
+   */
+  private loadMultipleModels(documentIds: DocumentID[]) {
+    this.documents = [];
+    const bubbleNodes: Autodesk.Viewing.BubbleNode[] = [];
+    let loaded = 0;
+
+    for (const documentId of documentIds) {
+      // Add urn: to the beginning of document id if needed
+      Autodesk.Viewing.Document.load(
+        ViewerComponent.verifyUrn(documentId.urn),
+        (document) => {
+          this.documents.push(document);
+
+          // Set the nodes from the doc
+          const nodes = document.getRoot().search({ type: 'geometry' });
+
+          if (this.aggregatedView) {
+            // Load the first bubble node. This assumes that a bubbleNode was successfully found
+            bubbleNodes.push(nodes[0]);
+
+            // Have we finished loading documents?
+            loaded += 1;
+            if (loaded === documentIds.length) {
+              void this.aggregatedView.setNodes(bubbleNodes, undefined)
+                .then((docs) => {
+                  // Emit an event so the caller can do something
+                  this.onDocumentChanged.emit({ document, viewerComponent: this, viewer: this.viewer });
+                });
+            }
+          } else {
+            const options: any = {
+              keepCurrentModels: true,
+            };
+
+            if (documentId.xform) {
+              options.placementTransform = (new THREE.Matrix4()).setPosition(
+                new THREE.Vector3(documentId.xform.x, documentId.xform.y, documentId.xform.z),
+              );
+            }
+
+            if (documentId.offset) {
+              options.globalOffset = new THREE.Vector3(documentId.offset.x, documentId.offset.y, documentId.offset.z);
+            }
+
+            this.viewer.loadDocumentNode(
+              document,
+              nodes[0],
+              options,
+            )
+            .then((docs) => {
+              // Emit an event so the caller can do something
+              this.onDocumentChanged.emit({ document, viewerComponent: this, viewer: this.viewer });
+            });
+          }
+        },
+        this.onDocumentLoadFailure.bind(this),
+      );
+    }
+  }
+
+  /**
+   * Loads a model in to the viewer via it's urn
+   */
+  private loadModel(documentId: string) {
+    if (!documentId) {
+      return;
+    }
+
+    // Add urn: to the beginning of document id if needed
+    Autodesk.Viewing.Document.load(
+      ViewerComponent.verifyUrn(documentId),
+      this.onDocumentLoadSuccess.bind(this),
+      this.onDocumentLoadFailure.bind(this),
+    );
+  }
+
+  /**
    * Document successfully loaded
    */
   private onDocumentLoadSuccess(document: Autodesk.Viewing.Document) {
     if (!document.getRoot()) return;
+    this.documents = [document];
 
     // Emit an event so the caller can do something
     // TODO: config option to specify which viewable to display (how?)
