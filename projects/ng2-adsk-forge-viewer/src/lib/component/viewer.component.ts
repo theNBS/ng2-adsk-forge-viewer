@@ -47,6 +47,7 @@ export interface ViewerOptions {
   enableMemoryManagement?: boolean;
   onViewerScriptsLoaded?: () => void;
   onViewerInitialized: (args: ViewerInitializedEvent) => void;
+  version?: string | number;
 }
 
 
@@ -196,8 +197,10 @@ export class ViewerComponent implements OnDestroy {
    * to add the scripts to their index.html pages. So we'll load them when required.
    */
   private loadScripts(): Promise<void> {
+    const version = this.viewerOptions.version || '7.*';
+    const url = `https://developer.api.autodesk.com/modelderivative/v2/viewers/${version}/viewer3D.min.js`;
     return this.script.load(
-      'https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js',
+      url,
     )
       .then((data) => {
         this.log('script loaded ', data);
@@ -245,8 +248,13 @@ export class ViewerComponent implements OnDestroy {
       this.viewer = new Autodesk.Viewing.GuiViewer3D(this.Container, config);
     }
 
+    // set a document url if environment set to Local
+    let url: string;
+    if (this.viewerOptions.initializerOptions?.env === 'Local') {
+      url = this.viewerOptions.initializerOptions?.document;
+    }
     // Start the viewer
-    this.viewer.start(undefined);
+    this.viewer.start(url);
 
     // Viewer is ready - scripts are loaded and we've create a new viewing application
     this.viewerInitialized = true;
