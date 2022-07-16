@@ -355,7 +355,7 @@ export class ViewerComponent implements OnDestroy {
               options.globalOffset = new THREE.Vector3(documentId.offset.x, documentId.offset.y, documentId.offset.z);
             }
 
-            this.viewer.loadDocumentNode(
+            void this.viewer.loadDocumentNode(
               document,
               nodes[0],
               options,
