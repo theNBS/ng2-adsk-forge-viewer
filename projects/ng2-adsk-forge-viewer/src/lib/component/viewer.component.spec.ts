@@ -552,7 +552,6 @@ describe('ViewerComponent', () => {
 
     it('loads additional extensions', () => {
       const viewerOptions = {
-        headlessViewer: true,
         viewerConfig: {
           extensions: ['AnotherExtension'],
           useConsolidation: true,
