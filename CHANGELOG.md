@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.6.1></a>
+## 1.6.1 (2022-11-08)
+
+- Fix issue with Travis CI build
+- PR #67 Make viewer component fit parent dimensions (with thanks to [wladiarce](https://github.com/wladiarce))
+
+<a name="1.6.0></a>
+## 1.6.0 (2022-04-10)
+
+- Bump packages to address security vulnerabilities
+- PR #44 Provide Script Service in root (with thanks to [Damian Harasymczuk](https://github.com/dmh126))
+
 <a name="1.5.0></a>
 ## 1.5.0 (2021-08-25)
 
