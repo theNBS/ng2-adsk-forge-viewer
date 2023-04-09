@@ -428,8 +428,8 @@ export class ViewerComponent implements OnDestroy {
   }
 
   /**
-   * Subscript to BasicExtension events when the extension has been
-   * succesfully loaded by the viewer.
+   * Subscribe to BasicExtension events when the extension has been
+   * successfully loaded by the viewer.
    */
   private extensionLoaded(ext: BasicExtension) {
     this.basicExt = ext;

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 import {
   ViewerOptions,
@@ -17,7 +17,7 @@ import { ACCESS_TOKEN, DOCUMENT_URN, MULTIPLE_MODEL_URNS } from './config';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   public viewerOptionsMultipleModels: ViewerOptions;
   public viewerOptionsAggregateView: ViewerOptions;
   public viewerOptions3d: ViewerOptions;

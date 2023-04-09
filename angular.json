@@ -1,7 +1,10 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   },
   "version": 1,
   "newProjectRoot": "projects",
@@ -33,14 +36,11 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:lint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "projects/ng2-adsk-forge-viewer/tsconfig.lib.json",
-              "projects/ng2-adsk-forge-viewer/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
+            "lintFilePatterns": [
+              "projects/ng2-adsk-forge-viewer/**/*.ts",
+              "projects/ng2-adsk-forge-viewer/**/*.html"
             ]
           }
         }
@@ -133,8 +133,8 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "src/**/*.ts",
-              "src/**/*.html"
+              "projects/integration/**/*.ts",
+              "projects/integration/**/*.html"
             ]
           }
         }

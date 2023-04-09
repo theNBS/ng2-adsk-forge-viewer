@@ -50,11 +50,10 @@ export class ThumbnailComponent implements OnChanges {
     };
 
     this.http.get(url, { headers, responseType: 'arraybuffer' })
-      .subscribe(
-        data => (data) ? this.setImageSrc(`data:image/png;base64,${this.toBase64(data)}`)
-          : this.setImageSrc(),
-        error => this.setImageSrc(),
-      );
+      .subscribe({
+        next: data => (data) ? this.setImageSrc(`data:image/png;base64,${this.toBase64(data)}`) : this.setImageSrc(),
+        error: error => this.setImageSrc(),
+      });
   }
 
   private setAccessToken(accessToken: string, expiryTime: number) {
