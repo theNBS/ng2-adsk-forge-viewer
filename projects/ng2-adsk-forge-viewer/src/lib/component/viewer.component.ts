@@ -284,7 +284,7 @@ export class ViewerComponent implements OnDestroy {
           this.aggregatedView = view;
           this.viewer = view.viewer;
 
-          // Viewer is ready - scripts are loaded and we've create a new viewing application
+          // Viewer is ready - scripts are loaded and we've created a new viewing application
           this.viewerInitialized = true;
           this.viewerOptions.onViewerInitialized({ viewerComponent: this, viewer: this.viewer! });
         });
