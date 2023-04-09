@@ -1,13 +1,19 @@
 // tslint:disable:no-string-literal
 import { fakeAsync, flushMicrotasks } from '@angular/core/testing';
+import { mock, instance, when, anything } from 'ts-mockito';
+import { of } from 'rxjs';
 import { BasicExtension } from './basic-extension';
 import { Extension } from './extension';
 
 describe('BasicExtension', () => {
   let mockExtension: BasicExtension;
 
+  let mockViewer = mock(Autodesk.Viewing.Viewer3D);
+
   beforeEach(() => {
-    mockExtension = new BasicExtension({} as any);
+    when(mockViewer.addEventListener(anything(), anything())).thenReturn(of({}));
+
+    mockExtension = new BasicExtension(instance(mockViewer));
   });
 
   it('is initialized', () => {

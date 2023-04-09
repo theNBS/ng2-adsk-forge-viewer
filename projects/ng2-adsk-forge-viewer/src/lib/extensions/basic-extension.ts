@@ -4,12 +4,12 @@ import { map } from 'rxjs/operators';
 import { Extension, ViewerEventArgs } from './extension';
 
 export class BasicExtension extends Extension {
-  public static extensionName: string = 'BasicExtension';
+  public static override extensionName: string = 'BasicExtension';
   public static debugMessages: boolean = false;
 
-  private static callback: (ext: BasicExtension) => void = null;
+  private static callback: null | ((ext: BasicExtension) => void) = null;
 
-  public viewerEvents: Observable<ViewerEventArgs>;
+  public viewerEvents: Observable<ViewerEventArgs> | undefined;
   protected eventStreams: Observable<ViewerEventArgs>[] = [];
 
   protected readonly events: string[] = [
@@ -25,7 +25,7 @@ export class BasicExtension extends Extension {
     Autodesk.Viewing.SHOW_EVENT,
   ];
 
-  public static registerExtension(extensionName: string, callback: (ext: BasicExtension) => void) {
+  public static override registerExtension(extensionName: string, callback: (ext: BasicExtension) => void) {
     BasicExtension.callback = callback;
     super.registerExtension(BasicExtension.extensionName, BasicExtension);
   }

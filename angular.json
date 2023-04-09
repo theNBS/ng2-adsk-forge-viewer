@@ -33,7 +33,7 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-devkit/build-angular:lint",
           "options": {
             "tsConfig": [
               "projects/ng2-adsk-forge-viewer/tsconfig.lib.json",
@@ -61,7 +61,6 @@
             "main": "projects/integration/src/main.ts",
             "polyfills": "projects/integration/src/polyfills.ts",
             "tsConfig": "projects/integration/tsconfig.app.json",
-            "aot": false,
             "assets": [
               "projects/integration/src/favicon.ico",
               "projects/integration/src/assets"
@@ -82,9 +81,7 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -133,18 +130,15 @@
           }
         },
         "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
+          "builder": "@angular-eslint/builder:lint",
           "options": {
-            "tsConfig": [
-              "projects/integration/tsconfig.app.json",
-              "projects/integration/tsconfig.spec.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
             ]
           }
         }
       }
-    }},
-  "defaultProject": "ng2-adsk-forge-viewer"
+    }
+  }
 }
