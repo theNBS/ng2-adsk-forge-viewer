@@ -1,9 +1,3 @@
-::ng-deep .forge-viewer-container {
-  position: relative;
-  width: 100%;
-  height: 95vh;
-}
-
 ::ng-deep .my-view-front-button {
   background: red;
 }
@@ -14,3 +8,9 @@
   background: green;
 }
 
+.viewer1, .viewer2 {
+  width: 50vw;
+  height: 100vh;
+  display: block;
+  position: relative;
+}

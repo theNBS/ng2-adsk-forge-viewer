@@ -64,6 +64,7 @@ export class AppComponent {
 
   public loadDocument(args: ViewerInitializedEvent) {
     args.viewerComponent.DocumentId = DOCUMENT_URN;
+    args.viewer.resize();
   }
 
   public documentChanged(event: DocumentChangedEvent) {

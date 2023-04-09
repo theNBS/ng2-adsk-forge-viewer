@@ -23,12 +23,12 @@
 <div id="MultipleViewers" *ngIf="view === 4">
   <div style="float:left; width: 49vw;">
     <h2>Viewer 1</h2>
-    <adsk-forge-viewer [viewerOptions]="viewerOptions3d"
+    <adsk-forge-viewer [viewerOptions]="viewerOptions3d" class="viewer1"
                       (onSelectionChanged)="selectionChanged($event)"></adsk-forge-viewer>
   </div>
   <div style="float:right; width: 49vw;">
     <h2>Viewer 2</h2>
-    <adsk-forge-viewer [viewerOptions]="viewerOptions2d"
+    <adsk-forge-viewer [viewerOptions]="viewerOptions2d" class="viewer2"
                       (onDocumentChanged)="documentChanged($event)"
                       (onSelectionChanged)="selectionChanged($event)"></adsk-forge-viewer>
   </div>
