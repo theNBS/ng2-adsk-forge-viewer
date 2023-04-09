@@ -12,7 +12,9 @@ export interface ScriptInfo {
   status?: string;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class ScriptService {
 
   private scripts: ScriptInfoLookup = {};

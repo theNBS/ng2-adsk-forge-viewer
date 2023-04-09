@@ -21,7 +21,7 @@ export class AppComponent {
   public viewerOptions3d: ViewerOptions;
   public viewerOptions2d: ViewerOptions;
   public thumbnailOptions: ThumbnailOptions;
-  public documentId: string;
+  public documentId!: string;
   public view: number = 1;
 
   public ngOnInit() {

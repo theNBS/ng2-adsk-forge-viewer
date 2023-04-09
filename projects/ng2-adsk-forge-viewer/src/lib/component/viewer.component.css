@@ -1,1 +1,5 @@
 @import url('https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css');
+
+.forge-viewer-container {
+  position: relative;
+}

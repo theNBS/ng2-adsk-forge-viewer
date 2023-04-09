@@ -50,7 +50,7 @@ class MockExtension extends Extension {
   public unload() { return true; }
   public activate() { return true; }
   public deactivate() { return true; }
-  public registerEventTypes() { super.registerEventTypes(); }
+  public override registerEventTypes() { super.registerEventTypes(); }
 }
 
 describe('event args', () => {
