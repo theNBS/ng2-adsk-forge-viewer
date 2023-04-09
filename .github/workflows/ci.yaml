@@ -18,6 +18,6 @@ jobs:
 
       # Install & build & test:
       - run: npm ci
-      - run: npm build:app
-      - run: npm build:lib
-      - run: npm run test:lib
+      - run: 'npm build:app'
+      - run: 'npm build:lib'
+      - run: 'npm run test:lib'
