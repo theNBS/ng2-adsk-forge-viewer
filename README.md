@@ -1,6 +1,6 @@
 # Angular Autodesk Forge Viewer
 
-[![CI](https://github.com/theNBS/ng2-adsk-forge-viewer/actions/workflows/ci.yaml/badge.svg?branch=master)](https://github.com/theNBS/ng2-adsk-forge-viewer/actions/workflows/ci.yaml)
+[![CI](https://github.com/theNBS/ng2-adsk-forge-viewer/actions/workflows/ci.yaml/badge.svg)](https://github.com/theNBS/ng2-adsk-forge-viewer/actions/workflows/ci.yaml)
 [![Viewer](https://img.shields.io/badge/Viewer-v7-green.svg)](https://forge.autodesk.com/)
 
 Angular wrapper for the [Autodesk Forge Viewer](https://developer.autodesk.com).
