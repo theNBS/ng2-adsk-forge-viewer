@@ -1,1 +1,7 @@
 @import url('https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css');
+
+:host .forge-viewer-container {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}

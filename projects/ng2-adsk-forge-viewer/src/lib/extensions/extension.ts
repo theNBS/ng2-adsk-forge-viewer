@@ -1,161 +1,161 @@
 /// <reference types="forge-viewer" />
 export abstract class ViewerEventArgs {
   target?: Autodesk.Viewing.Viewer3D;
-  model?: Autodesk.Viewing.ViewerItem;
-  type: string;
+  model!: Autodesk.Viewing.ViewerItem;
+  type!: string;
   [key: string]: any;
 }
 export class AggregationSelectionChangedEventArgs extends ViewerEventArgs {
-  selections: Autodesk.Viewing.ViewerItem[];
-  type = Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT;
+  selections!: Autodesk.Viewing.ViewerItem[];
+  override type = Autodesk.Viewing.AGGREGATE_SELECTION_CHANGED_EVENT;
 }
 export class AnimationReadyEventArgs extends ViewerEventArgs {
-  type = Autodesk.Viewing.ANIMATION_READY_EVENT;
+  override type = Autodesk.Viewing.ANIMATION_READY_EVENT;
 }
 export class CameraChangedEventArgs extends ViewerEventArgs {
-  camera: THREE.Camera;
-  type = Autodesk.Viewing.CAMERA_CHANGE_EVENT;
+  camera!: THREE.Camera;
+  override type = Autodesk.Viewing.CAMERA_CHANGE_EVENT;
 }
 export class CutplanesChangedEventArgs extends ViewerEventArgs {
-  cutplanes: Object[];
-  type = Autodesk.Viewing.CUTPLANES_CHANGE_EVENT;
+  cutplanes!: Object[];
+  override type = Autodesk.Viewing.CUTPLANES_CHANGE_EVENT;
 }
 export class EscapeEventArgs extends ViewerEventArgs {
-  type = Autodesk.Viewing.ESCAPE_EVENT;
+  override type = Autodesk.Viewing.ESCAPE_EVENT;
 }
 export class ExplodeChangedEventArgs extends ViewerEventArgs {
-  scale: number;
-  type = Autodesk.Viewing.EXPLODE_CHANGE_EVENT;
+  scale!: number;
+  override type = Autodesk.Viewing.EXPLODE_CHANGE_EVENT;
 }
 export abstract class ExtensionLoadedUnloadedEventArgs extends ViewerEventArgs {
-  extensionId: string;
+  extensionId!: string;
 }
 export class ExtensionLoadedEventArgs extends ExtensionLoadedUnloadedEventArgs {
-  type = Autodesk.Viewing.EXTENSION_LOADED_EVENT;
+  override type = Autodesk.Viewing.EXTENSION_LOADED_EVENT;
 }
 export class ExtensionUnloadedEventArgs extends ExtensionLoadedUnloadedEventArgs {
-  type = Autodesk.Viewing.EXTENSION_UNLOADED_EVENT;
+  override type = Autodesk.Viewing.EXTENSION_UNLOADED_EVENT;
 }
 export class FinalFrameRenderedChangedEventArgs extends ViewerEventArgs {
-  planes: Object[];
-  type = Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT;
+  planes!: Object[];
+  override type = Autodesk.Viewing.FINAL_FRAME_RENDERED_CHANGED_EVENT;
 }
 export class FitToViewEventArgs extends ViewerEventArgs {
-  immediate: boolean;
-  nodeIdArray: number[];
-  type = Autodesk.Viewing.FIT_TO_VIEW_EVENT;
+  immediate!: boolean;
+  nodeIdArray!: number[];
+  override type = Autodesk.Viewing.FIT_TO_VIEW_EVENT;
 }
 export class FragmentsLoadedEventArgs extends ViewerEventArgs {
-  getFragIds: () => void;
-  data: Object;
-  type = Autodesk.Viewing.FRAGMENTS_LOADED_EVENT;
+  getFragIds!: () => void;
+  data!: Object;
+  override type = Autodesk.Viewing.FRAGMENTS_LOADED_EVENT;
 }
 export class FullscreenEventArgs extends ViewerEventArgs {
-  mode: Autodesk.Viewing.ScreenMode;
-  type = Autodesk.Viewing.FULLSCREEN_MODE_EVENT;
+  mode!: Autodesk.Viewing.ScreenMode;
+  override type = Autodesk.Viewing.FULLSCREEN_MODE_EVENT;
 }
 export class GeometryLoadedEventArgs extends ViewerEventArgs {
-  type = Autodesk.Viewing.GEOMETRY_LOADED_EVENT;
+  override type = Autodesk.Viewing.GEOMETRY_LOADED_EVENT;
 }
 export class HideEventArgs extends ViewerEventArgs {
-  nodeIdArray: number[];
-  type = Autodesk.Viewing.HIDE_EVENT;
+  nodeIdArray!: number[];
+  override type = Autodesk.Viewing.HIDE_EVENT;
 }
 export class HyperlinkEventArgs extends ViewerEventArgs {
-  data: Object; // TODO: Can his be stronger?
-  type = Autodesk.Viewing.HYPERLINK_EVENT;
+  data!: Object; // TODO: Can his be stronger?
+  override type = Autodesk.Viewing.HYPERLINK_EVENT;
 }
 export class IsolateEventArgs extends ViewerEventArgs {
-  nodeIdArray: number[];
-  type = Autodesk.Viewing.ISOLATE_EVENT;
+  nodeIdArray?: number[];
+  override type = Autodesk.Viewing.ISOLATE_EVENT;
 }
 export class LayerVisibilityEventArgs extends ViewerEventArgs {
-  type = Autodesk.Viewing.LAYER_VISIBILITY_CHANGED_EVENT;
+  override type = Autodesk.Viewing.LAYER_VISIBILITY_CHANGED_EVENT;
 }
 export class LoadMissingGeometryEventArgs extends ViewerEventArgs {
-  delay: boolean;
-  type = Autodesk.Viewing.LOAD_MISSING_GEOMETRY;
+  delay!: boolean;
+  override type = Autodesk.Viewing.LOAD_MISSING_GEOMETRY;
 }
 export class ModelRootLoadedEventArgs extends ViewerEventArgs {
-  svf: Object; // TODO: can this be stronger
-  type = Autodesk.Viewing.MODEL_ROOT_LOADED_EVENT;
+  svf!: Object; // TODO: can this be stronger
+  override type = Autodesk.Viewing.MODEL_ROOT_LOADED_EVENT;
 }
 export class ModelUnloadedEventArgs extends ViewerEventArgs {
-  type = Autodesk.Viewing.MODEL_UNLOADED_EVENT;
+  override type = Autodesk.Viewing.MODEL_UNLOADED_EVENT;
 }
 export class NavigationModeChangedEventArgs extends ViewerEventArgs {
-  id: string;
-  type = Autodesk.Viewing.NAVIGATION_MODE_CHANGED_EVENT;
+  id!: string;
+  override type = Autodesk.Viewing.NAVIGATION_MODE_CHANGED_EVENT;
 }
 export abstract class ObjectTreeEventArgs extends ViewerEventArgs {
-  svf: Object; // TODO: can this be stronger
+  svf!: Object; // TODO: can this be stronger
 }
 export class ObjectTreeCreatedEventArgs extends ObjectTreeEventArgs {
-  type = Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT;
+  override type = Autodesk.Viewing.OBJECT_TREE_CREATED_EVENT;
 }
 export class ObjectTreeUnavailableEventArgs extends ObjectTreeEventArgs {
-  type = Autodesk.Viewing.OBJECT_TREE_UNAVAILABLE_EVENT;
+  override type = Autodesk.Viewing.OBJECT_TREE_UNAVAILABLE_EVENT;
 }
 export abstract class PrefEventArgs extends ViewerEventArgs {
-  name: string;
-  value: Object;
+  name!: string;
+  value!: Object;
 }
 export class PrefChangedEventArgs extends PrefEventArgs {
-  type = Autodesk.Viewing.PREF_CHANGED_EVENT;
+  override type = Autodesk.Viewing.PREF_CHANGED_EVENT;
 }
 export class PrefResetEventArgs extends PrefEventArgs {
-  type = Autodesk.Viewing.PREF_RESET_EVENT;
+  override type = Autodesk.Viewing.PREF_RESET_EVENT;
 }
 export class ProgressUpdateEventArgs extends ViewerEventArgs {
-  percent: number;
-  state: Autodesk.Viewing.ProgressState;
-  type = Autodesk.Viewing.PROGRESS_UPDATE_EVENT;
+  percent!: number;
+  state!: Autodesk.Viewing.ProgressState;
+  override type = Autodesk.Viewing.PROGRESS_UPDATE_EVENT;
 }
 export class RenderOptionChangedEventArgs extends ViewerEventArgs {
-  type = Autodesk.Viewing.RENDER_OPTION_CHANGED_EVENT;
+  override type = Autodesk.Viewing.RENDER_OPTION_CHANGED_EVENT;
 }
 export class RenderPresentedEventArgs extends ViewerEventArgs {
-  type = Autodesk.Viewing.RENDER_PRESENTED_EVENT;
+  override type = Autodesk.Viewing.RENDER_PRESENTED_EVENT;
 }
 export class ResetEventArgs extends ViewerEventArgs {
-  type = Autodesk.Viewing.RESET_EVENT;
+  override type = Autodesk.Viewing.RESET_EVENT;
 }
 export class RestoreDefaultSettingsEventArgs extends ViewerEventArgs {
-  type = Autodesk.Viewing.RESTORE_DEFAULT_SETTINGS_EVENT;
+  override type = Autodesk.Viewing.RESTORE_DEFAULT_SETTINGS_EVENT;
 }
 export class SelectionChangedEventArgs extends ViewerEventArgs {
-  fragIdsArray: number[];
-  dbIdArray: number[];
-  nodeArray: number[];
-  type = Autodesk.Viewing.SELECTION_CHANGED_EVENT;
+  fragIdsArray!: number[];
+  dbIdArray!: number[];
+  nodeArray!: number[];
+  override type = Autodesk.Viewing.SELECTION_CHANGED_EVENT;
 }
 export class ShowEventArgs extends ViewerEventArgs {
-  nodeArrayId: number[];
-  type = Autodesk.Viewing.SHOW_EVENT;
+  nodeArrayId!: number[];
+  override type = Autodesk.Viewing.SHOW_EVENT;
 }
 export class TexturesLoadedEventArgs extends ViewerEventArgs {
-  type = Autodesk.Viewing.TEXTURES_LOADED_EVENT;
+  override type = Autodesk.Viewing.TEXTURES_LOADED_EVENT;
 }
 export class ToolChangedEventArgs extends ViewerEventArgs {
-  toolName: string;
-  tool: Object;
-  active: boolean;
-  type = Autodesk.Viewing.TOOL_CHANGE_EVENT;
+  toolName!: string;
+  tool!: Object;
+  active!: boolean;
+  override type = Autodesk.Viewing.TOOL_CHANGE_EVENT;
 }
 export class ViewerInitializedEventArgs extends ViewerEventArgs {
-  type = Autodesk.Viewing.VIEWER_INITIALIZED;
+  override type = Autodesk.Viewing.VIEWER_INITIALIZED;
 }
 export class ViewerResizeEventArgs extends ViewerEventArgs {
-  width: number;
-  height: number;
-  type = Autodesk.Viewing.VIEWER_RESIZE_EVENT;
+  width!: number;
+  height!: number;
+  override type = Autodesk.Viewing.VIEWER_RESIZE_EVENT;
 }
 export class ViewerStateRestoredEventArgs extends ViewerEventArgs {
-  value: boolean;
-  type = Autodesk.Viewing.VIEWER_STATE_RESTORED_EVENT;
+  value!: boolean;
+  override type = Autodesk.Viewing.VIEWER_STATE_RESTORED_EVENT;
 }
 export class ViewerUnInitializedEventArgs extends ViewerEventArgs {
-  type = Autodesk.Viewing.VIEWER_UNINITIALIZED;
+  override type = Autodesk.Viewing.VIEWER_UNINITIALIZED;
 }
 
 /**
@@ -164,8 +164,8 @@ export class ViewerUnInitializedEventArgs extends ViewerEventArgs {
 export abstract class Extension {
   public static extensionName: string = '';
 
-  protected viewer: Autodesk.Viewing.Viewer3D = undefined;
-  protected extOptions: Autodesk.Viewing.ExtensionOptions = undefined;
+  protected viewer: Autodesk.Viewing.Viewer3D;
+  protected extOptions: Autodesk.Viewing.ExtensionOptions | undefined = undefined;
 
   protected eventArgsTypeMap: { [key: string]: Function } = {};
 

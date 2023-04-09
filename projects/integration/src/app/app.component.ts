@@ -23,7 +23,7 @@ export class AppComponent {
   public viewerOptions3d: ViewerOptions;
   public viewerOptions2d: ViewerOptions;
   public thumbnailOptions: ThumbnailOptions;
-  public documentId: string;
+  public documentId!: string;
   public view: number = 1;
 
   public ngOnInit() {
@@ -78,6 +78,7 @@ export class AppComponent {
 
   public loadDocument(args: ViewerInitializedEvent) {
     args.viewerComponent.DocumentId = DOCUMENT_URN;
+    args.viewer.resize();
   }
   public loadMultipleDocument(args: ViewerInitializedEvent) {
     args.viewerComponent.DocumentId = MULTIPLE_MODEL_URNS;

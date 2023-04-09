@@ -15,11 +15,11 @@ export interface ThumbnailOptions {
   templateUrl: './thumbnail.component.html',
 })
 export class ThumbnailComponent implements OnChanges {
-  @Input() public thumbnailOptions: ThumbnailOptions;
-  public imageSrc: SafeUrl;
+  @Input() public thumbnailOptions!: ThumbnailOptions;
+  public imageSrc!: SafeUrl;
 
-  private token: string;
-  private expire: number;   // tslint:disable-line
+  private token!: string;
+  private expire!: number;   // tslint:disable-line
 
   constructor(
     private http: HttpClient,
@@ -41,7 +41,9 @@ export class ThumbnailComponent implements OnChanges {
     if (this.thumbnailOptions.height) opts += `height=${this.thumbnailOptions.height}&`;
     if (opts) url += `?${opts.slice(0, -1)}`;
 
-    this.thumbnailOptions.getAccessToken(this.setAccessToken.bind(this));
+    if (this.thumbnailOptions?.getAccessToken) {
+      this.thumbnailOptions.getAccessToken(this.setAccessToken.bind(this));
+    }
     const headers = {
       Authorization: `Bearer ${this.token}`,
       'Content-Type': 'image/png',

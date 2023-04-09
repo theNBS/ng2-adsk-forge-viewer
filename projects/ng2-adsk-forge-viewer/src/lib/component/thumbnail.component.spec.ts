@@ -78,7 +78,7 @@ describe('ThumbnailComponent', () => {
     it('no data', () => {
       const testDocumentId = 'doc123';
 
-      when(mockHttpClient.get(anything(), anything())).thenReturn(of(null));
+      when(mockHttpClient.get(anything(), anything())).thenReturn(of(null as any));
       const spy = spyOn(component, 'setImageSrc' as any).and.stub();
 
       component['token'] = '1234';

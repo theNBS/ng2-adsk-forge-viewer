@@ -183,7 +183,7 @@ describe('ViewerComponent', () => {
         sharedPropertyDbPath: '',
         lodNode: null,
         children: [],
-      } as Autodesk.Viewing.BubbleNode;
+      } as unknown as Autodesk.Viewing.BubbleNode;
 
       await component.loadDocumentNode({} as any, testViewerItem);
 
@@ -217,7 +217,7 @@ describe('ViewerComponent', () => {
       const spy = spyOn(component, 'initialized' as any).and.stub();
       const initializerOptions = { env: 'Production' };
 
-      Autodesk.Viewing.Private['env' as any] = 'Production';
+      (Autodesk.Viewing.Private['env'] as any) = 'Production';
       component.viewerOptions = { initializerOptions } as any;
       await component['initialiseViewer']();
 
@@ -252,7 +252,7 @@ describe('ViewerComponent', () => {
       expect(viewerSpy).toHaveBeenCalledWith(component.Container, undefined);
       expect(registerBasicExtensionSpy).toHaveBeenCalled();
       expect(addBasicExtensionConfigSpy).toHaveBeenCalledWith('mockExt');
-      expect(component['viewerInitialized' as any]).toBe(true);
+      expect(component['viewerInitialized'] as any).toBe(true);
     }));
   });
 
@@ -285,7 +285,7 @@ describe('ViewerComponent', () => {
     });
 
     it('skips load if documentId not set', async () => {
-      component['loadModel'](null);
+      component['loadModel'](null as any);
       expect(loadDocumentSpy).not.toHaveBeenCalled();
     });
 

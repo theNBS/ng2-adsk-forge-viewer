@@ -15,7 +15,7 @@ The wrapper was designed to meet the following requirements:
 
 ## Dependencies
 
-The library targets Angular 8.
+The library targets Angular 14.
 
 ## Using the viewer component
 
