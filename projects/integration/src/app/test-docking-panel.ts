@@ -6,12 +6,12 @@ export function createSimplePanel(
   panelX: number,
   panelY: number,
 ) {
-  let panel: SimplePanel;
+  let panel: SimplePanel | undefined = undefined;
 
   // Wrapping in function as Autodesk namespace might not be defined
   // Is there a better way?
   class SimplePanel extends Autodesk.Viewing.UI.DockingPanel {
-    public content: Node;
+    public override content: Node;
 
     constructor(parentContainer: HTMLElement, id: string, title: string, content: any, x: number, y: number) {
       super(parentContainer, id, title, content);
@@ -28,7 +28,7 @@ export function createSimplePanel(
       this.container.style.top = y + 'px';
     }
 
-    public initialize() {
+    public override initialize() {
       // Override DockingPanel initialize() to:
       // - create a standard title bar
       // - click anywhere on the panel to move
@@ -52,6 +52,6 @@ export function createSimplePanel(
     panel = new SimplePanel(panelContainer, panelId, panelTitle, panelContent, panelX, panelY);
   }
 
-  panel.setVisible(true);
+  panel?.setVisible(true);
   return panel;
 }
