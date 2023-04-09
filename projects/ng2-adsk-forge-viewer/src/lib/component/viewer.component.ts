@@ -79,12 +79,12 @@ export class ViewerComponent implements OnDestroy {
   // Debugging
   @Input() public showDebugMessages = false;
 
-  private _viewerOptions: ViewerOptions = null;
+  private _viewerOptions: ViewerOptions | null = null;
   private viewerInitialized = false;
-  private viewer: Autodesk.Viewing.Viewer3D;
-  private documentId: string;
-  private unsubscribe: Subject<boolean> = new Subject();
-  private basicExt: BasicExtension;
+  private viewer!: Autodesk.Viewing.Viewer3D | null;
+  private documentId!: string;
+  private unsubscribe: Subject<void> = new Subject();
+  private basicExt!: BasicExtension;
 
   /**
    * Helper to allow callers to specify documentId with or without the required urn: prefix
@@ -105,7 +105,7 @@ export class ViewerComponent implements OnDestroy {
   }
 
   public get viewerOptions() {
-    return this._viewerOptions;
+    return this._viewerOptions as ViewerOptions;
   }
 
   ngOnDestroy() {
@@ -144,7 +144,7 @@ export class ViewerComponent implements OnDestroy {
    * Get a reference to the current 3D viewer
    */
   public get Viewer3D(): Autodesk.Viewing.Viewer3D {
-    return this.viewer;
+    return this.viewer as Autodesk.Viewing.Viewer3D;
   }
 
   /**
@@ -166,7 +166,7 @@ export class ViewerComponent implements OnDestroy {
    * Get the container element
    */
   public get Container(): HTMLElement {
-    return document.getElementById(this.containerId);
+    return document.getElementById(this.containerId) as HTMLElement;
   }
 
   /**
@@ -180,16 +180,18 @@ export class ViewerComponent implements OnDestroy {
     return this.basicExt;
   }
 
-  public get extensionEvents(): Observable<ViewerEventArgs> | null {
+  public get extensionEvents(): Observable<ViewerEventArgs> | undefined {
     if (this.basicExt) {
       return this.basicExt.viewerEvents;
     }
+
+    return undefined;
   }
 
   public loadDocumentNode(document: Autodesk.Viewing.Document,
                           bubbleNode: Autodesk.Viewing.BubbleNode,
                           options?: object): Promise<Autodesk.Viewing.Model> {
-    return this.viewer.loadDocumentNode(document, bubbleNode, options);
+    return this.viewer!.loadDocumentNode(document, bubbleNode, options);
   }
 
   /**
@@ -238,7 +240,7 @@ export class ViewerComponent implements OnDestroy {
 
     // Support large models
     if (this.viewerOptions.enableMemoryManagement) {
-      config.loaderExtensions = { svf: 'Autodesk.MemoryLimited' };
+      config['loaderExtensions'] = { svf: 'Autodesk.MemoryLimited' };
     }
 
     // Create a new viewer
@@ -251,14 +253,14 @@ export class ViewerComponent implements OnDestroy {
     // set a document url if environment set to Local
     let url: string;
     if (this.viewerOptions.initializerOptions?.env === 'Local') {
-      url = this.viewerOptions.initializerOptions?.document;
+      url = this.viewerOptions.initializerOptions?.['document'];
     }
     // Start the viewer
-    this.viewer.start(url);
+    this.viewer!.start(url!);
 
-    // Viewer is ready - scripts are loaded and we've create a new viewing application
+    // Viewer is ready - scripts are loaded and we've created a new viewing application
     this.viewerInitialized = true;
-    this.viewerOptions.onViewerInitialized({ viewerComponent: this, viewer: this.viewer });
+    this.viewerOptions.onViewerInitialized({ viewerComponent: this, viewer: this.viewer! });
   }
 
   /**
@@ -283,7 +285,7 @@ export class ViewerComponent implements OnDestroy {
 
     // Emit an event so the caller can do something
     // TODO: config option to specify which viewable to display (how?)
-    this.onDocumentChanged.emit({ document, viewerComponent: this, viewer: this.viewer });
+    this.onDocumentChanged.emit({ document, viewerComponent: this, viewer: this.viewer! });
 
     if (this.viewerOptions.showFirstViewable === undefined || this.viewerOptions.showFirstViewable) {
       let model: Autodesk.Viewing.BubbleNode = (document.getRoot() as any).getDefaultGeometry();
@@ -292,7 +294,7 @@ export class ViewerComponent implements OnDestroy {
         model = allModels[0];
       }
 
-      void this.viewer.loadDocumentNode(document, model, undefined);
+      void this.viewer?.loadDocumentNode(document, model, undefined);
     }
   }
 
@@ -318,8 +320,7 @@ export class ViewerComponent implements OnDestroy {
    */
   private extensionLoaded(ext: BasicExtension) {
     this.basicExt = ext;
-    ext.viewerEvents
-      .pipe(takeUntil(this.unsubscribe))
+    ext.viewerEvents?.pipe(takeUntil(this.unsubscribe))
       .subscribe((item: ViewerEventArgs) => {
         this.log(item);
 
@@ -349,7 +350,7 @@ export class ViewerComponent implements OnDestroy {
 
   private unregisterBasicExtension() {
     BasicExtension.unregisterExtension(BasicExtension.extensionName);
-    this.basicExt = null;
+    this.basicExt = null as any;
   }
 
   /**
