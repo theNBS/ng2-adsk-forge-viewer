@@ -2,133 +2,150 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-<a name="1.6.1></a>
+<a name="2.0.2"></a>
+## 2.0.2 (2023-05-07)
+
+- Update peer dependency to Angular >= 12 to support Angular 16
+
+<a name="2.0.1"></a>
+## 2.0.1 (2023-04-09)
+
+- Update peer dependency to Angular 12 - 15
+- Attempts to reset default styling to before v2. The viewer is quite difficult to style - especially when multiple viewers are on the screen. The integration app shows some ways to resize the viewer using positioning and vw/vh sizes
+
+<a name="2.0.0"></a>
+## 2.0.0 (2023-04-09)
+
+- Upgraded to Angular 14
+- Migrate from Travis to GitHub Actions for CI pipeline
+
+<a name="1.6.1"></a>
 ## 1.6.1 (2022-11-08)
 
 - Fix issue with Travis CI build
 - PR #67 Make viewer component fit parent dimensions (with thanks to [wladiarce](https://github.com/wladiarce))
 
-<a name="1.6.0></a>
+<a name="1.6.0"></a>
 ## 1.6.0 (2022-04-10)
 
 - Bump packages to address security vulnerabilities
 - PR #44 Provide Script Service in root (with thanks to [Damian Harasymczuk](https://github.com/dmh126))
 
-<a name="1.5.0></a>
+<a name="1.5.0"></a>
 ## 1.5.0 (2021-08-25)
 
 - PR #44 Enable loading local SVF files (with thanks to [Damian Harasymczuk](https://github.com/dmh126))
 
-<a name="1.4.0></a>
+<a name="1.4.0"></a>
 ## 1.4.0 (2021-04-20)
 
 - PR #35 Add version property to ViewerOptions (with thanks to [Damian Harasymczuk](https://github.com/dmh126))
 
-<a name="1.3.0></a>
+<a name="1.3.0"></a>
 ## 1.3.0 (2021-04-04)
 
 - Updated package dependencies
 - Added activate and deactivate methods to BasicExtension
 
-<a name="1.2.6></a>
+<a name="1.2.6"></a>
 ## 1.2.6 (2021-02-07)
 
 - Updated package dependencies
 
-<a name="1.2.5></a>
+<a name="1.2.5"></a>
 ## 1.2.5 (2020-05-23)
 
 - Updated package dependencies
 
-<a name="1.2.4></a>
+<a name="1.2.4"></a>
 ## 1.2.4 (2020-03-14)
 
 - Updated package dependencies
 
-<a name="1.2.3></a>
+<a name="1.2.3"></a>
 ## 1.2.3 (2019-12-09)
 
 - Updated package dependencies
 
-<a name="1.2.1></a>
+<a name="1.2.1"></a>
 ## 1.2.1 (2019-11-07)
 
 - Assign random id to viewer div
 
-<a name="1.2.0></a>
+<a name="1.2.0"></a>
 ## 1.2.0 (2019-09-20)
 
 - Forge Viewer typings are not included with the component as a dependency
 
-<a name="1.1.0></a>
+<a name="1.1.0"></a>
 ## 1.1.2 (2019-08-11)
 
 - Update to latest viewer typings
 
-<a name="1.1.0></a>
+<a name="1.1.0"></a>
 ## 1.1.1 (2019-07-12)
 
 - Updated README.md and added CHANGELOG.md and LICENSE
 
-<a name="1.1.0></a>
+<a name="1.1.0"></a>
 ## 1.1.0 (2019-07-09)
 
 - Updated library to support Viewer version 7
 
-<a name="1.0.1></a>
+<a name="1.0.1"></a>
 ## 1.0.1 (2019-07-09)
 
 - Updated library to Angular-cli/ng-packagr
 - Upgraded to Angular 8 and RxJS 6
 
-<a name="0.2.2></a>
+<a name="0.2.2"></a>
 ## 0.2.2 (2019-05-11)
 
 - Update to latest forge viewer typings
 
-<a name="0.2.1></a>
+<a name="0.2.1"></a>
 ## 0.2.1 (2019-02-22)
 
 - Fix build issue
 
-<a name="0.2.0></a>
+<a name="0.2.0"></a>
 ## 0.2.0 (2019-02-22)
 
 - Switched to official Autodesk forge-viewer typings
 
-<a name="0.1.7></a>
+<a name="0.1.7"></a>
 ## 0.1.7 (2019-01-08)
 
 - Added missing typings to support DockingPanel
 
-<a name="0.1.6></a>
+<a name="0.1.6"></a>
 ## 0.1.6 (2018-12-21)
 
 - Correct return type of some typings (could lead to error TS7010 re. lacking a return type)
 
-<a name="0.1.5></a>
+<a name="0.1.5"></a>
 ## 0.1.5 (2018-12-21)
 
 - Correct typings for toolbar UI
 
-<a name="0.1.4></a>
+<a name="0.1.4"></a>
 ## 0.1.4 (2018-12-15)
 
 - Added typings and examples to show how to add toolbar buttons
 
-<a name="0.1.3></a>
+<a name="0.1.3"></a>
 ## 0.1.3 (2018-09-15)
 
 - Upgrade to Viewer version 6.0
 
-<a name="0.1.2></a>
+<a name="0.1.2"></a>
 ## 0.1.2 (2018-08-09)
 
 - Added a callback when sciprt have been loaded - so that extnesions can be registered before the
   viewer app is initialised
 - Added a test extension to exercise loading additional extensions
 
-<a name="0.1.1></a>
+<a name="0.1.1"></a>
 ## 0.1.1 (2018-06-30)
 
 Events to indicate the viewer is loaded and ready to use have been refactored in to one
